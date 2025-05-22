@@ -1,10 +1,14 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { InvoiceDetails } from "@/app/api/actions/invoiceactions"
 import { fetchuser } from '@/app/api/actions/useractions';
 import { useSession } from 'next-auth/react';
-import Image from 'next/image';
+
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+import InvoiceDetailsPage from '@/components/InvoiceDetails';
+
 
 const Page = () => {
   const { data: session } = useSession();
@@ -13,6 +17,8 @@ const Page = () => {
   const [invoice, setInvoice] = useState([])
   const [user, setUser] = useState([])
   const [isLoading, setIsLoading] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const reportRef = useRef(null);
 
   useEffect(() => {
 
@@ -34,159 +40,124 @@ const Page = () => {
     setIsLoading(false);
   };
 
+
+  const generatePDF = async () => {
+  if (!reportRef.current) return;
+
+  setIsGeneratingPDF(true);
+  const input = reportRef.current;
+
+  try {
+    // Show and reset styles
+    input.style.display = 'block';
+    input.style.position = 'static';
+
+    // Allow layout to stabilize
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Capture high-res canvas
+    const canvas = await html2canvas(input, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      scrollX: 0,
+      scrollY: -window.scrollY,
+    });
+
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();  // 210 mm
+    const pdfHeight = pdf.internal.pageSize.getHeight(); // 297 mm
+
+    // Convert canvas pixel dimensions to mm
+    const pxToMm = (px) => px * 0.264583;
+    const imgWidthMm = pxToMm(canvas.width);
+    const imgHeightMm = pxToMm(canvas.height);
+
+    const scaleFactor = pdfWidth / imgWidthMm;
+    const scaledHeight = imgHeightMm * scaleFactor;
+
+    // Split across pages if needed
+    if (scaledHeight > pdfHeight) {
+      const pageHeight = pdfHeight;
+      let position = 0;
+      let page = 0;
+
+      while (position < scaledHeight) {
+        const offsetY = -(position * (canvas.height / scaledHeight));
+
+        pdf.addImage(
+          imgData,
+          'PNG',
+          0,
+          offsetY,
+          pdfWidth,
+          scaledHeight
+        );
+
+        position += pageHeight;
+        page++;
+
+        if (position < scaledHeight) {
+          pdf.addPage();
+        } else {
+          // Add timestamp to the last page
+          const timestamp = new Date().toLocaleString();
+          pdf.setFontSize(8);
+          const textWidth = pdf.getTextWidth(timestamp);
+          pdf.text(timestamp, pdfWidth - textWidth - 10, pdfHeight - 10);
+        }
+      }
+    } else {
+      // Single-page case
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, scaledHeight);
+
+      // Timestamp at bottom-right
+      const timestamp = new Date().toLocaleString();
+      pdf.setFontSize(8);
+      const textWidth = pdf.getTextWidth(timestamp);
+      pdf.text(timestamp, pdfWidth - textWidth - 10, pdfHeight - 10);
+    }
+
+    // Download the file
+    pdf.save('invoice-report.pdf');
+
+  } catch (error) {
+    console.error("PDF generation error:", error);
+  } finally {
+    // Hide the component after generation
+    input.style.display = 'none';
+    input.style.position = 'absolute';
+    setIsGeneratingPDF(false);
+  }
+};
+
+      
+    
   return (
     <>
-      <div className='flex'>
-
-
-
-        {isLoading ? (
-          <div className=' justify-center text-center items-center'>
-
-            <Image
-              width={2000}
-              height={2000}
-              src="/assets/infinite-spinner.svg"
-              alt="Loading..."
-              className="w-6 h-6 mx-auto"
-            />
+       <div className="container mx-auto px-4 mb-4">
+            <div className="flex justify-end">
+           
+            <button type="button"
+          onClick={generatePDF}
+          disabled={isGeneratingPDF}
+          
+          className="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"><i className="fa-solid fa-file-pdf mx-1"></i>{isGeneratingPDF ? "Generating..." : "PDF"}</button>
           </div>
 
-        ) : invoice ? (
+        <InvoiceDetailsPage
+          isLoading={isLoading}
+          invoice={invoice}
+          user={user}
+         reportRef={reportRef}
+        />
 
-          <div className="max-w-4xl w-full mx-auto shadow shadow-gray-400 rounded-lg bg-white text-black px-6 mt-8  sm:px-6 py-6">
-            {invoice && (
-              <div className="flex justify-end mb-4">
-                <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-200">
-                  PDF
-                </button>
-              </div>
-            )}
-            <div className="  rounded-t-lg sm:px-6 sm:py-4 px-2 py-1">
-              <h1 className="sm:text-2xl text-sm font-bold text-center uppercase bg-black py-2 text-white tracking-wider mb-3">INVOICE</h1>
-              <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-
-                {/* Invoice Info */}
-                <div className="flex flex-row justify-between items-start w-full space-y-4 sm:space-y-0 sm:space-x-6">
-                  {/* Logo on the left or placeholder */}
-                  <div className="w-20 h-20 sm:w-32 sm:h-32 overflow-hidden rounded-full  flex items-center justify-center">
-                    {user?.companylogo?.trim() ? (
-                      <img
-                        src={user.companylogo}
-                        alt="Company Logo"
-                        className="w-32 h-32 object-cover rounded-full border-2 border-gray-300"
-                        onError={(e) => (e.target.style.display = 'none')}
-                      />
-                    ) : (
-                      // Placeholder to maintain layout when logo is missing
-                      <div className="w-32 h-32" />
-                    )}
-                  </div>
-
-                  {/* Invoice info and address on the right */}
-                  <div className="flex flex-col items-end text-right text-xs sm:text-sm w-full sm:w-auto space-y-2">
-                    <table className="text-xs bg-white text-black rounded shadow sm:text-sm">
-                      <tbody>
-                        <tr>
-                          <th className="bg-gray-200 text-left p-2 text-xs sm:w-32">Invoice #</th>
-                          <td className="p-2 border text-right">{invoice?.invoiceNumber}</td>
-                        </tr>
-                        <tr>
-                          <th className="bg-gray-200 text-left p-2 text-xs sm:text-sm">Issue Date</th>
-                          <td className="p-2 border text-right">
-                            {invoice?.date
-                              ? new Date(invoice.date).toLocaleDateString("en-GB")
-                              : "N/A"}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-
-                    <address className="text-xs leading-4 not-italic space-y-1 sm:text-sm mt-2">
-                      <p className="font-semibold">{user.company}</p>
-                      {(user.companyaddress || '').split(',').map((line, index) => (
-                        <p key={index} className="text-gray-700">{line.trim()}</p>
-                      ))}
-                      <p className="text-gray-700">
-                        <span className="font-medium">Phone:</span> {user.companyphone}
-                      </p>
-                    </address>
-                  </div>
-                </div>
-
-
-
-              </div>
-            </div>
-
-            {/* Client Info */}
-            <div className="mt-4 border bg-blue-100 text-blue-900 text-xs font-medium p-3 rounded  sm:text-sm ">
-              <p className="font-semibold  text-xs sm:text-sm">Bill To:</p>
-              <p className="text-xs sm:text-sm font-extrabold">{invoice?.client}</p>
-              {/* {isclient?.address.split(',').map((line, index) => (
-                <p className="text-xs sm:text-sm" key={index}>{line.trim()}</p>
-              ))} */}
-            </div>
-
-
-
-            {/* Items Table */}
-            <div className="my-2  overflow-x-auto">
-              <table className="w-full text-sm border rounded-2xl border-collapse">
-                <thead className="bg-gray-200">
-                  <tr className="text-center">
-
-                    <th className="p-2 text-xs sm:text-sm">No.</th>
-                    <th className="p-2 text-xs sm:text-sm">Item</th>
-
-                    <th className="p-2 text-xs sm:text-sm">Rate</th>
-                    <th className="p-2 text-xs sm:text-sm">Quantity</th>
-                    <th className="p-2 text-xs sm:text-sm">Price</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {invoice?.items?.map((item, index) => (
-                    <tr key={index} className="text-center">
-
-                      <td className="p-2 text-xs sm:text-sm">{index + 1}</td>
-                      <td className="p-2 text-xs sm:text-sm whitespace-nowrap">{item.item_name}</td>
-
-                      <td className="p-2 text-xs sm:text-sm">₹{(item.item_price).toFixed(2)}</td>
-                      <td className="p-2 text-xs sm:text-sm">{(item.item_quantity).toFixed(2)}</td>
-                      <td className="p-2 text-xs sm:text-sm">₹{(item.item_quantity * item.item_price).toFixed(2)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Totals Section */}
-            <div className=" overflow-x-auto flex justify-end">
-              <table className="text-sm w-[45%] sm:w-[300px]">
-                <tbody>
-                  <tr>
-                    <th className="bg-gray-200 p-2 text-xs sm:text-sm">Total</th>
-                    <td className="p-2 border text-right text-xs sm:text-sm">₹{invoice?.grandTotal}</td>
-                  </tr>
-                  {/* <tr>
-                    <th className="bg-gray-200 p-2 text-xs sm:text-sm">Amount Paid</th>
-                    <td className="p-2 border text-right text-xs sm:text-sm">₹totalReceivedAmount</td>
-                  </tr>
-                  <tr>
-                    <th className="bg-gray-200 p-2 text-xs sm:text-sm">Balance Due</th>
-                    <td className="p-2 border text-right text-xs sm:text-sm">₹{invoice?.balance_due_amount}</td>
-                  </tr> */}
-                </tbody>
-              </table>
-            </div>
-
-
-
-          </div>
-        ) : (
-          <p>Invoice not found</p>
-        )}
       </div>
+
+
+      
     </>
   );
 };
