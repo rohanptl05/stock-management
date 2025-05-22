@@ -1,12 +1,12 @@
 "use client";
 
-import Modal from '@/app/components/Modal';
+import Modal from '@/components/Modal';
 import { use, useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { createProduct, fetchProducts, updateProduct } from '@/app/api/actions/productactions';
-import ProductList from '@/app/components/ProductList';
+import ProductList from '@/components/ProductList';
 import { AddProductHistory } from '@/app/api/actions/productHistoryactions';
-import { ConnectionStates } from 'mongoose';
+import Image from 'next/image';
 
 const Page = () => {
   const { data: session } = useSession();
@@ -30,7 +30,8 @@ const Page = () => {
   const [viewopen, setViewopen] = useState(false);
   const [isQuantityOpen, setIsQuantityOpen] = useState(false);
   const [newQuantity, setNewQuantity] = useState(0);
-  const [serchText,setSearchText]=useState({})
+  // const [serchText,setSearchText]=useState({})
+   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
 
@@ -200,7 +201,20 @@ const Page = () => {
 
 };
 
+  const itemsPerPage = 5;
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
+  const paginatedproduct = (Array.isArray(products) ? products : []).slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil((Array.isArray(products) ? products.length : 0) / itemsPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
 
 
 
@@ -242,16 +256,18 @@ const Page = () => {
             <tbody className='text-center'>
               {isLoading ? (
                 <tr>
-                  <td colSpan="8" className="px-4 py-4 text-center">
-                    <img
+                  <td colSpan="18" className="px-4 py-4 text-center">
+                    <Image
+                    width={2000}
+                    height={2000}
                       src="/assets/infinite-spinner.svg"
                       alt="Loading..."
                       className="w-6 h-6 mx-auto"
                     />
                   </td>
                 </tr>
-              ) : products.length > 0 ? (
-                products.map((product) => (
+              ) : paginatedproduct.length > 0 ? (
+                paginatedproduct.map((product) => (
                   <ProductList
                     key={product._id}
                     product={product}
@@ -272,6 +288,40 @@ const Page = () => {
             </tbody>
           </table>
         </div>
+
+
+
+
+
+        
+      {/* pagination */}
+      <div className="flex justify-center items-center gap-2 mt-4">
+        <button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(currentPage - 1)}
+          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+        >
+          Prev
+        </button>
+
+        {[...Array(totalPages)].map((_, pageNum) => (
+          <button
+            key={pageNum}
+            onClick={() => setCurrentPage(pageNum + 1)}
+            className={`px-3 py-1 rounded ${currentPage === pageNum + 1 ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
+          >
+            {pageNum + 1}
+          </button>
+        ))}
+
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(currentPage + 1)}
+          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
 
 
 

@@ -19,7 +19,8 @@ export const authOptions = {
 
         try {
           await connectDB();
-          const user = await User.findOne({ email: credentials.email });
+          const email = credentials.email.toLowerCase();
+          const user = await User.findOne({ email });
 
           if (!user) {
             throw new Error("No user found with this email");

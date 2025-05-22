@@ -21,7 +21,7 @@ const ProductList = ({ product, setSelectedProduct, setIsEditModalOpen, setViewo
             alert("Something went wrong while deleting.");
         }
     };
-    const available = (Number(product.productQuantity) || 0) - (Number(product.productQuantityUse) || 0);
+    const available = (Number(product.productQuantityUse) || 0);
 
     return (
         <tr key={product._id}>

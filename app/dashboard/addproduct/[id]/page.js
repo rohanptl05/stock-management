@@ -1,15 +1,16 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { fetchProductsHistory,updateProductHistory } from '@/app/api/actions/productHistoryactions'
+import { fetchProductsHistory, updateProductHistory } from '@/app/api/actions/productHistoryactions'
 import { useSession } from 'next-auth/react'
-import ProductHistoryList from '@/app/components/ProductHistoryList'
-import Modal from '@/app/components/Modal'
+import ProductHistoryList from '@/components/ProductHistoryList'
+import Modal from '@/components/Modal'
+import Image from 'next/image'
 
 const Page = () => {
   const { data: session } = useSession();
-  const params = useParams(); 
-  const id = params.id;       
+  const params = useParams();
+  const id = params.id;
   const [isLoading, setIsLoading] = useState(false);
   const [historyData, setHistoryData] = useState([])
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -22,13 +23,13 @@ const Page = () => {
   const fetchData = async () => {
     try {
 
-      setIsLoading(false);
+      setIsLoading(true);
       const res = await fetchProductsHistory(id, "active");
       if (res) {
 
         setHistoryData(res)
 
-
+  setIsLoading(false);
       }
     } catch (error) {
       console.error("data not Fetch ", error)
@@ -46,13 +47,13 @@ const Page = () => {
   };
 
 
-  const EditQuehandleSubmit = async(e) => {
+  const EditQuehandleSubmit = async (e) => {
     e.preventDefault();
     // console.log("Updated Quantity:", selectedProductQue?.productQuantity);
     console.log("Updated Quantity:", selectedProductQue);
     // Submit updated quantity here
     const res = await updateProductHistory(selectedProductQue)
-    if(res.status === 200){
+    if (res.status === 200) {
       alert("update data")
       setIsEditModalOpen(false)
       fetchData();
@@ -74,19 +75,17 @@ const Page = () => {
               <tr>
                 <th className="px-4 py-2">Product Index</th>
                 <th className="px-4 py-2">Product Quantity</th>
-                {/* <th className="px-4 py-2">Product Price</th> */}
-                {/* <th className="px-4 py-2">Product Category</th> */}
-                {/* <th className="px-4 py-2">Product Brand</th> */}
                 <th className="px-4 py-2">Date</th>
-                {/* <th className="px-4 py-2">Product Description</th> */}
                 <th className="px-4 py-2">Actions</th>
               </tr>
             </thead>
             <tbody className='text-center'>
               {isLoading ? (
                 <tr>
-                  <td colSpan="8" className="px-4 py-4 text-center">
-                    <img
+                  <td colSpan="18" className="px-4 py-4 text-center">
+                    <Image
+                      width={2000}
+                      height={2000}
                       src="/assets/infinite-spinner.svg"
                       alt="Loading..."
                       className="w-6 h-6 mx-auto"
@@ -102,8 +101,7 @@ const Page = () => {
                     product={product}
                     setSelectedProductQue={setSelectedProductQue}
                     setIsEditModalOpen={setIsEditModalOpen}
-
-    fetchData={fetchData}
+                    fetchData={fetchData}
                   />
                 ))
               ) : (
