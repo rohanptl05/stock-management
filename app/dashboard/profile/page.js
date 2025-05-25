@@ -121,14 +121,16 @@ export default function ProfilePage() {
             alt="Loading..."
             className="w-6 h-6 mx-auto"
           />
-        </div>) : ( <div className="flex-col-2 gap-6 text-gray-700">
+        </div>) : (<div className="flex-col-2 gap-6 text-gray-700">
           <div className="relative col-span-2  flex justify-center sm:justify-start items-center mb-4">
 
 
             <div className="relative">
               {/* Image */}
-              <img
-                src={form.image || "/assets/user.jpg"}
+              <Image
+                width={2000}
+                height={2000}
+                src={form?.image || "/assets/user.jpg"}
                 alt="Profile pic"
                 onClick={() => open()}
                 title="Click to change Profile"
@@ -188,7 +190,7 @@ export default function ProfilePage() {
         </div>)
 
         }
-       
+
       </div>
 
       {/* Company Info */}
@@ -211,30 +213,32 @@ export default function ProfilePage() {
             alt="Loading..."
             className="w-6 h-6 mx-auto"
           />
-        </div>):(  <div className=" flex-col-2 gap-6 text-gray-700">
+        </div>) : (<div className=" flex-col-2 gap-6 text-gray-700">
 
 
-          
+
 
           <div className="relative col-span-2  flex justify-center sm:justify-start items-center mb-4">
 
 
             <div className="relative">
-              {/* Image */}
-              <img
-                src={form.companylogo || "/assets/user.jpg"}
+
+              <Image
+                width={2000}
+                height={2000}
+               src={form?.companylogo?.trim() || "/assets/user.jpg"}
                 alt="company logo"
                 onClick={() => open()}
                 title="Click to change company logo"
                 onError={(e) => {
-                  e.target.onerror = null; // Prevent infinite loop
-                  e.target.src = "/assets/user.jpg"; // Fallback image
+                  e.target.onerror = null;
+                  e.target.src = "/assets/user.jpg";
                 }}
 
                 className="w-32 h-32 object-cover cursor-pointer rounded-full border-2 border-gray-300"
               />
 
-              {/* Change (Camera) Icon */}
+
               <div
                 className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md hover:scale-110 transition cursor-pointer"
                 onClick={() => open()}
@@ -279,7 +283,7 @@ export default function ProfilePage() {
           <div className="flex gap-2 m-2"><strong>Company Phone:</strong> {form.companyphone}</div>
           <div className="flex gap-2 m-2"><strong>Company Address:</strong> {form.companyaddress}</div>
         </div>)}
-      
+
       </div>
 
 

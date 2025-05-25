@@ -52,7 +52,7 @@ const Page = () => {
   };
 
   useEffect(() => {
-    if (!originalInvoices) return;
+   if (!Array.isArray(originalInvoices)) return;
 
     let filteredInvoices = [...originalInvoices];
 
