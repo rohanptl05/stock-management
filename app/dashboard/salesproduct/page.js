@@ -441,8 +441,7 @@ const Page = () => {
                   invoice={invoice}
                   setSelectedInvoice={setSelectedInvoice}
                   setIsEditModalOpen={setIsEditModalOpen}
-                  // setViewopen={setViewopen}
-                  // setIsQuantityOpen={setIsQuantityOpen}
+                 
                   fetchData={fetchData}
                 />
               ))

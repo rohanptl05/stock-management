@@ -112,3 +112,7 @@ export const changeUserPassword = async (email, oldPassword, newPassword) => {
   };
 
 
+export const deleteProfile = async (id)=>{
+    
+
+}

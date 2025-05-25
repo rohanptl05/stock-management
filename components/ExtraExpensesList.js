@@ -1,6 +1,6 @@
 "use client"
 import React from 'react'
-import { DeleteExinvoices } from '../api/actions/extraexpenseactions'
+import { DeleteExinvoices } from '@/app/api/actions/extraexpenseactions'
 
 const ExtraExpensesList = ({ exinvoice, index, updateExInvoice, getData }) => {
 

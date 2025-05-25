@@ -10,7 +10,7 @@ export const fetchProducts = async (userId, status) => {
   const products = await Product.find({ user: userId, recordStatus: status }).sort({ date: -1 });
 
   if (!products || products.length === 0) {
-    return {  };
+    return { };
   }
   const safeProducts = products.map(product =>product.toObject({ flattenObjectIds: true })
   );
@@ -128,3 +128,30 @@ export const productDelete = async (id) => {
     throw new Error('Server error while deactivating product history');
   }
 };
+
+
+
+export const RestoreProduct = async (id)=>{
+  await connectDb();
+  try {
+     const prod = await Product.findById(id);
+        if (!prod) {
+          return { error: "product not found" };
+        }
+      
+          await Product.findOneAndUpdate(
+            { _id: id },  
+            {
+                $set: {
+                    recordStatus: "active",
+                    deactivatedAt: null
+                }
+            },
+            { new: true }
+          );
+     return { success: true, message: "Product Restore successfully" };
+  } catch (error) {
+      console.error("Error deleting invoice:", error);
+          return { error: "Failed to delete invoice" };
+  }
+}

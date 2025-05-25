@@ -8,20 +8,20 @@ const ReportinvoiceItems = ({invoices }) => {
 <tr className="sm:table-row hover:bg-gray-50 transition duration-300 border-b sm:border-b  py-5 text-center ">
   {/* Invoice Number */}
   <td className="px-3 py-3 font-medium text-gray-900  sm:table-cell">
-   {invoices.invoiceNumber}
+   {invoices?.invoiceNumber}
   </td>
 
   <td className="px-3 py-3 font-medium text-gray-900 sm:table-cell">
   {/* Mobile view: truncated */}
   <span className="block sm:hidden">
-    {invoices.client.name.length > 10
-      ? `${invoices.client.name.slice(0, 8)}...`
-      : invoices.client.name}
+    {invoices?.client.length > 10
+      ? `${invoices?.client.slice(0, 8)}...`
+      : invoices?.client}
   </span>
 
   {/* Desktop view: full name */}
   <span className="hidden sm:inline">
-    {invoices.client.name}
+    {invoices.client}
   </span>
 </td>
 
@@ -47,9 +47,7 @@ const ReportinvoiceItems = ({invoices }) => {
     {invoices.grandTotal}
   </td>
 
-  <td className="px-3 py-3 font-medium text-gray-900  sm:table-cell">
-    {invoices.balance_due_amount}
-  </td>
+ 
 </tr>
 
    

@@ -213,3 +213,58 @@ export const InvoiceDetails = async (id) => {
     throw new Error('Server error while fetching invoice');
   }
 };
+
+
+export const RestoreInvoice = async (id) => {
+  await connectDB();
+
+  try {
+    // Step 1: Restore the invoice
+    const restoredInvoice = await Invoice.findOneAndUpdate(
+      { _id: id },
+      {
+        $set: {
+          recordStatus: "active",
+          deactivatedAt: null,
+        },
+      },
+      { new: true }
+    );
+
+    if (!restoredInvoice) {
+      return { error: "Invoice not found" };
+    }
+
+    // Step 2: Get active products and invoices
+    const [activeProducts, activeInvoices] = await Promise.all([
+      Product.find({ recordStatus: "active" }),
+      Invoice.find({ recordStatus: "active" }),
+    ]);
+
+    // Step 3: Recalculate product usage
+    for (const product of activeProducts) {
+      const productId = product._id.toString();
+      let totalUsed = 0;
+
+      for (const invoice of activeInvoices) {
+        for (const item of invoice.items) {
+          if (item.productId.toString() === productId) {
+            totalUsed += parseInt(item.item_quantity);
+          }
+        }
+      }
+
+      const remainingQty = Math.max(0, product.productQuantity - totalUsed);
+
+      await Product.findByIdAndUpdate(productId, {
+        productQuantityUse: remainingQty,
+      });
+    }
+
+    return { success: true, message: "Invoice restored successfully" };
+
+  } catch (error) {
+    console.error("Error restoring invoice:", error);
+    return { error: "Failed to restore invoice" };
+  }
+};
