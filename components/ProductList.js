@@ -29,8 +29,8 @@ const ProductList = ({ product, setSelectedProduct, setIsEditModalOpen, setViewo
 
             <td className="border-b px-4 py-2 whitespace-nowrap">{product.productId}</td>
             <td className="border-b px-4 py-2 whitespace-nowrap">{product.productQuantity}</td>
-            <td className={`border-b border-black px-4 py-2 whitespace-nowrap ${available < 5 ? 'text-red-500 font-semibold' : ''}`}>
-                {available}
+            <td className={`border-b border-black px-4 py-2 whitespace-nowrap `}>
+                {Number(product.productQuantityUse)}
             </td>
             <td className="border-b px-4 py-2 whitespace-nowrap">{product.productPrice}</td>
 

@@ -248,7 +248,7 @@ const Page = () => {
                 <th className="px-4 py-2">Product Name</th>
                 <th className="px-4 py-2">Product ID</th>
                 <th className="px-4 py-2">Product Quantity</th>
-                <th className="px-4 py-2">Product Available</th>
+                <th className="px-4 py-2">Product Use</th>
                 <th className="px-4 py-2">Product Price</th>
                 <th className="px-4 py-2">Actions</th>
               </tr>

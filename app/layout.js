@@ -2,6 +2,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SessionWrapper from "../components/SessionWrapper";
 import Script from "next/script";
+import 'flowbite';
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

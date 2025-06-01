@@ -26,6 +26,7 @@ const Page = () => {
   })
   const [currentPage, setCurrentPage] = useState(1);
   const [isselectedInvoice, setSelectedInvoice] = useState([])
+  const [isselectedOrinalInvoice, setSelectedOrinalInvoice] = useState([])
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
@@ -106,7 +107,9 @@ const Page = () => {
       validateQuantities(updatedItems)
     }
   }
- const handleItemEditChange = (index, field, value) => {
+ 
+ 
+  const handleItemEditChange = (index, field, value) => {
   setSelectedInvoice(prevInvoice => {
     const updatedItems = [...prevInvoice.items];
 
@@ -155,7 +158,7 @@ const Page = () => {
     const warningList = itemList.map(item => {
       const product = products.find(p => p._id === item.productId)
       if (product) {
-        const availableQty = product.productQuantityUse
+        const availableQty = product.productQuantity - product.productQuantityUse
         return item.item_quantity > availableQty
           ? `Only ${availableQty} available`
           : ''
@@ -441,7 +444,7 @@ const Page = () => {
                   invoice={invoice}
                   setSelectedInvoice={setSelectedInvoice}
                   setIsEditModalOpen={setIsEditModalOpen}
-                 
+                  setSelectedOrinalInvoice={setSelectedOrinalInvoice}
                   fetchData={fetchData}
                 />
               ))
@@ -555,7 +558,7 @@ const Page = () => {
                       {/* Available Quantity */}
                       <td className="border p-2 text-center">
                         {product
-                          ? product.productQuantityUse
+                          ? product.productQuantity - product.productQuantityUse
                           : '--'}
                       </td>
 
@@ -571,14 +574,14 @@ const Page = () => {
                           min={1}
                           max={
                             product
-                              ? product.productQuantityUse
+                              ? product?.productQuantity - product?.productQuantityUse
                               : undefined
                           }
                           value={item.item_quantity}
                           onChange={(e) => {
                             const enteredQty = parseInt(e.target.value);
                             const availableQty = product
-                              ? product.productQuantityUse
+                              ? product?.productQuantity
                               : 0;
                             if (enteredQty > availableQty) {
                               setWarnings((prev) => {
@@ -765,7 +768,7 @@ const Page = () => {
                       {/* Available Quantity */}
                       <td className="border p-2 text-center">
                         {product
-                          ? product.productQuantityUse
+                          ? product.productQuantity - product.productQuantityUse 
                           : '--'}
                       </td>
 
@@ -781,14 +784,14 @@ const Page = () => {
                           min={1}
                           max={
                             product
-                              ? product.productQuantityUse
+                              ? product.productQuantity - product.productQuantityUse 
                               : undefined
                           }
                           value={item.item_quantity}
                           onChange={(e) => {
                             const enteredQty = parseInt(e.target.value);
                             const availableQty = product
-                              ? product.productQuantityUse
+                              ? product.productQuantity - product.productQuantityUse 
                               : 0;
                             if (enteredQty > availableQty) {
                               setWarnings((prev) => {
@@ -871,7 +874,7 @@ const Page = () => {
             </button>
           </div>
         </div>
-      </Modal>
+      </Modal> 
 
 
 

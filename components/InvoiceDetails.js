@@ -22,7 +22,7 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                 <div className="max-w-4xl w-full mx-auto shadow shadow-gray-400 rounded-lg bg-white text-black px-6 mt-8  sm:px-6 py-6">
 
                     <div className="  rounded-t-lg sm:px-6 sm:py-4 px-2 py-1">
-                        <h1 className="sm:text-2xl text-sm font-bold text-center uppercase bg-black py-2 text-white tracking-wider mb-3">Sai Services</h1>
+                        <h1 className="sm:text-2xl text-sm font-bold text-center uppercase bg-black py-2 text-white tracking-wider mb-3">Sai Service</h1>
                         <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
 
                             {/* Invoice Info */}
@@ -31,8 +31,8 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                                 <div className="w-20 h-20 sm:w-32 sm:h-32 overflow-hidden rounded-full   flex items-center justify-center">
                                     {user?.companylogo?.trim() ? (
                                         <Image
-                                        width={200}
-                                        height={200}
+                                            width={200}
+                                            height={200}
                                             src={user.companylogo}
                                             alt="Company Logo"
                                             className="w-32 h-32 object-cover rounded-full border-2 border-gray-300"
@@ -146,102 +146,79 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                 ref={reportRef}
                 style={{
                     backgroundColor: '#ffffff',
-                    width: '794px', // Fixed width for A4 size
+                    width: '794px', // A4 width
                     margin: '0 auto',
-                    padding: '40px', // Equivalent to 1.5cm
+                    padding: '40px',
                     boxSizing: 'border-box',
                 }}
-                className="shadow-lg hidden items-center "
+                className="hidden items-center"
             >
-                <div className="rounded-t-lg w-[650px] m-auto">
-                    <h1 className="text-2xl font-extrabold text-center items-center uppercase bg-black py-2 text-white tracking-wider mb-6 ">
-                        Sai Services
-                    </h1>
+                <div className="w-[794px] mx-auto p-4 border border-black text-xs text-black font-medium">
+                    {/* Header */}
+                    <div className="border-b border-black text-center mb-2">
+                        <h1 className="text-xl font-bold uppercase">Sai Sales Service</h1>
+                        <p>All Type DTH Recharge service & Sales LED TV, CCTV Camera</p>
+                        <p className="text-[10px] font-normal">(કુલર, પંખા વગેરેની સર્વિસ ઉપલબ્ધ છે.)</p>
+                        <p className="text-sm mt-1">
+                            A.T. Post. Pipalkhed, (Bus stop Pachhal) Shop No. 2, Ta. Vansda Dist. Navsari
+                        </p>
+                        <p className="font-semibold">Mo. 9979524096, 9023137786</p>
+                    </div>
 
-                    <div className="flex justify-between items-start mb-6 gap-4">
-                        {/* Company Logo */}
-                        <div className="w-28 h-28 overflow-hidden rounded-full border border-black flex items-center justify-center">
-                            {user?.companylogo?.trim() ? (
-                                <img
-                                    src={user.companylogo}
-                                    alt="Company Logo"
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => (e.target.style.display = 'none')}
-                                />
-                            ) : (
-                                <div className="w-full h-full" />
-                            )}
+                    {/* Top Meta Section */}
+                    <div className="grid grid-cols-2 gap-4 mb-2">
+                        <div className="space-y-1">
+                            <p>Name: ___________________________________</p>
+                            <p>Add.: ___________________________________</p>
+                            <p>Mo.: ____________________________________</p>
                         </div>
-
-                        {/* Company Info */}
-                        <div className="text-right text-xs space-y-2">
-                            <table className="text-xs bg-white text-black border border-black w-full">
-                                <tbody>
-                                    <tr>
-                                        <th className="p-2 border border-black text-left">Invoice #</th>
-                                        <td className="p-2 border border-black text-right">{invoice?.invoiceNumber}</td>
-                                    </tr>
-                                    <tr>
-                                        <th className="p-2 border border-black text-left">Issue Date</th>
-                                        <td className="p-2 border border-black text-right">
-                                            {invoice?.date ? new Date(invoice.date).toLocaleDateString("en-GB") : "N/A"}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <address className="mt-2 not-italic text-xs space-y-1">
-                                <p className="font-semibold">{user.company}</p>
-                                {(user.companyaddress || '').split(',').map((line, index) => (
-                                    <p key={index} className="text-black">{line.trim()}</p>
-                                ))}
-                                <p className="text-black">
-                                    <span className="font-medium">Phone:</span> {user.companyphone}
-                                </p>
-                            </address>
+                        <div className="space-y-1 text-right">
+                            <p>Bill No.: <span className="font-bold">201</span></p>
+                            <p>Date: ________ - 20</p>
                         </div>
                     </div>
 
-                    {/* Bill To Section */}
-                    <div className="border border-black text-black text-xs font-medium p-3 rounded mb-6">
-                        <p className="font-semibold">Bill To:</p>
-                        <p className="font-extrabold">{invoice?.client}</p>
-                    </div>
-
-                    {/* Items Table */}
-                    <table className="w-full text-sm border border-black border-collapse mb-6">
-                        <thead className="bg-white text-black">
-                            <tr className="text-center">
-                                <th className="p-2 text-xs border border-black">No.</th>
-                                <th className="p-2 text-xs border border-black">Item</th>
-                                <th className="p-2 text-xs border border-black">Rate</th>
-                                <th className="p-2 text-xs border border-black">Quantity</th>
-                                <th className="p-2 text-xs border border-black">Price</th>
+                    {/* Table Header */}
+                    <table className="w-full border border-black border-collapse mb-2 text-center">
+                        <thead>
+                            <tr>
+                                <th className="border border-black px-1 py-1 w-[40px]">No.</th>
+                                <th className="border border-black px-1 py-1">PRODUCT DESCRIPTION</th>
+                                <th className="border border-black px-1 py-1 w-[60px]">Qty.</th>
+                                <th className="border border-black px-1 py-1 w-[100px]">Unit Rate</th>
+                                <th className="border border-black px-1 py-1 w-[80px]">Amount Rs.</th>
+                                <th className="border border-black px-1 py-1 w-[60px]">Ps.</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {invoice?.items?.map((item, index) => (
-                                <tr key={index} className="text-center">
-                                    <td className="p-2 text-xs border border-black">{index + 1}</td>
-                                    <td className="p-2 text-xs border border-black">{item.item_name}</td>
-                                    <td className="p-2 text-xs border border-black">₹{item.item_price.toFixed(2)}</td>
-                                    <td className="p-2 text-xs border border-black">{item.item_quantity.toFixed(2)}</td>
-                                    <td className="p-2 text-xs border border-black">₹{(item.item_quantity * item.item_price).toFixed(2)}</td>
+                            {/* Add items dynamically or leave blank for manual entry */}
+                            {[...Array(5)].map((_, i) => (
+                                <tr key={i} className="h-[28px]">
+                                    <td className="border border-black px-1 py-1">{i + 1}</td>
+                                    <td className="border border-black px-1 py-1 text-left"></td>
+                                    <td className="border border-black px-1 py-1"></td>
+                                    <td className="border border-black px-1 py-1"></td>
+                                    <td className="border border-black px-1 py-1"></td>
+                                    <td className="border border-black px-1 py-1"></td>
                                 </tr>
                             ))}
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colSpan="4" className="p-2 text-right font-semibold text-xs border border-black">
-                                    Total:
-                                </td>
-                                <td className="p-2 text-center font-bold text-xs border border-black">
-                                    ₹{invoice?.grandTotal?.toFixed(2)}
-                                </td>
-                            </tr>
-                        </tfoot>
                     </table>
+
+                    {/* Footer Bottom Lines */}
+                    <div className="flex justify-between items-start mb-1">
+                        <p>I.D.: ____________________________________</p>
+                        <div className="text-right">
+                            <p className="font-semibold">TOTAL</p>
+                        </div>
+                    </div>
+
+                    <div className="flex justify-between mt-8">
+                        <p><em>Received Signature: _______________________</em></p>
+                        <p className="font-bold">For, Sai Sales Service</p>
+                    </div>
                 </div>
+
             </div>
 
 

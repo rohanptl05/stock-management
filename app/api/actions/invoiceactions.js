@@ -115,7 +115,7 @@ export const UpdateInvoice = async (data) => {
       }
 
       // Step 4: Calculate remaining quantity
-      const remainingQty = Math.max(0, product.productQuantity - totalUsed);
+      const remainingQty = Math.max(totalUsed);
 
       // Step 5: Update productQuantityUse as remaining
       await Product.findByIdAndUpdate(productId, {
