@@ -3,7 +3,8 @@
 import connectDb from "@/db/connectDb"
 import Product from "@/models/Products"
 import ProductHistory from "@/models/ProductHistory";
-import { updateProduct } from "./productactions";
+import Invoice from "@/models/Invoice";
+
 
 export const fetchProductsHistory = async (product, status) => {
   await connectDb();
@@ -20,66 +21,101 @@ export const fetchProductsHistory = async (product, status) => {
   return safeProducts;
 }
 
-
 export const AddProductHistory = async (data) => {
   await connectDb();
 
   let ndata = { ...data };
 
-  let newProductHistory = await ProductHistory.create({
+  // Step 1: Create a new product history record
+  const newProductHistory = await ProductHistory.create({
     product: ndata._id,
     user: ndata.user,
     productId: ndata.productId,
     productQuantity: ndata.productQuantity,
-
   });
 
-  return { status: 200, message: "Product created successfully" };
-}
+  const aggregates = await ProductHistory.aggregate([
+    {
+      $match: {
+        product: newProductHistory.product,
+        recordStatus: "active",
+      },
+    },
+    {
+      $group: {
+        _id: "$product",
+        totalproduct: { $sum: "$productQuantity" },
+      },
+    },
+  ]);
+
+  const { totalproduct = 0 } = aggregates[0] || {};
+  const finalproduct = totalproduct;
+
+  // 3. Update the operator's balance
+  await Product.findByIdAndUpdate(
+    newProductHistory.product,
+    { productQuantity: totalproduct , productQuantityremaining: finalproduct},
+    { new: true }
+  );
+  await recalculateProductQuantities();
+  return { status: 200, message: "Product history added and product updated successfully" };
+};
 
 
+
+
+
+
+// Function to update product history
 export const updateProductHistory = async (data) => {
   await connectDb();
 
   try {
-    const updatedHistory = await ProductHistory.findByIdAndUpdate(
+    const newProductHistory = await ProductHistory.findByIdAndUpdate(
       data._id,
       {
         $set: {
-           productQuantity: data.productQuantity ,
-          date: data.date ,
+          productQuantity: data.productQuantity,
+          date: data.date,
         }
       },
       { new: true } // Return the updated document
     );
-   if (!updatedHistory) {
+    if (!newProductHistory) {
       return {
         status: 404,
         message: 'Product history not found',
       };
     }
-  
 
- const productId = updatedHistory.product;
- 
-    const activeHistories = await ProductHistory.find({
-      product: productId,
-      recordStatus: "active"
-    });
 
-    const totalQuantity = activeHistories.reduce((sum, record) => sum + (record.productQuantity || 0), 0);
-
-    await Product.findByIdAndUpdate(
-      productId,
+    const aggregates = await ProductHistory.aggregate([
       {
-        $set: {
-          productQuantity: totalQuantity
-        }
-      }
+        $match: {
+          product: newProductHistory.product,
+          recordStatus: "active",
+        },
+      },
+      {
+        $group: {
+          _id: "$product",
+          totalproduct: { $sum: "$productQuantity" },
+        },
+      },
+    ]);
+
+    const { totalproduct = 0 } = aggregates[0] || {};
+    const finalproduct = totalproduct;
+
+    // 3. Update the operator's balance
+    await Product.findByIdAndUpdate(
+      newProductHistory.product,
+      { productQuantity: totalproduct, productQuantityremaining: finalproduct },
+      { new: true }
     );
 
-    
-
+    await recalculateProductQuantities();
     return {
       status: 200,
       message: 'Successfully updated product history',
@@ -96,7 +132,7 @@ export const productHistoryDelete = async (id) => {
   await connectDb();
 
   try {
-    const updatedHistory = await ProductHistory.findByIdAndUpdate(
+    const newProductHistory = await ProductHistory.findByIdAndUpdate(
       id,
       {
         $set: {
@@ -109,33 +145,37 @@ export const productHistoryDelete = async (id) => {
 
 
 
-    console.log("object",updatedHistory.product)
-
-const productId = updatedHistory.product;
- 
-    const activeHistories = await ProductHistory.find({
-      product: productId,
-      recordStatus: "active"
-    });
-
-    const totalQuantity = activeHistories.reduce((sum, record) => sum + (record.productQuantity || 0), 0);
-
-    await Product.findByIdAndUpdate(
-      productId,
+    const aggregates = await ProductHistory.aggregate([
       {
-        $set: {
-          productQuantity: totalQuantity
-        }
-      }
+        $match: {
+          product: newProductHistory.product,
+          recordStatus: "active",
+        },
+      },
+      {
+        $group: {
+          _id: "$product",
+          totalproduct: { $sum: "$productQuantity" },
+        },
+      },
+    ]);
+
+    const { totalproduct = 0 } = aggregates[0] || {};
+    const finalproduct = totalproduct;
+
+    // 3. Update the operator's balance
+    await Product.findByIdAndUpdate(
+      newProductHistory.product,
+      { productQuantity: totalproduct , productQuantityremaining: finalproduct},
+      { new: true }
     );
+    await recalculateProductQuantities();
 
-
-
-    if (updatedHistory) {
+    if (newProductHistory) {
       return {
         status: 200,
         message: "Successfully soft-deleted record",
-       
+
       };
     } else {
       return {
@@ -147,5 +187,39 @@ const productId = updatedHistory.product;
   } catch (error) {
     console.error('Failed to soft-delete product history:', error);
     throw new Error('Server error while deactivating product history');
+  }
+};
+
+
+
+export const recalculateProductQuantities = async () => {
+  try {
+    // Only get active products
+    const allProducts = await Product.find({ recordStatus: "active" });
+
+    for (const product of allProducts) {
+      // Find total quantity sold for this product in active invoices
+      const sold = await Invoice.aggregate([
+        { $match: { recordStatus: "active" } }, // Filter active invoices
+        { $unwind: "$items" },
+        { $match: { "items.productId": product._id } },
+        {
+          $group: {
+            _id: "$items.productId",
+            totalSold: { $sum: "$items.item_quantity" },
+          },
+        },
+      ]);
+
+      const totalSold = sold.length > 0 ? sold[0].totalSold : 0;
+      const remainingQty = product.productQuantity - totalSold;
+
+      await Product.updateOne(
+        { _id: product._id },
+        { $set: { productQuantityremaining: remainingQty } }
+      );
+    }
+  } catch (error) {
+    console.error("Error recalculating product quantities:", error);
   }
 };

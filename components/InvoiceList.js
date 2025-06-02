@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation'; // ✅ Correct for App Router
 import { invoiceDelete } from '@/app/api/actions/invoiceactions';
 
-const InvoiceList = ({ invoice, setSelectedInvoice, setIsEditModalOpen, fetchData,setSelectedOrinalInvoice }) => {
+const InvoiceList = ({ invoice, setSelectedInvoice, setIsEditModalOpen, fetchData,openEditModal}) => {
   const router = useRouter(); // ✅ useRouter from 'next/navigation'
 
   const handleDeleted = async () => {
@@ -44,9 +44,10 @@ const InvoiceList = ({ invoice, setSelectedInvoice, setIsEditModalOpen, fetchDat
       <td className="border-b px-4 py-2 whitespace-nowrap">
         <button
           onClick={() => {
-            setSelectedInvoice(invoice);
-            setIsEditModalOpen(true);
-            setSelectedOrinalInvoice(invoice);
+            // setSelectedInvoice(invoice);
+            // setIsEditModalOpen(true);
+            openEditModal(invoice);
+            // setSelectedOrinalInvoice(invoice);
           }}
           className="bg-green-500 text-white px-2 py-1 rounded mx-2"
         >

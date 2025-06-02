@@ -26,7 +26,7 @@ export const ADDinvoice = async (data) => {
     const balanceDue = parseFloat((data.grandTotal - receivedAmount).toFixed(2));
 
     const newInvoice = await Invoice.create({
-      user: new mongoose.Types.ObjectId(data.userId),
+      user: data.userId,
       client: data.client,
       items: data.items,
       grandTotal: data.grandTotal,
@@ -35,16 +35,30 @@ export const ADDinvoice = async (data) => {
       imageURL: data.imageURL,
     });
 
-    // ✅ Update each product's quantity after invoice creation
-    for (const item of data.items) {
-      await Product.findByIdAndUpdate(
-        item.productId,
-        {
-          $inc: { productQuantityUse: item.item_quantity },
-        },
-        { new: true }
-      );
-    }
+    
+    // After newInvoice is created
+    // const soldQuantities = await Invoice.aggregate([
+    //   { $unwind: "$items" },
+    //   {
+    //     $group: {
+    //       _id: "$items.productId",
+    //       totalSold: { $sum: "$items.item_quantity" },
+    //     },
+    //   },
+    // ]);
+
+    // for (const sold of soldQuantities) {
+    //   const product = await Product.findById(sold._id);
+    //   if (!product) continue;
+
+    //   const remainingQty = product.productQuantity - sold.totalSold;
+
+    //   await Product.updateOne(
+    //     { _id: sold._id },
+    //     { $set: { productQuantityremaining: remainingQty } }
+    //   );
+    // }
+    await recalculateProductQuantities();
 
     return JSON.parse(JSON.stringify(newInvoice));
   } catch (error) {
@@ -95,33 +109,31 @@ export const UpdateInvoice = async (data) => {
       return { status: 404, message: 'Invoice not found' };
     }
 
-    // Step 2: Get all active products and active invoices
-    const [activeProducts, activeInvoices] = await Promise.all([
-      Product.find({ recordStatus: 'active' }),
-      Invoice.find({ recordStatus: 'active' }),
-    ]);
+  
 
-    // Step 3: For each product, calculate total used from all invoice items
-    for (const product of activeProducts) {
-      const productId = product._id.toString();
-      let totalUsed = 0;
+      // After UpdatedInvoice 
+    // const soldQuantities = await Invoice.aggregate([
+    //   { $unwind: "$items" },
+    //   {
+    //     $group: {
+    //       _id: "$items.productId",
+    //       totalSold: { $sum: "$items.item_quantity" },
+    //     },
+    //   },
+    // ]);
 
-      for (const invoice of activeInvoices) {
-        for (const item of invoice.items) {
-          if (item.productId.toString() === productId) {
-            totalUsed += parseInt(item.item_quantity);
-          }
-        }
-      }
+    // for (const sold of soldQuantities) {
+    //   const product = await Product.findById(sold._id);
+    //   if (!product) continue;
 
-      // Step 4: Calculate remaining quantity
-      const remainingQty = Math.max(totalUsed);
+    //   const remainingQty = product.productQuantity - sold.totalSold;
 
-      // Step 5: Update productQuantityUse as remaining
-      await Product.findByIdAndUpdate(productId, {
-        productQuantityUse: remainingQty,
-      });
-    }
+    //   await Product.updateOne(
+    //     { _id: sold._id },
+    //     { $set: { productQuantityremaining: remainingQty } }
+    //   );
+    // }
+     await recalculateProductQuantities();
 
     return {
       status: 200,
@@ -154,34 +166,29 @@ export const invoiceDelete = async (id) => {
     if (!DeleteInvoice) {
       return { status: 404, message: 'Invoice not found' };
     }
-    // Step 2: Get all active products and active invoices
-    const [activeProducts, activeInvoices] = await Promise.all([
-      Product.find({ recordStatus: 'active' }),
-      Invoice.find({ recordStatus: 'active' }),
-    ]);
+     // After newInvoice is created
+    // const soldQuantities = await Invoice.aggregate([
+    //   { $unwind: "$items" },
+    //   {
+    //     $group: {
+    //       _id: "$items.productId",
+    //       totalSold: { $sum: "$items.item_quantity" },
+    //     },
+    //   },
+    // ]);
 
-    // Step 3: For each product, calculate total used from all invoice items
-    for (const product of activeProducts) {
-      const productId = product._id.toString();
-      let totalUsed = 0;
+    // for (const sold of soldQuantities) {
+    //   const product = await Product.findById(sold._id);
+    //   if (!product) continue;
 
-      for (const invoice of activeInvoices) {
-        for (const item of invoice.items) {
-          if (item.productId.toString() === productId) {
-            totalUsed += parseInt(item.item_quantity);
-          }
-        }
-      }
+    //   const remainingQty = product.productQuantity - sold.totalSold;
 
-      // Step 4: Calculate remaining quantity
-      const remainingQty = Math.max(0, product.productQuantity - totalUsed);
-
-      // Step 5: Update productQuantityUse as remaining
-      await Product.findByIdAndUpdate(productId, {
-        productQuantityUse: remainingQty,
-      });
-    }
-
+    //   await Product.updateOne(
+    //     { _id: sold._id },
+    //     { $set: { productQuantityremaining: remainingQty } }
+    //   );
+    // }
+ await recalculateProductQuantities();
     return {
       status: 200,
       message: 'Invoice Delete successfully and product remaining quantities updated successfully.',
@@ -207,7 +214,7 @@ export const InvoiceDetails = async (id) => {
     // );
 
     // return safeinvoice;
-     return invoice.toObject({ flattenObjectIds: true });
+    return invoice.toObject({ flattenObjectIds: true });
   } catch (error) {
     console.error('Failed to fetch invoice', error);
     throw new Error('Server error while fetching invoice');
@@ -266,5 +273,39 @@ export const RestoreInvoice = async (id) => {
   } catch (error) {
     console.error("Error restoring invoice:", error);
     return { error: "Failed to restore invoice" };
+  }
+};
+
+
+
+export const recalculateProductQuantities = async () => {
+  try {
+    // Only get active products
+    const allProducts = await Product.find({ recordStatus: "active" });
+
+    for (const product of allProducts) {
+      // Find total quantity sold for this product in active invoices
+      const sold = await Invoice.aggregate([
+        { $match: { recordStatus: "active" } }, // Filter active invoices
+        { $unwind: "$items" },
+        { $match: { "items.productId": product._id } },
+        {
+          $group: {
+            _id: "$items.productId",
+            totalSold: { $sum: "$items.item_quantity" },
+          },
+        },
+      ]);
+
+      const totalSold = sold.length > 0 ? sold[0].totalSold : 0;
+      const remainingQty = product.productQuantity - totalSold;
+
+      await Product.updateOne(
+        { _id: product._id },
+        { $set: { productQuantityremaining: remainingQty } }
+      );
+    }
+  } catch (error) {
+    console.error("Error recalculating product quantities:", error);
   }
 };

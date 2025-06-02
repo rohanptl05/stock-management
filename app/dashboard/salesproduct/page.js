@@ -26,8 +26,15 @@ const Page = () => {
   })
   const [currentPage, setCurrentPage] = useState(1);
   const [isselectedInvoice, setSelectedInvoice] = useState([])
-  const [isselectedOrinalInvoice, setSelectedOrinalInvoice] = useState([])
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [originalItemQuantities, setOriginalItemQuantities] = useState([]);
+
+
+  const openEditModal = (invoice) => {
+    setSelectedInvoice(invoice);
+    setOriginalItemQuantities(invoice.items.map(item => item.item_quantity));
+    setIsEditModalOpen(true);
+  };
 
   useEffect(() => {
 
@@ -71,7 +78,7 @@ const Page = () => {
 
     setSelectedInvoice(prev => ({
       ...prev,
-      grandTotal: total.toFixed(2), 
+      grandTotal: total.toFixed(2),
     }));
   }, [isselectedInvoice?.items, products]);
 
@@ -107,48 +114,46 @@ const Page = () => {
       validateQuantities(updatedItems)
     }
   }
- 
- 
   const handleItemEditChange = (index, field, value) => {
-  setSelectedInvoice(prevInvoice => {
-    const updatedItems = [...prevInvoice.items];
+    setSelectedInvoice(prevInvoice => {
+      const updatedItems = [...prevInvoice.items];
 
-    // Handle quantity field with proper parsing
-    const updatedValue = field === 'item_quantity' ? parseInt(value) || 0 : value;
+      // Handle quantity field with proper parsing
+      const updatedValue = field === 'item_quantity' ? parseInt(value) || 0 : value;
 
-    // Update the specific field
-    updatedItems[index] = {
-      ...updatedItems[index],
-      [field]: updatedValue,
-    };
+      // Update the specific field
+      updatedItems[index] = {
+        ...updatedItems[index],
+        [field]: updatedValue,
+      };
 
-    // Find the updated product
-    const selectedProduct = products.find(p => p._id === updatedItems[index].productId);
+      // Find the updated product
+      const selectedProduct = products.find(p => p._id === updatedItems[index].productId);
 
-    // If product is selected or changed, update name and price
-    if (field === 'productId' && selectedProduct) {
-      updatedItems[index].item_name = selectedProduct.productName;
-      updatedItems[index].item_price = selectedProduct.productPrice;
-    }
+      // If product is selected or changed, update name and price
+      if (field === 'productId' && selectedProduct) {
+        updatedItems[index].item_name = selectedProduct.productName;
+        updatedItems[index].item_price = selectedProduct.productPrice;
+      }
 
-    // Recalculate the item total
-    updatedItems[index].total = selectedProduct
-      ? selectedProduct.productPrice * updatedItems[index].item_quantity
-      : 0;
+      // Recalculate the item total
+      updatedItems[index].total = selectedProduct
+        ? selectedProduct.productPrice * updatedItems[index].item_quantity
+        : 0;
 
-    // Recalculate the overall grand total
-    const grandTotal = updatedItems.reduce((acc, item) => {
-      const prod = products.find(p => p._id === item.productId);
-      return acc + (prod ? prod.productPrice * item.item_quantity : 0);
-    }, 0);
+      // Recalculate the overall grand total
+      const grandTotal = updatedItems.reduce((acc, item) => {
+        const prod = products.find(p => p._id === item.productId);
+        return acc + (prod ? prod.productPrice * item.item_quantity : 0);
+      }, 0);
 
-    return {
-      ...prevInvoice,
-      items: updatedItems,
-      grandTotal: parseFloat(grandTotal.toFixed(2)),
-    };
-  });
-};
+      return {
+        ...prevInvoice,
+        items: updatedItems,
+        grandTotal: parseFloat(grandTotal.toFixed(2)),
+      };
+    });
+  };
 
 
 
@@ -158,7 +163,8 @@ const Page = () => {
     const warningList = itemList.map(item => {
       const product = products.find(p => p._id === item.productId)
       if (product) {
-        const availableQty = product.productQuantity - product.productQuantityUse
+        const availableQty = product.productQuantityremaining
+
         return item.item_quantity > availableQty
           ? `Only ${availableQty} available`
           : ''
@@ -180,12 +186,13 @@ const Page = () => {
         item_price: 0
       }]
     })
+    setWarnings((prev) => [...prev, '']); // ✅ Add blank warning
   }
 
   const EditaddItem = () => {
     setSelectedInvoice((prev) => ({
       ...prev,
-      items: [...prev.items, { productId: '', item_quantity: 1 ,item_name:"",item_price: 0}],
+      items: [...prev.items, { productId: '', item_quantity: 1, item_name: "", item_price: 0 }],
     }));
     setWarnings((prev) => [...prev, '']);
   };
@@ -235,7 +242,7 @@ const Page = () => {
   const handleSale = async () => {
 
     if (warnings.some(w => w)) {
-      alert('Fix quantity warnings before submitting.')
+      alert('Please fix all quantity warnings before submitting')
       return
     }
 
@@ -417,7 +424,7 @@ const Page = () => {
           <thead className="bg-gray-100 border-b text-sm text-gray-700 uppercase tracking-wider">
             <tr>
               <th className="px-4 py-2">Invoice Number</th>
-              <th className="px-4 py-2">Costemer Name</th>
+              <th className="px-4 py-2">Client Name</th>
               <th className="px-4 py-2">Date</th>
               {/* <th className="px-4 py-2">Product Quantity</th> */}
               <th className="px-4 py-2">Total Amonut</th>
@@ -442,9 +449,9 @@ const Page = () => {
                 <InvoiceList
                   key={invoice._id}
                   invoice={invoice}
-                  setSelectedInvoice={setSelectedInvoice}
-                  setIsEditModalOpen={setIsEditModalOpen}
-                  setSelectedOrinalInvoice={setSelectedOrinalInvoice}
+                  // setSelectedInvoice={setSelectedInvoice}
+                  // setIsEditModalOpen={setIsEditModalOpen}
+                  openEditModal={openEditModal}
                   fetchData={fetchData}
                 />
               ))
@@ -558,7 +565,7 @@ const Page = () => {
                       {/* Available Quantity */}
                       <td className="border p-2 text-center">
                         {product
-                          ? product.productQuantity - product.productQuantityUse
+                          ? product.productQuantityremaining
                           : '--'}
                       </td>
 
@@ -567,45 +574,42 @@ const Page = () => {
                         {product ? `₹${product.productPrice}` : '--'}
                       </td>
 
+
                       {/* Quantity Input */}
                       <td className="border p-2">
                         <input
                           type="number"
                           min={1}
-                          max={
-                            product
-                              ? product?.productQuantity - product?.productQuantityUse
-                              : undefined
-                          }
-                          value={item.item_quantity}
+                          max={product ? product.productQuantityremaining : 0}
+                          value={item?.item_quantity || 0}
                           onChange={(e) => {
                             const enteredQty = parseInt(e.target.value);
-                            const availableQty = product
-                              ? product?.productQuantity
-                              : 0;
+                            const availableQty = product ? product.productQuantityremaining : 0;
+
+                            const newWarnings = [...warnings];
+
                             if (enteredQty > availableQty) {
-                              setWarnings((prev) => {
-                                const newWarnings = [...prev];
-                                newWarnings[index] = `Only ${availableQty} available`;
-                                return newWarnings;
-                              });
+                              newWarnings[index] = `Only ${availableQty} available`;
                             } else {
-                              setWarnings((prev) => {
-                                const newWarnings = [...prev];
-                                newWarnings[index] = '';
-                                return newWarnings;
-                              });
+                              newWarnings[index] = ''; // ✅ Clear the warning if it's valid
                             }
-                            handleItemChange(index, 'item_quantity', e.target.value);
+
+                            setWarnings(newWarnings); // ✅ Always update warnings array
+                            // console.log((Warnings))
+                            handleItemChange(index, 'item_quantity', enteredQty);
                           }}
                           className="w-full border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         />
+
+                        {/* ✅ Properly display the warning */}
                         {warnings[index] && (
                           <p className="text-red-600 text-xs mt-1">
                             {warnings[index]}
                           </p>
                         )}
                       </td>
+
+
 
                       {/* Total */}
                       <td className="border p-2 text-center font-medium">
@@ -742,6 +746,10 @@ const Page = () => {
 
 
                   const product = products.find(p => p._id === item.productId);
+                  const originalQty = originalItemQuantities[index] || 0;
+                  const availableQty = product
+                    ? product.productQuantityremaining + originalQty
+                    : 0;
                   const itemTotal = product ? product.productPrice * item.item_quantity : 0;
 
 
@@ -767,9 +775,7 @@ const Page = () => {
 
                       {/* Available Quantity */}
                       <td className="border p-2 text-center">
-                        {product
-                          ? product.productQuantity - product.productQuantityUse 
-                          : '--'}
+                        {availableQty}
                       </td>
 
                       {/* Price */}
@@ -783,16 +789,12 @@ const Page = () => {
                           type="number"
                           min={1}
                           max={
-                            product
-                              ? product.productQuantity - product.productQuantityUse 
-                              : undefined
+                            availableQty
                           }
                           value={item.item_quantity}
                           onChange={(e) => {
-                            const enteredQty = parseInt(e.target.value);
-                            const availableQty = product
-                              ? product.productQuantity - product.productQuantityUse 
-                              : 0;
+                            const enteredQty = parseInt(e.target.value || '0');
+
                             if (enteredQty > availableQty) {
                               setWarnings((prev) => {
                                 const newWarnings = [...prev];
@@ -806,7 +808,8 @@ const Page = () => {
                                 return newWarnings;
                               });
                             }
-                            handleItemEditChange(index, 'item_quantity', e.target.value);
+
+                            handleItemEditChange(index, 'item_quantity', enteredQty);
                           }}
                           className="w-full border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         />
@@ -874,8 +877,7 @@ const Page = () => {
             </button>
           </div>
         </div>
-      </Modal> 
-
+      </Modal>
 
 
     </div>

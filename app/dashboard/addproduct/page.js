@@ -15,7 +15,7 @@ const Page = () => {
     user: session?.user?.id,
     productName: '',
     productQuantity: '',
-    productQuantityUse: 0,
+    productQuantityremaining: 0,
     productPrice: '',
     productCategory: '',
     productBrand: '',
@@ -90,7 +90,7 @@ const Page = () => {
         user: session?.user?.id,
         productName: '',
         productQuantity: '',
-        productQuantityUse: 0,
+        productQuantityremaining: 0,
         productPrice: '',
         productCategory: '',
         productBrand: '',
@@ -248,7 +248,7 @@ const Page = () => {
                 <th className="px-4 py-2">Product Name</th>
                 <th className="px-4 py-2">Product ID</th>
                 <th className="px-4 py-2">Product Quantity</th>
-                <th className="px-4 py-2">Product Use</th>
+                <th className="px-4 py-2">Product Remaining</th>
                 <th className="px-4 py-2">Product Price</th>
                 <th className="px-4 py-2">Actions</th>
               </tr>
