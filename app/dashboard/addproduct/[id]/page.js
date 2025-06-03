@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import { fetchProductsHistory, updateProductHistory } from '@/app/api/actions/productHistoryactions'
 import { useSession } from 'next-auth/react'
 import ProductHistoryList from '@/components/ProductHistoryList'
@@ -9,8 +9,12 @@ import Image from 'next/image'
 
 const Page = () => {
   const { data: session } = useSession();
-  const params = useParams();
-  const id = params.id;
+  const params = useParams()
+   const searchParams = useSearchParams()
+   const router = useRouter()
+ 
+   const id = params.id                   // e.g. "6428f3a9f1c9b2e3a0a1d123"
+   const name = searchParams.get('name')
   const [isLoading, setIsLoading] = useState(false);
   const [historyData, setHistoryData] = useState([])
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -66,7 +70,7 @@ const Page = () => {
       <div className='h-full w- full'>
         {/* <header></header> */}
         <div className='w-full m-2 text-center '>
-          <h1 className='bg-amber-300 p-2 rounded-2xl shadow-2xl shadow-amber-300 whitespace-nowrap'>Product Historys</h1>
+          <h1 className='bg-amber-300 p-2 rounded-2xl shadow-2xl shadow-amber-300 whitespace-nowrap'>{name} Product Historys</h1>
         </div>
 
         <div className='flex'>

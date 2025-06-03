@@ -16,8 +16,10 @@ const Page = () => {
   const [isAddModalOpen, setIsAddModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    client: '',
     user: session?.user?.id,
+    client: '',
+    clientPhone:"",
+    clientAddress:"",
     items: [{ item_name: '', item_price: 0, productId: '', item_quantity: 1, total: 0 }],
     grandTotal: 0,
     received_amount: 0,
@@ -289,6 +291,8 @@ const Page = () => {
 
     const saleData = {
       client: formData.client,
+      clientPhone : formData.clientPhone,
+      clientAddress: formData.clientAddress,
       grandTotal,
       items: preparedItems,
       received_amount: 0,
@@ -301,6 +305,8 @@ const Page = () => {
         alert('Invoice created successfully!')
         setFormData({
           client: '',
+          clientPhone: '',
+          clientAddress: '',
           user: session?.user?.id,
           items: [{ productId: '', item_quantity: 1, total: 0, item_name: '', item_price: 0 }],
           grandTotal: 0,
@@ -520,6 +526,30 @@ const Page = () => {
               className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+          <div>
+            <label className=" font-semibold mb-1 text-sm text-gray-700">
+              Customer Address
+            </label>
+            <input
+              type="text"
+              name="clientAddress"
+              value={formData.clientAddress}
+              onChange={(e)=>setFormData({...formData,clientAddress:e.target.value})}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className=" font-semibold mb-1 text-sm text-gray-700">
+              Customer Phone
+            </label>
+            <input
+              type="text"
+              name="clientPhone"
+              value={formData.clientPhone}
+               onChange={(e)=>setFormData({...formData,clientPhone:e.target.value})}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
 
           {/* Product Table */}
@@ -699,6 +729,30 @@ const Page = () => {
               name="client"
               value={isselectedInvoice.client}
               onChange={handleClientChange}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className=" font-semibold mb-1 text-sm text-gray-700">
+              Customer Address
+            </label>
+            <input
+              type="text"
+              name="client"
+              value={isselectedInvoice.clientAddress}
+              onChange={(e)=>setSelectedInvoice({...isselectedInvoice,clientAddress:e.target.value})}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className=" font-semibold mb-1 text-sm text-gray-700">
+              Customer Phone
+            </label>
+            <input
+              type="text"
+              name="client"
+              value={isselectedInvoice.clientPhone}
+              onChange={(e)=>setSelectedInvoice({...isselectedInvoice,clientPhone:e.target.value})}
               className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>

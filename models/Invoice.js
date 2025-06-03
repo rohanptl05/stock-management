@@ -15,8 +15,10 @@ const ItemSchema = new Schema({
 
 const invoiceSchema = new Schema({
     invoiceNumber: { type: Number },
-    client: { type: String, required: true },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    client: { type: String, required: true },
+    clientPhone:{type: String},
+    clientAddress:{type: String},
     status: {
         type: String,
         default: "PENDING",

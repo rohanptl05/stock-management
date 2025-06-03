@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import { fetchRechargeHistory, editRechargeHistory } from '@/app/api/actions/rechargeHistoryactions'
 import { useSession } from 'next-auth/react'
 import Modal from '@/components/Modal'
@@ -9,8 +9,12 @@ import RechargeHistoryList from '@/components/RechargeHistoryList'
 
 const Page = () => {
   const { data: session } = useSession();
-  const params = useParams();
-  const id = params.id;
+ const params = useParams()
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  const id = params.id                   // e.g. "6428f3a9f1c9b2e3a0a1d123"
+  const name = searchParams.get('name')  // e.g. "Airtel" or null
   const [isLoading, setIsLoading] = useState(false);
   const [RechargehistoryData, setRechargeHistoryData] = useState([])
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -71,7 +75,7 @@ const Page = () => {
       <div className='h-full w- full'>
         {/* <header></header> */}
         <div className='w-full m-2 text-center '>
-          <h1 className='bg-amber-300 p-2 rounded-2xl shadow-2xl shadow-amber-300 whitespace-nowrap'>Recharge Historys</h1>
+          <h1 className='bg-amber-300 p-2 rounded-2xl shadow-2xl shadow-amber-300 whitespace-nowrap'>{name} Recharge Historys</h1>
         </div>
 
         <div className='flex'>

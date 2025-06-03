@@ -28,6 +28,8 @@ export const ADDinvoice = async (data) => {
     const newInvoice = await Invoice.create({
       user: data.userId,
       client: data.client,
+      clientPhone: data.clientPhone || "",
+      clientAddress: data.clientAddress || "",
       items: data.items,
       grandTotal: data.grandTotal,
       received_amount: receivedAmount,
@@ -35,7 +37,7 @@ export const ADDinvoice = async (data) => {
       imageURL: data.imageURL,
     });
 
-    
+
     // After newInvoice is created
     // const soldQuantities = await Invoice.aggregate([
     //   { $unwind: "$items" },
@@ -60,7 +62,10 @@ export const ADDinvoice = async (data) => {
     // }
     await recalculateProductQuantities();
 
-    return JSON.parse(JSON.stringify(newInvoice));
+    return {
+      status : 200,
+      message : "Invoice added successfully and product remaining quantities updated.",
+    }
   } catch (error) {
     console.error("Error adding invoice:", error);
     return null;
@@ -109,9 +114,9 @@ export const UpdateInvoice = async (data) => {
       return { status: 404, message: 'Invoice not found' };
     }
 
-  
 
-      // After UpdatedInvoice 
+
+    // After UpdatedInvoice 
     // const soldQuantities = await Invoice.aggregate([
     //   { $unwind: "$items" },
     //   {
@@ -133,7 +138,7 @@ export const UpdateInvoice = async (data) => {
     //     { $set: { productQuantityremaining: remainingQty } }
     //   );
     // }
-     await recalculateProductQuantities();
+    await recalculateProductQuantities();
 
     return {
       status: 200,
@@ -166,7 +171,7 @@ export const invoiceDelete = async (id) => {
     if (!DeleteInvoice) {
       return { status: 404, message: 'Invoice not found' };
     }
-     // After newInvoice is created
+    // After newInvoice is created
     // const soldQuantities = await Invoice.aggregate([
     //   { $unwind: "$items" },
     //   {
@@ -188,7 +193,7 @@ export const invoiceDelete = async (id) => {
     //     { $set: { productQuantityremaining: remainingQty } }
     //   );
     // }
- await recalculateProductQuantities();
+    await recalculateProductQuantities();
     return {
       status: 200,
       message: 'Invoice Delete successfully and product remaining quantities updated successfully.',

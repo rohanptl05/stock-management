@@ -2,7 +2,28 @@
 import React from 'react'
 import Image from 'next/image';
 
+
 const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
+    const cellHeader = {
+        padding: '6px',
+        borderTop: '1px solid #000',
+        borderLeft: '1px solid #000',
+        borderRight: '1px solid #000',
+        borderBottom: '1px solid #000',
+        backgroundColor: '#fee2e2',
+        textAlign: 'center',
+    };
+
+    const cellBody = {
+        padding: '6px',
+        borderRight: '1px solid #000',
+        textAlign: 'center',
+        // borderLeft: '1px solid #000', // Remove left border for first column
+        // borderBottom: "none",
+        //   borderRight: 'none', // Remove right border for last column
+    };
+
+
     return (
         <div>
             {isLoading ? (
@@ -19,112 +40,87 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
 
             ) : invoice ? (
 
-                <div className="max-w-4xl w-full mx-auto shadow shadow-gray-400 rounded-lg bg-white text-black px-6 mt-8  sm:px-6 py-6">
-
-                    <div className="  rounded-t-lg sm:px-6 sm:py-4 px-2 py-1">
-                        <h1 className="sm:text-2xl text-sm font-bold text-center uppercase bg-black py-2 text-white tracking-wider mb-3">Sai Service</h1>
-                        <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-
-                            {/* Invoice Info */}
-                            <div className="flex flex-row justify-between items-start w-full space-y-4 sm:space-y-0 sm:space-x-6">
-                                {/* Logo on the left or placeholder */}
-                                <div className="w-20 h-20 sm:w-32 sm:h-32 overflow-hidden rounded-full   flex items-center justify-center">
-                                    {user?.companylogo?.trim() ? (
-                                        <Image
-                                            width={200}
-                                            height={200}
-                                            src={user.companylogo}
-                                            alt="Company Logo"
-                                            className="w-32 h-32 object-cover rounded-full border-2 border-gray-300"
-                                            onError={(e) => (e.target.style.display = 'none')}
-                                        />
-                                    ) : (
-                                        // Placeholder to maintain layout when logo is missing
-                                        <div className="w-32 h-32" />
-                                    )}
-                                </div>
-
-                                {/* Invoice info and address on the right */}
-                                <div className="flex flex-col items-end text-right text-xs sm:text-sm w-full sm:w-auto space-y-2">
-                                    <table className="text-xs bg-white text-black rounded shadow sm:text-sm">
-                                        <tbody>
-                                            <tr>
-                                                <th className="bg-gray-200 text-left p-2 text-xs sm:w-32">Invoice #</th>
-                                                <td className="p-2 border text-right">{invoice?.invoiceNumber}</td>
-                                            </tr>
-                                            <tr>
-                                                <th className="bg-gray-200 text-left p-2 text-xs sm:text-sm">Issue Date</th>
-                                                <td className="p-2 border text-right">
-                                                    {invoice?.date
-                                                        ? new Date(invoice.date).toLocaleDateString("en-GB")
-                                                        : "N/A"}
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-
-                                    <address className="text-xs leading-4 not-italic space-y-1 sm:text-sm mt-2">
-                                        <p className="font-semibold">{user.company}</p>
-                                        {(user.companyaddress || '').split(',').map((line, index) => (
-                                            <p key={index} className="text-gray-700">{line.trim()}</p>
-                                        ))}
-                                        <p className="text-gray-700">
-                                            <span className="font-medium">Phone:</span> {user.companyphone}
-                                        </p>
-                                    </address>
-                                </div>
+                <div className="max-w-3xl mx-auto border border-red-700 text-[10px] sm:text-sm font-[Cambria] bg-white text-black py-4 rounded-lg min-h-[822px]"> {/* A4 height approx 1122px at 96dpi */}
+                    {/* Header */}
+                    <div className="text-center border-b border-red-700 ">
+                        <p className='text-right px-2'>Mo. 9979524096, 9023137786</p>
+                        <h1 className="text-red-700 text-lg font-bold uppercase tracking-wide">Sai Service</h1>
+                        <p className="text-[10px] font-semibold">All Type DTH Recharge Service & Sales LED TV, CCTV Camera</p>
+                        <p className="text-[10px] text-red-700">(કુલાર, પંખા, ઈલેક્ટ્રોનિક્સ વસ્તુઓ મળશે.)</p>
+                        <p className="mt-1 font-semibold border-t border-b w-full">A.T. Post. Pipalkhed, (Bus stop Pachhal) Shop No. 2, Ta. Vansda Dist. Navsari.</p>
+                        <div className="flex justify-between  ">
+                            <div className="space-y-1 p-2   text-left">
+                                <p><span className="font-bold">Name:</span> {invoice?.client || '________________________'}</p>
+                                <p><span className="font-bold">Add.:</span> {invoice?.clientAddress || '________________________'}</p>
+                                <p><span className="font-bold">Mo.:</span> {invoice?.clientPhone || '________________'}</p>
                             </div>
-
-
-
+                            <div className="text-right border-l px-2 ">
+                                <p><span className="font-bold">Bill No:</span> <span className="text-lg font-bold">{invoice?.invoiceNumber || '201'}</span></p>
+                                <p><span className="font-bold">Date:</span> {invoice?.date ? new Date(invoice.date).toLocaleDateString("en-GB") : "- / - / 20"}</p>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Client Info */}
-                    <div className="mt-4 border bg-blue-100 text-blue-900 text-xs font-medium p-3 rounded  sm:text-sm ">
-                        <p className="font-semibold  text-xs sm:text-sm">Bill To:</p>
-                        <p className="text-xs sm:text-sm font-extrabold">{invoice?.client}</p>
-                        {/* {isclient?.address.split(',').map((line, index) => (
-                <p className="text-xs sm:text-sm" key={index}>{line.trim()}</p>
-              ))} */}
-                    </div>
-
-
-
-                    {/* Items Table */}
-                    <div className="my-2  overflow-x-auto">
-                        <table className="w-full text-sm border rounded-2xl border-collapse">
-                            <thead className="bg-gray-200">
-                                <tr className="text-center">
-
-                                    <th className="p-2 text-xs sm:text-sm">No.</th>
-                                    <th className="p-2 text-xs sm:text-sm">Item</th>
-
-                                    <th className="p-2 text-xs sm:text-sm">Rate</th>
-                                    <th className="p-2 text-xs sm:text-sm">Quantity</th>
-                                    <th className="p-2 text-xs sm:text-sm">Price</th>
+                    {/* Table */}
+                    <div className="mt-3 p-2">
+                        <table className="w-full border border-collapse text-center">
+                            <thead>
+                                <tr className="bg-red-100 text-[11px]">
+                                    <th className="border p-1">No.</th>
+                                    <th className="border p-1">PRODUCT DESCRIPTION</th>
+                                    <th className="border p-1">Qty.</th>
+                                    <th className="border p-1">Unit Rate</th>
+                                    <th className="border p-1">Amount<br />Rs.</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="min-h-[300px]">
                                 {invoice?.items?.map((item, index) => (
-                                    <tr key={index} className="text-center">
-
-                                        <td className="p-2 text-xs sm:text-sm">{index + 1}</td>
-                                        <td className="p-2 text-xs sm:text-sm whitespace-nowrap">{item.item_name}</td>
-
-                                        <td className="p-2 text-xs sm:text-sm">₹{(item.item_price).toFixed(2)}</td>
-                                        <td className="p-2 text-xs sm:text-sm">{(item.item_quantity).toFixed(2)}</td>
-                                        <td className="p-2 text-xs sm:text-sm">₹{(item.item_quantity * item.item_price).toFixed(2)}</td>
+                                    <tr key={index}>
+                                        <td className="border-l p-1">{index + 1}</td>
+                                        <td className="border-l p-1 text-left">{item.item_name}</td>
+                                        <td className="border-l p-1">{item.item_quantity}</td>
+                                        <td className="border-l p-1">₹{item.item_price.toFixed(2)}</td>
+                                        <td className="border-l p-1">₹{(item.item_price * item.item_quantity).toFixed(2)}</td>
+                                    </tr>
+                                ))}
+                                {/* Add blank rows to fill space */}
+                                {Array.from({ length: Math.max(10 - (invoice?.items?.length || 0), 0) }).map((_, i) => (
+                                    <tr key={`empty-${i}`}>
+                                        <td className="border-l p-1">&nbsp;</td>
+                                        <td className="border-l p-1">&nbsp;</td>
+                                        <td className="border-l p-1">&nbsp;</td>
+                                        <td className="border-l p-1">&nbsp;</td>
+                                        <td className="border-l p-1">&nbsp;</td>
                                     </tr>
                                 ))}
                             </tbody>
                             <tfoot>
-                                <tr className="bg-gray-100">
-                                    <td colSpan="4" className="p-2 text-right font-semibold text-xs sm:text-sm">
-                                        Total :
+                                <tr>
+                                    {/* First cell spans columns No., Description, Qty., and Unit Rate */}
+                                    <td
+                                        colSpan={4}
+                                        style={{
+                                            border: '1px solid #000',
+                                            padding: '6px',
+                                            textAlign: 'right',
+                                            fontWeight: 'bold',
+                                            backgroundColor: '#f3f3f3', // optional, to distinguish the total row
+                                        }}
+                                    >
+                                        TOTAL:
                                     </td>
-                                    <td className="p-2 text-center text-xs sm:text-sm font-bold">
-                                        ₹{invoice?.grandTotal?.toFixed(2)}
+
+                                    {/* Fifth cell under “Amount Rs.” holds the total value */}
+                                    <td
+                                        style={{
+                                            border: '1px solid #000',
+                                            padding: '6px',
+                                            textAlign: 'center', // or 'right' if you prefer
+                                            fontWeight: 'bold',
+                                            backgroundColor: '#f3f3f3',
+                                        }}
+                                    >
+                                        ₹{invoice?.grandTotal?.toFixed(2) || '0.00'}
                                     </td>
                                 </tr>
                             </tfoot>
@@ -132,100 +128,247 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                         </table>
                     </div>
 
-
-
-
+                    {/* Footer */}
+                    <div className="flex justify-between mt-2 text-xs p-4">
+                        <p className="font-bold">I.D.: _________________________</p>
+                        <p className="font-bold">TOTAL: ₹{invoice?.grandTotal?.toFixed(2) || "0.00"}</p>
+                    </div>
+                    <div className="mt-2 p-4">
+                        <p className="text-xs"><span className="font-bold">WARRANTY:</span> _______________________________________</p>
+                    </div>
+                    <div className="flex justify-between items-end mt-4 text-xs p-4">
+                        <p className="italic">Received Signature…</p>
+                        <p className="font-bold">For, Sai Sales Service</p>
+                    </div>
                 </div>
+
+
             ) : (
                 <p>Invoice not found</p>
             )}
 
 
             {/* pdf contains */}
-            <div
-                ref={reportRef}
-                style={{
-                    backgroundColor: '#ffffff',
-                    width: '794px', // A4 width
-                    margin: '0 auto',
-                    padding: '40px',
-                    boxSizing: 'border-box',
-                }}
-                className="hidden items-center"
+
+
+
+            <div ref={reportRef}
+            // style={{ display: 'none' }}
+            className={`bg-white min-w-[794px] min-h-[1123px] w-[994px] p-8 text-black mx-auto  rounded shadow-lg hidden  `}
             >
-                <div className="w-[794px] mx-auto p-4 border border-black text-xs text-black font-medium">
+                <div
+
+                    style={{
+                        width: '794px',         // Fixed A4 width (96 dpi)
+                        height: '1123px',       // Fixed A4 height
+                        margin: '0 auto',
+                        border: '1px solid #b91c1c',
+                        fontFamily: 'Cambria, serif',
+                        fontSize: '12px',
+                        backgroundColor: '#ffffff',
+                        color: '#000',
+                        wordSpacing: '2px',
+                        letterSpacing: '0.5px',
+                        boxSizing: 'border-box',
+                        position: 'relative',
+                        marginTop: '20px',
+                        padding: '0',
+                        overflow: 'hidden',     // Prevent any overflow
+                    }}
+                >
                     {/* Header */}
-                    <div className="border-b border-black text-center mb-2">
-                        <h1 className="text-xl font-bold uppercase">Sai Sales Service</h1>
-                        <p>All Type DTH Recharge service & Sales LED TV, CCTV Camera</p>
-                        <p className="text-[10px] font-normal">(કુલર, પંખા વગેરેની સર્વિસ ઉપલબ્ધ છે.)</p>
-                        <p className="text-sm mt-1">
-                            A.T. Post. Pipalkhed, (Bus stop Pachhal) Shop No. 2, Ta. Vansda Dist. Navsari
+                    <div style={{ paddingBottom: '10px' }}>
+                        <p style={{ textAlign: 'right', margin: 0, padding: 10 }}>Mo. 9979524096,9023137786</p>
+                        <h1
+                            style={{
+                                color: '#b91c1c',
+                                fontSize: '20px',
+                                fontWeight: 'bold',
+                                textAlign: 'center',
+                                margin: '5px 0',
+                                textTransform: 'uppercase',
+                            }}
+                        >
+                            Sai Service
+                        </h1>
+                        <p style={{ textAlign: 'center', fontWeight: 'bold', margin: '2px 0' }}>
+                            All Type DTH Recharge Service & Sales LED TV, CCTV Camera
                         </p>
-                        <p className="font-semibold">Mo. 9979524096, 9023137786</p>
+                        <p style={{ textAlign: 'center', color: '#b91c1c', margin: '2px 0' }}>
+                            (કુલાર, પંખા, ઈલેક્ટ્રોનિક્સ વસ્તુઓ મળશે.)
+                        </p>
+                        <p
+                            style={{
+                                textAlign: 'center',
+                                borderTop: '1px solid #000',
+                                borderBottom: '1px solid #000',
+                                padding: '5px 0',
+                                margin: '10px 0',
+                                fontWeight: 'bold',
+                                itemsAlign: 'center',
+                            }}
+                        >
+                            A.T. Post. Pipalkhed, (Bus stop Pachhal) Shop No. 2, Ta. Vansda Dist. Navsari.
+                        </p>
+
+                        {/* Info Row */}
+                        <div
+                            style={{
+                                padding: '10px',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'stretch', // ensure both children stretch to same height
+                                borderTop: '1px solid #000', // optional horizontal top border if needed
+                                borderBottom: '1px solid #000', // optional horizontal bottom border if needed
+                            }}
+                        >
+                            {/* Client Info */}
+                            <div style={{ width: '60%', textAlign: 'left', paddingRight: '10px' }}>
+                                <p style={{ wordSpacing: '2px', letterSpacing: '0.5px' }}><strong>Name:</strong> {invoice?.client || '________________________'}</p>
+                                <p><strong>Add.:</strong> {invoice?.clientAddress || '________________________'}</p>
+                                <p><strong>Mo.:</strong> {invoice?.clientPhone || '________________'}</p>
+                            </div>
+
+                            {/* Invoice Info */}
+                            <div
+                                style={{
+                                    width: '40%',
+                                    paddingLeft: '10px',
+                                    borderLeft: '1px solid #000',
+                                    textAlign: 'right',
+                                }}
+                            >
+                                <p>
+                                    <strong>Bill No:</strong>{' '}
+                                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                                        {invoice?.invoiceNumber || '201'}
+                                    </span>
+                                </p>
+                                <p>
+                                    <strong>Date:</strong>{' '}
+                                    {invoice?.date ? new Date(invoice.date).toLocaleDateString('en-GB') : '- / - / 20'}
+                                </p>
+                            </div>
+                        </div>
+
                     </div>
 
-                    {/* Top Meta Section */}
-                    <div className="grid grid-cols-2 gap-4 mb-2">
-                        <div className="space-y-1">
-                            <p>Name: ___________________________________</p>
-                            <p>Add.: ___________________________________</p>
-                            <p>Mo.: ____________________________________</p>
-                        </div>
-                        <div className="space-y-1 text-right">
-                            <p>Bill No.: <span className="font-bold">201</span></p>
-                            <p>Date: ________ - 20</p>
-                        </div>
-                    </div>
-
-                    {/* Table Header */}
-                    <table className="w-full border border-black border-collapse mb-2 text-center">
-                        <thead>
-                            <tr>
-                                <th className="border border-black px-1 py-1 w-[40px]">No.</th>
-                                <th className="border border-black px-1 py-1">PRODUCT DESCRIPTION</th>
-                                <th className="border border-black px-1 py-1 w-[60px]">Qty.</th>
-                                <th className="border border-black px-1 py-1 w-[100px]">Unit Rate</th>
-                                <th className="border border-black px-1 py-1 w-[80px]">Amount Rs.</th>
-                                <th className="border border-black px-1 py-1 w-[60px]">Ps.</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {/* Add items dynamically or leave blank for manual entry */}
-                            {[...Array(5)].map((_, i) => (
-                                <tr key={i} className="h-[28px]">
-                                    <td className="border border-black px-1 py-1">{i + 1}</td>
-                                    <td className="border border-black px-1 py-1 text-left"></td>
-                                    <td className="border border-black px-1 py-1"></td>
-                                    <td className="border border-black px-1 py-1"></td>
-                                    <td className="border border-black px-1 py-1"></td>
-                                    <td className="border border-black px-1 py-1"></td>
+                    {/* Table */}
+                    <div style={{ marginTop: '20px', padding: '0 10px' }}>
+                        <table
+                            style={{
+                                width: '100%',
+                                borderCollapse: 'collapse',
+                                border: '1px solid #000',
+                                textAlign: 'center',
+                            }}
+                        >
+                            <thead>
+                                <tr style={{ backgroundColor: '#fee2e2', fontSize: '12px' }}>
+                                    <th style={cellHeader}>No.</th>
+                                    <th style={cellHeader}>PRODUCT DESCRIPTION</th>
+                                    <th style={cellHeader}>Qty.</th>
+                                    <th style={cellHeader}>Unit Rate</th>
+                                    <th style={cellHeader}>Amount Rs.</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {(invoice?.items || []).map((item, index) => (
+                                    <tr key={index}>
+                                        <td style={cellBody}>{index + 1}</td>
+                                        <td style={{ ...cellBody, textAlign: 'left' }}>{item.item_name}</td>
+                                        <td style={cellBody}>{item.item_quantity}</td>
+                                        <td style={cellBody}>₹{item.item_price.toFixed(2)}</td>
+                                        <td style={cellBody}>
+                                            ₹{(item.item_quantity * item.item_price).toFixed(2)}
+                                        </td>
+                                    </tr>
+                                ))}
+                                {/* Blank Rows */}
+                                {Array.from({ length: Math.max(10 - (invoice?.items?.length || 0), 0) }).map((_, i) => (
+                                    <tr key={`blank-${i}`}>
+                                        <td style={cellBody}>&nbsp;</td>
+                                        <td style={cellBody}>&nbsp;</td>
+                                        <td style={cellBody}>&nbsp;</td>
+                                        <td style={cellBody}>&nbsp;</td>
+                                        <td style={cellBody}>&nbsp;</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    {/* First cell spans columns No., Description, Qty., and Unit Rate */}
+                                    <td
+                                        colSpan={4}
+                                        style={{
+                                            border: '1px solid #000',
+                                            padding: '6px',
+                                            textAlign: 'right',
+                                            fontWeight: 'bold',
+                                            backgroundColor: '#f3f3f3', // optional, to distinguish the total row
+                                        }}
+                                    >
+                                        TOTAL:
+                                    </td>
 
-                    {/* Footer Bottom Lines */}
-                    <div className="flex justify-between items-start mb-1">
-                        <p>I.D.: ____________________________________</p>
-                        <div className="text-right">
-                            <p className="font-semibold">TOTAL</p>
-                        </div>
+                                    {/* Fifth cell under “Amount Rs.” holds the total value */}
+                                    <td
+                                        style={{
+                                            border: '1px solid #000',
+                                            padding: '6px',
+                                            textAlign: 'center', // or 'right' if you prefer
+                                            fontWeight: 'bold',
+                                            backgroundColor: '#f3f3f3',
+                                        }}
+                                    >
+                                        ₹{invoice?.grandTotal?.toFixed(2) || '0.00'}
+                                    </td>
+                                </tr>
+                            </tfoot>
+
+                        </table>
                     </div>
 
-                    <div className="flex justify-between mt-8">
-                        <p><em>Received Signature: _______________________</em></p>
-                        <p className="font-bold">For, Sai Sales Service</p>
+                    {/* Footer Totals */}
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            marginTop: '20px',
+                            fontSize: '12px',
+                            padding: '12px',
+
+                        }}
+                    >
+                        <p>I.D.: _________________________</p>
+
+                    </div>
+
+                    {/* Warranty */}
+                    <div style={{ marginTop: '10px', padding: '12px', }}>
+                        <p>
+                            <strong>WARRANTY:</strong> _______________________________________
+                        </p>
+                    </div>
+
+                    {/* Signature */}
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'flex-end',
+                            marginTop: '40px',
+                            fontSize: '12px',
+                            padding: '10px',
+                        }}
+                    >
+                        <p style={{ fontStyle: 'italic' }}>Received Signature…</p>
+                        <p style={{ fontWeight: 'bold' }}>For, Sai Sales Service</p>
                     </div>
                 </div>
 
             </div>
-
-
-            {/* <div ref={reportRef}>
-<p className='bg-black text-6xl text-white'>Rohan</p>
-                </div> */}
-        </div>
+        </div >
     )
 }
 

@@ -5,6 +5,7 @@ import Modal from "@/components/Modal";
 import { fetchRecharge, createRecharge, updateRecharge, deleteRecharge } from "@/app/api/actions/rechargeactions";
 import { createRechargeHistory } from "@/app/api/actions/rechargeHistoryactions";
 import Link from "next/link";
+import Image from "next/image";
 
 const Page = () => {
   const { data: session } = useSession();
@@ -34,12 +35,13 @@ const Page = () => {
     addBalance: 0,
     useBalance: 0,
     description: "",
+    remainingBalance: 0,
 
 
   });
   const [AddBalanceModal, setAddBalanceModal] = useState(false);
   const [selectedType, setSelectedType] = useState("");
-
+  const [currentPage, setCurrentPage] = useState(1);
 
 
 
@@ -63,6 +65,7 @@ const Page = () => {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+      remainingBalance: name === "totalBalance" ? value : prev.totalBalance
     }));
   };
 
@@ -154,6 +157,21 @@ const Page = () => {
     }
   }
 
+  const itemsPerPage = 5;
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+
+  const paginatedrechargeData = (Array.isArray(rechargeData) ? rechargeData : []).slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil((Array.isArray(rechargeData) ? rechargeData.length : 0) / itemsPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
   return (
     <div className="container p-3">
       <div className="flex justify-between">
@@ -167,34 +185,44 @@ const Page = () => {
       </div>
 
 
-      <div className="mt-4">
-        {loading ? (
-          <div className="text-center text-gray-500">Loading...</div>
-        ) : (
-          <table className="min-w-full bg-white border border-gray-200">
-            <thead>
+      <div className="flex flex-col w-full  mt-2">
+        <table className="min-w-full divide-y divide-gray-200 border border-gray-300 shadow-sm rounded-lg overflow-hidden text-sm">
+          <thead className="bg-gray-100 border-b text-sm text-gray-700 uppercase tracking-wider">
+            <tr>
+              <th className="px-4 py-2 border-b">Operator Name</th>
+              <th className="px-4 py-2 border-b">Total Balance</th>
+              <th className="px-4 py-2 border-b">Remaining Balance</th>
+              {/* <th className="px-4 py-2 border-b">Date</th> */}
+              <th className="px-4 py-2 border-b">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
               <tr>
-                <th className="px-4 py-2 border-b">Operator Name</th>
-                <th className="px-4 py-2 border-b">Total Balance</th>
-                <th className="px-4 py-2 border-b">Remaining Balance</th>
-                {/* <th className="px-4 py-2 border-b">Date</th> */}
-                <th className="px-4 py-2 border-b">Actions</th>
+                <td colSpan="18" className="px-4 py-4 text-center">
+                  <Image
+                    width={2000}
+                    height={2000}
+                    src="/assets/infinite-spinner.svg"
+                    alt="Loading..."
+                    className="w-6 h-6 mx-auto"
+                  />
+
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {rechargeData.map((recharge) => (
-                <tr key={recharge._id}>
-                  <td className="px-4 py-2 border-b"> <Link href={`recharge/${recharge._id}`}>{recharge.operatorName} </Link></td>
+            ) : (paginatedrechargeData.length > 0 ? (
+              paginatedrechargeData.map((recharge) => (
+                <tr key={recharge._id} className="text-center">
+                  <td className="px-4 py-2 border-b">
+                    <Link href={`recharge/${recharge._id}?name=${encodeURIComponent(recharge.operatorName)}`}>{recharge.operatorName}</Link>
+                  </td>
                   <td className="px-4 py-2 border-b">{recharge.totalBalance}</td>
                   <td className="px-4 py-2 border-b">{recharge.remainingBalance}</td>
-                  {/* <td className="px-4 py-2 border-b">{new Date(recharge.date).toLocaleDateString()}</td> */}
                   <td className="px-4 py-2 border-b">
-                    {/* //add Balance and recharge history new cretae */}
                     <button
                       onClick={() => {
-                        setAddBalance({
-                          operatorId: recharge._id,
-                        });
+                        setAddBalance({ operatorId: recharge._id, remainingBalance: recharge.remainingBalance });
+                        setSelectedType("");
                         setAddBalanceModal(true);
                       }}
                       className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mr-2"
@@ -217,7 +245,6 @@ const Page = () => {
                       Edit
                     </button>
 
-
                     <button
                       onClick={() => handleDelete(recharge._id)}
                       className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
@@ -226,10 +253,49 @@ const Page = () => {
                     </button>
                   </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              ))) : (
+              <tr>
+                <td colSpan="8" className="px-4 py-4 text-center text-gray-500">
+                  No Recharge Data found.
+                </td>
+              </tr>
+            )
+            )}
+
+          </tbody>
+        </table>
+
+
+        {/* pagination */}
+        <div className="flex justify-center items-center gap-2 mt-4">
+          <button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(currentPage - 1)}
+            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          {[...Array(totalPages)].map((_, pageNum) => (
+            <button
+              key={pageNum}
+              onClick={() => setCurrentPage(pageNum + 1)}
+              className={`px-3 py-1 rounded ${currentPage === pageNum + 1 ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
+            >
+              {pageNum + 1}
+            </button>
+          ))}
+
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(currentPage + 1)}
+            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+
+
       </div>
 
       <Modal
@@ -338,6 +404,7 @@ const Page = () => {
         </form>
       </Modal>
 
+      {/* Add and use Balance Modal */}
       {/* Add Balance Modal */}
       <Modal
         isOpen={AddBalanceModal}
@@ -351,7 +418,7 @@ const Page = () => {
             e.preventDefault();
             setLoading(true);
 
-            // Validation: Must enter one of the amounts
+            // 1) Basic validation: must choose a type and enter a number
             if (
               selectedType === "" ||
               (selectedType === "add" && !AddBalance.addBalance) ||
@@ -361,7 +428,18 @@ const Page = () => {
               setLoading(false);
               return;
             }
-           
+
+            // 2) Extra validation: if using, must not exceed remainingBalance
+            if (
+              selectedType === "use" &&
+              AddBalance.useBalance > AddBalance.remainingBalance
+            ) {
+              alert(
+                `You cannot use more than the available balance (${AddBalance.remainingBalance}).`
+              );
+              setLoading(false);
+              return;
+            }
 
             try {
               const response = await createRechargeHistory({
@@ -373,7 +451,6 @@ const Page = () => {
                 date: new Date(),
               });
 
-
               if (response.status === 200) {
                 setAddBalanceModal(false);
                 fetchRechargeData();
@@ -382,8 +459,9 @@ const Page = () => {
                   addBalance: 0,
                   useBalance: 0,
                   description: "",
+                  remainingBalance: 0,
                 });
-                setSelectedType(""); // Reset type
+                setSelectedType("");
                 alert(response.message || "Balance added successfully.");
               } else {
                 alert(response.message || "Something went wrong.");
@@ -418,33 +496,44 @@ const Page = () => {
             </select>
           </div>
 
-          {/* Conditionally render the input based on selected type */}
+          {/* “Add Balance” input */}
           {selectedType === "add" && (
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Add Balance</label>
               <input
                 type="number"
                 value={AddBalance.addBalance}
-                onChange={(e) => setAddBalance({ ...AddBalance, addBalance: Number(e.target.value) })}
+                onChange={(e) =>
+                  setAddBalance({ ...AddBalance, addBalance: Number(e.target.value) })
+                }
                 required
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm sm:text-sm"
               />
             </div>
           )}
 
+          {/* “Use Balance” input + real-time warning */}
           {selectedType === "use" && (
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Use Balance</label>
               <input
                 type="number"
                 value={AddBalance.useBalance}
-                onChange={(e) => setAddBalance({ ...AddBalance, useBalance: Number(e.target.value) })}
+                onChange={(e) =>
+                  setAddBalance({ ...AddBalance, useBalance: Number(e.target.value) })
+                }
                 required
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm sm:text-sm"
               />
+              {AddBalance.useBalance > AddBalance.remainingBalance && (
+                <p className="text-sm text-red-600">
+                  Cannot use more than {AddBalance.remainingBalance}.
+                </p>
+              )}
             </div>
           )}
 
+          {/* Description */}
           <div className="mb-4">
             <label htmlFor="description" className="block text-sm font-medium text-gray-700">
               Description
@@ -467,6 +556,7 @@ const Page = () => {
           </button>
         </form>
       </Modal>
+
 
     </div>
   );

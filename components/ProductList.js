@@ -25,7 +25,7 @@ const ProductList = ({ product, setSelectedProduct, setIsEditModalOpen, setViewo
 
     return (
         <tr key={product._id}>
-            <td className="border-b px-4 py-2 whitespace-nowrap font-bold"> <Link href={`addproduct/${product._id}`} className="hover:text-blue-900">{product.productName}</Link></td>
+            <td className="border-b px-4 py-2 whitespace-nowrap font-bold"> <Link href={`addproduct/${product._id}?name=${encodeURIComponent(product.productName)}`} className="hover:text-blue-900">{product.productName}</Link></td>
 
             <td className="border-b px-4 py-2 whitespace-nowrap">{product.productId}</td>
             <td className="border-b px-4 py-2 whitespace-nowrap">{product.productQuantity}</td>
