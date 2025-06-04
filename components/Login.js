@@ -101,13 +101,13 @@ console.log("retun",res)
           >
             Sign In with Github
           </button>
-          <div className="text-center text-gray-500 mt-4">- OR -</div>
-          <Link
+          {/* <div className="text-center text-gray-500 mt-4">- OR -</div> */}
+          {/* <Link
             className="block text-center text-blue-500 hover:underline mt-2"
             href="/register"
           >
             Register Here
-          </Link>
+          </Link> */}
         </div>
       </div>
     )
