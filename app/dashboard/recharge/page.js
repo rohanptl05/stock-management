@@ -8,7 +8,12 @@ import Link from "next/link";
 import Image from "next/image";
 
 const Page = () => {
-  const { data: session } = useSession();
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.push('/login');
+    },
+  });
   const userId = session?.user?.id;
 
   const [isAddModal, setIsAddModal] = useState(false);
@@ -173,7 +178,7 @@ const Page = () => {
   };
 
   return (
-    <div className="container p-3">
+    <div className="container ">
       <div className="flex justify-between">
         <h1 className="text-4xl font-bold">Recharge</h1>
         <button
@@ -185,7 +190,7 @@ const Page = () => {
       </div>
 
 
-      <div className="flex flex-col w-full  mt-2">
+      <div className="   sm:min-h-[75vh] h-[62vh] overflow-y-auto mt-3">
         <table className="min-w-full divide-y divide-gray-200 border border-gray-300 shadow-sm rounded-lg overflow-hidden text-sm">
           <thead className="bg-gray-100 border-b text-sm text-gray-700 uppercase tracking-wider">
             <tr>
@@ -227,7 +232,7 @@ const Page = () => {
                       }}
                       className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mr-2"
                     >
-                      Add Balance
+                      <i className="fa-solid fa-plus-minus"></i>
                     </button>
 
                     <button
@@ -240,16 +245,16 @@ const Page = () => {
                         });
                         setIsEditModal(true);
                       }}
-                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mr-2"
+                      className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded mr-2"
                     >
-                      Edit
+                      <i className="fa-solid fa-pen-to-square"></i>
                     </button>
 
                     <button
                       onClick={() => handleDelete(recharge._id)}
                       className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
                     >
-                      Delete
+                      <i className="fa-solid fa-trash"></i>
                     </button>
                   </td>
                 </tr>
@@ -264,39 +269,39 @@ const Page = () => {
 
           </tbody>
         </table>
-
-
-        {/* pagination */}
-        <div className="flex justify-center items-center gap-2 mt-4">
-          <button
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(currentPage - 1)}
-            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
-          >
-            Prev
-          </button>
-
-          {[...Array(totalPages)].map((_, pageNum) => (
-            <button
-              key={pageNum}
-              onClick={() => setCurrentPage(pageNum + 1)}
-              className={`px-3 py-1 rounded ${currentPage === pageNum + 1 ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
-            >
-              {pageNum + 1}
-            </button>
-          ))}
-
-          <button
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage(currentPage + 1)}
-            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
-
-
       </div>
+
+      {/* pagination */}
+      <div className="flex justify-center items-center gap-2 mt-4">
+        <button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(currentPage - 1)}
+          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+        >
+          Prev
+        </button>
+
+        {[...Array(totalPages)].map((_, pageNum) => (
+          <button
+            key={pageNum}
+            onClick={() => setCurrentPage(pageNum + 1)}
+            className={`px-3 py-1 rounded ${currentPage === pageNum + 1 ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
+          >
+            {pageNum + 1}
+          </button>
+        ))}
+
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(currentPage + 1)}
+          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
+
+
+
 
       <Modal
         isOpen={isAddModal}
@@ -409,7 +414,7 @@ const Page = () => {
       <Modal
         isOpen={AddBalanceModal}
         onClose={() => setAddBalanceModal(false)}
-        title="ADD BALANCE"
+        title="ADD BALANCE OR USE BALANCE"
         className="max-h-[80vh] sm:max-h-[75vh] overflow-y-auto"
       >
         <form

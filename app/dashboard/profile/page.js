@@ -9,7 +9,12 @@ import { deleteCompanyLogo, deleteProfile } from "@/app/api/actions/useractions"
 import { changeUserPassword } from "@/app/api/actions/useractions";
 
 export default function ProfilePage() {
-  const { data: session } = useSession();
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.push('/login');
+    },
+  });
   const router = useRouter();
   const [form, setForm] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -145,7 +150,18 @@ export default function ProfilePage() {
               {/* Change (Camera) Icon */}
               <div
                 className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md hover:scale-110 transition cursor-pointer"
-                onClick={() => open()}
+                onClick={() => open(
+                  input => {
+                    const file = input.files[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        setImageUrl(reader.result);
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }
+                )}
                 title="Change Profile"
               >
                 <Camera className="w-4 h-4 text-gray-600" />
@@ -153,7 +169,7 @@ export default function ProfilePage() {
             </div>
 
 
-            {form.image && (
+            {/* {form.image && (
               <div
                 className="ml-4 bg-white rounded-full p-2 shadow-md hover:scale-110 transition cursor-pointer"
                 onClick={() =>
@@ -181,7 +197,7 @@ export default function ProfilePage() {
                   />
                 </svg>
               </div>
-            )}
+            )} */}
           </div>
           <div className="flex gap-2 m-2"><strong>Name:</strong> {form.name}</div>
           <div className="flex gap-2 m-2"><strong>Email:</strong> {form.email}</div>
@@ -193,98 +209,7 @@ export default function ProfilePage() {
 
       </div>
 
-      {/* Company Info */}
-      <div className="bg-white shadow-lg flex-col-2  rounded-2xl p-8 border border-gray-200">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">Company Information</h2>
-          <button
-            onClick={() => setCompanyModalOpen(true)}
-            className="text-sm bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-700 transition"
-          >
-            <i className="fa-solid fa-pen-to-square"></i>
-          </button>
-        </div>
 
-        {isLoading ? (<div>
-          <Image
-            width={2000}
-            height={2000}
-            src="/assets/infinite-spinner.svg"
-            alt="Loading..."
-            className="w-6 h-6 mx-auto"
-          />
-        </div>) : (<div className=" flex-col-2 gap-6 text-gray-700">
-
-
-
-
-          <div className="relative col-span-2  flex justify-center sm:justify-start items-center mb-4">
-
-
-            <div className="relative">
-
-              <Image
-                width={2000}
-                height={2000}
-               src={form?.companylogo?.trim() || "/assets/user.jpg"}
-                alt="company logo"
-                onClick={() => open()}
-                title="Click to change company logo"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = "/assets/user.jpg";
-                }}
-
-                className="w-32 h-32 object-cover cursor-pointer rounded-full border-2 border-gray-300"
-              />
-
-
-              <div
-                className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md hover:scale-110 transition cursor-pointer"
-                onClick={() => open()}
-                title="Change company logo"
-              >
-                <Camera className="w-4 h-4 text-gray-600" />
-              </div>
-            </div>
-
-
-            {form.companylogo && (
-              <div
-                className="ml-4 bg-white rounded-full p-2 shadow-md hover:scale-110 transition cursor-pointer"
-                onClick={() =>
-
-                  deleteCompanyLogo(form._id)
-                    .then(() => {
-                      alert("Company logo removed successfully");
-                      loadData();
-                    })
-                }
-                title="Remove company logo"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-5 h-5 text-red-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4"
-                  />
-                </svg>
-              </div>
-            )}
-          </div>
-          <div className="flex gap-2 m-2"><strong>Company Name:</strong> {form.company}</div>
-          <div className="flex gap-2 m-2"><strong>Company Phone:</strong> {form.companyphone}</div>
-          <div className="flex gap-2 m-2"><strong>Company Address:</strong> {form.companyaddress}</div>
-        </div>)}
-
-      </div>
 
 
       {/* password changes */}

@@ -273,6 +273,8 @@ export const RestoreInvoice = async (id) => {
       });
     }
 
+     await recalculateProductQuantities();
+
     return { success: true, message: "Invoice restored successfully" };
 
   } catch (error) {

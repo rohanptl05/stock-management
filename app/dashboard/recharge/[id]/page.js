@@ -8,7 +8,12 @@ import Image from 'next/image'
 import RechargeHistoryList from '@/components/RechargeHistoryList'
 
 const Page = () => {
-  const { data: session } = useSession();
+  const { data: session } = useSession({
+  required: true,
+  onUnauthenticated() {
+    router.push('/login');
+  },
+});
  const params = useParams()
   const searchParams = useSearchParams()
   const router = useRouter()

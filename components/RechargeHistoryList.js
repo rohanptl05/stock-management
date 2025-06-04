@@ -46,7 +46,7 @@ const RechargeHistoryList = ({ rechargehistory, index,setSelectedRechargeHistory
           onClick={() => {setSelectedRechargeHistory(rechargehistory) ; setIsEditHistoryModalOpen(true)}}
           className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-2"
         >
-          Edit
+        <i className="fa-solid fa-pen-to-square"></i>
         </button>
 
 
@@ -55,7 +55,7 @@ const RechargeHistoryList = ({ rechargehistory, index,setSelectedRechargeHistory
           onClick={handleDelete}
           className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
         >
-          Delete
+          <i className="fa-solid fa-trash"></i>
         </button>
 
       </td>

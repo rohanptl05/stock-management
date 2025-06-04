@@ -9,7 +9,12 @@ import { AddProductHistory } from '@/app/api/actions/productHistoryactions';
 import Image from 'next/image';
 
 const Page = () => {
-  const { data: session } = useSession();
+  const { data: session } = useSession({
+  required: true,
+  onUnauthenticated() {
+    router.push('/login');
+  },
+});
   const [isAddModalOpen, setIsAddModal] = useState(false);
   const [formData, setFormData] = useState({
     user: session?.user?.id,
@@ -201,7 +206,7 @@ const Page = () => {
 
 };
 
-  const itemsPerPage = 5;
+  const itemsPerPage = 7;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
@@ -241,7 +246,7 @@ const Page = () => {
 
 
         {/* Table */}
-        <div className="flex flex-col w-full ">
+        <div className="flex flex-col w-full sm:min-h-[60vh] h-[58vh] overflow-auto">
           <table className="min-w-full divide-y divide-gray-200 border border-gray-300 shadow-sm rounded-lg overflow-hidden text-sm">
             <thead className="bg-gray-100 border-b text-sm text-gray-700 uppercase tracking-wider">
               <tr>

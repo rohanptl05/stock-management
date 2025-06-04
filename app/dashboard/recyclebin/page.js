@@ -17,7 +17,12 @@ const RecycleBinPage = () => {
     const [product, setProduct] = useState([])
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null)
-    const { data: session, status: sessionStatus } = useSession()
+    const { data: session, status: sessionStatus } = useSession({
+  required: true,
+  onUnauthenticated() {
+    router.push('/login');
+  },
+});
     const [ExtraExpense, setExtraExpense] = useState([])
 
     // Pagination state

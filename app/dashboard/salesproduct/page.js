@@ -9,7 +9,12 @@ import InvoiceList from '@/components/InvoiceList'
 import Image from 'next/image'
 
 const Page = () => {
-  const { data: session } = useSession()
+  const { data: session } = useSession({
+  required: true,
+  onUnauthenticated() {
+    router.push('/login');
+  },
+});
   const [products, setProducts] = useState([])
   const [Invoice, setInvoice] = useState([])
   const [warnings, setWarnings] = useState([])
@@ -397,7 +402,7 @@ const Page = () => {
 
 
   return (
-    <div className="p-6  mx-auto">
+    <div className="w-full  mx-auto">
       <div className="flex flex-row justify-between items-center px-4 py-3 rounded-t-lg">
         <h1 className="text-xl sm:text-2xl font-bold text-center sm:text-left mb-2 sm:mb-0 text-black">
           Create Sale Invoice
@@ -425,7 +430,7 @@ const Page = () => {
       </div>
 
 
-      <div>
+      <div className='sm:min-h-[62vh] h-[62vh]'>
         <table className="min-w-full divide-y divide-gray-200 border border-gray-300 shadow-sm rounded-lg overflow-hidden text-sm">
           <thead className="bg-gray-100 border-b text-sm text-gray-700 uppercase tracking-wider">
             <tr>

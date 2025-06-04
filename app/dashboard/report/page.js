@@ -10,7 +10,12 @@ import Image from 'next/image';
 
 
 const Page = () => {
-  const { data: session } = useSession();
+  const { data: session } = useSession({
+  required: true,
+  onUnauthenticated() {
+    router.push('/login');
+  },
+});
   const router = useRouter();
   const reportRef = useRef(null);
   const [invoices, setInvoices] = useState([]);
@@ -269,7 +274,7 @@ const Page = () => {
 
          
 
-            <div className="overflow-x-auto  sm:w-full sm:overflow-visible sm:min-h-[62vh] h-[45vh]">
+            <div className="overflow-x-auto  sm:w-full sm:overflow-visible sm:min-h-[68vh] h-[45vh]">
               <table className="w-[300px] sm:w-full text-xs sm:text-sm">
 
                 <thead className="bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 uppercase text-sm ">

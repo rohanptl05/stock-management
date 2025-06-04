@@ -10,7 +10,12 @@ import html2canvas from "html2canvas";
 import Image from 'next/image'
 
 const Page = () => {
-  const { data: session } = useSession();
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.push('/login');
+    },
+  });
   const userId = session?.user?.id;
   const [formData, setFormData] = useState({
     amount: "",
@@ -352,34 +357,34 @@ const Page = () => {
         {/* </div> */}
 
 
-        
-          <div className="w-full mt-2 sm:min-h-[55vh] h-[45vh] shadow-md rounded-lg overflow-x-auto">
-            <table className="min-w-[600px] sm:w-full border-collapse  text-xs sm:text-sm">
-              <thead className="bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 uppercase tracking-wider">
-                <tr className='text-xs sm:text-sm text-center'>
-                  <th className="px-3 py-2 border-b whitespace-nowrap">Invoice #</th>
-                  <th className="px-3 py-2 border-b whitespace-nowrap">Date</th>
-                  <th className="px-3 py-2 border-b whitespace-nowrap">Type</th>
-                  <th className="px-3 py-2 border-b whitespace-nowrap">Description</th>
-                  <th className="px-3 py-2 border-b whitespace-nowrap">Amount</th>
-                  <th className="px-3 py-2 border-b whitespace-nowrap">Actions</th>
+
+        <div className="w-full mt-2 sm:min-h-[55vh] h-[45vh] shadow-md rounded-lg overflow-x-auto">
+          <table className="min-w-[600px] sm:w-full border-collapse  text-xs sm:text-sm">
+            <thead className="bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 uppercase tracking-wider">
+              <tr className='text-xs sm:text-sm text-center'>
+                <th className="px-3 py-2 border-b whitespace-nowrap">Invoice #</th>
+                <th className="px-3 py-2 border-b whitespace-nowrap">Date</th>
+                <th className="px-3 py-2 border-b whitespace-nowrap">Type</th>
+                <th className="px-3 py-2 border-b whitespace-nowrap">Description</th>
+                <th className="px-3 py-2 border-b whitespace-nowrap">Amount</th>
+                <th className="px-3 py-2 border-b whitespace-nowrap">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan="18" className="px-4 py-4 text-center">
+                    <Image
+                      width={2000}
+                      height={2000}
+                      src="/assets/infinite-spinner.svg"
+                      alt="Loading..."
+                      className="w-6 h-6 mx-auto"
+                    />
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {isLoading ? (
-                  <tr>
-                    <td colSpan="18" className="px-4 py-4 text-center">
-                      <Image
-                        width={2000}
-                        height={2000}
-                        src="/assets/infinite-spinner.svg"
-                        alt="Loading..."
-                        className="w-6 h-6 mx-auto"
-                      />
-                    </td>
-                  </tr>
-                ) : paginatedInvoices.length > 0 ? (
-                  paginatedInvoices.map((exinvoice, index) => (
+              ) : paginatedInvoices.length > 0 ? (
+                paginatedInvoices.map((exinvoice, index) => (
                   <ExtraExpensesList
                     key={exinvoice._id}
                     exinvoice={exinvoice}
@@ -387,18 +392,18 @@ const Page = () => {
                     updateExInvoice={editopenModal}
                     getData={getData}
                   />
-                ))): (
-                  <tr>
-                    <td colSpan="8" className="px-4 py-4 text-center text-gray-500">
-                      No products found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-      
-      
+                ))) : (
+                <tr>
+                  <td colSpan="8" className="px-4 py-4 text-center text-gray-500">
+                    No products found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+
 
         <div className="flex justify-center items-center gap-2 mt-4">
           <button

@@ -43,6 +43,12 @@ const InvoiceList = ({ invoice, setSelectedInvoice, setIsEditModalOpen, fetchDat
       <td className="border-b px-4 py-2 whitespace-nowrap">{invoice.grandTotal}</td>
       <td className="border-b px-4 py-2 whitespace-nowrap">
         <button
+          onClick={handleView}
+          className="bg-blue-500 text-white px-2 py-1 rounded mx-2"
+        >
+         <i className="fa-solid fa-file-invoice"></i>
+        </button>
+        <button
           onClick={() => {
             // setSelectedInvoice(invoice);
             // setIsEditModalOpen(true);
@@ -51,19 +57,13 @@ const InvoiceList = ({ invoice, setSelectedInvoice, setIsEditModalOpen, fetchDat
           }}
           className="bg-green-500 text-white px-2 py-1 rounded mx-2"
         >
-          Edit
-        </button>
-        <button
-          onClick={handleView}
-          className="bg-blue-500 text-white px-2 py-1 rounded mx-2"
-        >
-          View
+         <i className="fa-solid fa-pen-to-square"></i>
         </button>
         <button
           onClick={handleDeleted}
           className="bg-red-500 text-white px-2 py-1 rounded mx-2"
         >
-          Delete
+         <i className="fa-solid fa-trash"></i>
         </button>
       </td>
     </tr>

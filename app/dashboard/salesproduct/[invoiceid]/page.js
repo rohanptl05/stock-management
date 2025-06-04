@@ -11,7 +11,12 @@ import InvoiceDetailsPage from '@/components/InvoiceDetails';
 
 
 const Page = () => {
-  const { data: session } = useSession();
+  const { data: session } = useSession({
+  required: true,
+  onUnauthenticated() {
+    router.push('/login');
+  },
+});
   const params = useParams();
   const id = params.invoiceid;
   const [invoice, setInvoice] = useState([])

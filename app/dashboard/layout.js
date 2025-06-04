@@ -14,7 +14,12 @@ import { usePathname } from "next/navigation";
 export default function RootLayout({ children }) {
   const [isOpen, setIsOpen] = useState(false); // Sidebar toggle state
   const [user, setUser] = useState([])  // const navigate = useNavigate();
-  const { data: session, status: sessionStatus } = useSession();
+  const { data: session, status: sessionStatus } = useSession({
+  required: true,
+  onUnauthenticated() {
+    router.push('/login');
+  },
+});
   const pathname = usePathname();
   const [loading, setLoading] = useState(false);
 

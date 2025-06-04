@@ -35,10 +35,10 @@ const ProductList = ({ product, setSelectedProduct, setIsEditModalOpen, setViewo
             <td className="border-b px-4 py-2 whitespace-nowrap">{product.productPrice}</td>
 
             <td className="border-b px-4 py-2 whitespace-nowrap">
-                <button onClick={() => { setSelectedProduct(product); setIsQuantityOpen(true); }} className="bg-green-500 text-white px-2 py-1 rounded mx-2">Add Quantity</button>
-                <button onClick={() => { setSelectedProduct(product); setViewopen(true) }} className="bg-blue-500 text-white px-2 py-1 rounded mx-2">View</button>
-                <button onClick={() => { setSelectedProduct(product); setIsEditModalOpen(true); }} className="bg-yellow-500 text-white px-2 py-1 rounded mx-2">Edit</button>
-                <button onClick={() => { handleDeleted() }} className="bg-red-500 text-white px-2 py-1 rounded mx-2">Delete</button>
+                <button onClick={() => { setSelectedProduct(product); setIsQuantityOpen(true); }} className="bg-green-500 text-white px-2 py-1 rounded mx-2" title='Add Quantity'><i className="fa-regular fa-square-plus"></i></button>
+                <button onClick={() => { setSelectedProduct(product); setViewopen(true) }} className="bg-blue-500 text-white px-2 py-1 rounded mx-2"><i className="fa-solid fa-eye"></i></button>
+                <button onClick={() => { setSelectedProduct(product); setIsEditModalOpen(true); }} className="bg-yellow-500 text-white px-2 py-1 rounded mx-2"><i className="fa-solid fa-pen-to-square"></i></button>
+                <button onClick={() => { handleDeleted() }} className="bg-red-500 text-white px-2 py-1 rounded mx-2"> <i className="fa-solid fa-trash"></i></button>
             </td>
         </tr>
     )
