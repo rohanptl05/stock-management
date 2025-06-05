@@ -183,7 +183,7 @@ const Page = () => {
         <h1 className="text-4xl font-bold">Recharge</h1>
         <button
           onClick={() => setIsAddModal(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow-md transition-all"
+          className="bg-blue-600 hover:bg-blue-700 text-white sm:px-4 sm:py-2 px-2 py-1 rounded shadow-md transition-all"
         >
           New Operator
         </button>
@@ -191,14 +191,14 @@ const Page = () => {
 
 
       <div className="   sm:min-h-[75vh] h-[62vh] overflow-y-auto mt-3">
-        <table className="min-w-full divide-y divide-gray-200 border border-gray-300 shadow-sm rounded-lg overflow-hidden text-sm">
-          <thead className="bg-gray-100 border-b text-sm text-gray-700 uppercase tracking-wider">
+        <table className="min-w-full divide-y divide-gray-200 border border-gray-300 shadow-sm rounded-lg overflow-hidden sm:text-sm whitespace-nowrap text-[10px]">
+          <thead className="bg-gray-100 border-b sm:text-sm text-gray-700 uppercase tracking-wider text-[10px]">
             <tr>
-              <th className="px-4 py-2 border-b">Operator Name</th>
-              <th className="px-4 py-2 border-b">Total Balance</th>
-              <th className="px-4 py-2 border-b">Remaining Balance</th>
-              {/* <th className="px-4 py-2 border-b">Date</th> */}
-              <th className="px-4 py-2 border-b">Actions</th>
+              <th className="sm:px-4 sm:py-2 px-2 py-1 border-b">Operator Name</th>
+              <th className="sm:px-4 sm:py-2 px-2 py-1 border-b sm:table-cell hidden">Total Balance</th>
+              <th className="sm:px-4 sm:py-2 px-2 py-1 border-b">Balance</th>
+              {/* <th className="sm:px-4 sm:py-2 px-2 py-1 border-b">Date</th> */}
+              <th className="sm:px-4 sm:py-2 px-2 py-1 border-b">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -218,12 +218,17 @@ const Page = () => {
             ) : (paginatedrechargeData.length > 0 ? (
               paginatedrechargeData.map((recharge) => (
                 <tr key={recharge._id} className="text-center">
-                  <td className="px-4 py-2 border-b">
-                    <Link href={`recharge/${recharge._id}?name=${encodeURIComponent(recharge.operatorName)}`}>{recharge.operatorName}</Link>
+                  <td className="sm:px-4 sm:py-2 px-2 py-1 border-b">
+                    <Link href={`recharge/${recharge._id}?name=${encodeURIComponent(recharge.operatorName)}`}>
+                      <span className="hover:text-blue-500  hover:scale-110">
+                        {recharge.operatorName.charAt(0).toUpperCase() + recharge.operatorName.slice(1)}
+                      </span>
+                    </Link>
                   </td>
-                  <td className="px-4 py-2 border-b">{recharge.totalBalance}</td>
-                  <td className="px-4 py-2 border-b">{recharge.remainingBalance}</td>
-                  <td className="px-4 py-2 border-b">
+
+                  <td className="sm:px-4 sm:py-2 px-2 py-1 border-b sm:table-cell hidden">{recharge.totalBalance}</td>
+                  <td className="sm:px-4 sm:py-2 px-2 py-1 border-b">{recharge.remainingBalance}</td>
+                  <td className="sm:px-4 sm:py-2 px-2 py-1 border-b">
                     <button
                       onClick={() => {
                         setAddBalance({ operatorId: recharge._id, remainingBalance: recharge.remainingBalance });
@@ -352,10 +357,10 @@ const Page = () => {
           </div>
 
           <div className="flex justify-between">
-            <button type="button" onClick={() => setIsAddModal(false)} className="bg-red-500 text-white px-4 py-2 rounded">
+            <button type="button" onClick={() => setIsAddModal(false)} className="bg-red-500 text-white sm:px-4 sm:py-2 px-2 py-1 rounded">
               Close
             </button>
-            <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded">
+            <button type="submit" className="bg-green-500 text-white sm:px-4 sm:py-2 px-2 py-1 rounded">
               Add Operator
             </button>
           </div>
@@ -399,10 +404,10 @@ const Page = () => {
           </div>
 
           <div className="flex justify-between">
-            <button type="button" onClick={() => setIsEditModal(false)} className="bg-red-500 text-white px-4 py-2 rounded">
+            <button type="button" onClick={() => setIsEditModal(false)} className="bg-red-500 text-white sm:px-4 sm:py-2 px-2 py-1 rounded">
               Close
             </button>
-            <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded">
+            <button type="submit" className="bg-green-500 text-white sm:px-4 sm:py-2 px-2 py-1 rounded">
               Save Changes
             </button>
           </div>

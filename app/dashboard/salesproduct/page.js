@@ -10,21 +10,22 @@ import Image from 'next/image'
 
 const Page = () => {
   const { data: session } = useSession({
-  required: true,
-  onUnauthenticated() {
-    router.push('/login');
-  },
-});
+    required: true,
+    onUnauthenticated() {
+      router.push('/login');
+    },
+  });
   const [products, setProducts] = useState([])
   const [Invoice, setInvoice] = useState([])
+  const [OriginalInvoice, setOriginalInvoice] = useState([])
   const [warnings, setWarnings] = useState([])
   const [isAddModalOpen, setIsAddModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     user: session?.user?.id,
     client: '',
-    clientPhone:"",
-    clientAddress:"",
+    clientPhone: "",
+    clientAddress: "",
     items: [{ item_name: '', item_price: 0, productId: '', item_quantity: 1, total: 0 }],
     grandTotal: 0,
     received_amount: 0,
@@ -57,7 +58,7 @@ const Page = () => {
     setProducts(Array.isArray(res) ? res : []);
 
     const ress = await fetchInvoices(session?.user?.id, 'active')
-    // console.log("responce invoice", ress)
+    setOriginalInvoice(ress)
     setInvoice(ress)
     setIsLoading(false)
     // setProducts(res)
@@ -296,7 +297,7 @@ const Page = () => {
 
     const saleData = {
       client: formData.client,
-      clientPhone : formData.clientPhone,
+      clientPhone: formData.clientPhone,
       clientAddress: formData.clientAddress,
       grandTotal,
       items: preparedItems,
@@ -399,6 +400,31 @@ const Page = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
+  const handleSearch = async (e) => {
+    const searchTerm = e.target.value.trim();
+
+    // console.log("Search Text:", searchTerm);
+    if (!searchTerm) {
+      await fetchData();
+      return;
+    }
+
+    try {
+      const searchData = [...OriginalInvoice].filter((incoices) => {
+        const clientName = incoices.client.toLowerCase().includes(searchTerm.toLowerCase());
+        const address = incoices.clientAddress.toLowerCase().includes(searchTerm.toLowerCase());
+        const Phone = String(incoices.clientPhone || '').toLowerCase().includes(searchTerm);
+
+        return clientName || address || Phone;
+      });
+      setInvoice(searchData);
+
+
+    } catch (error) {
+      console.error("Error searching clients:", error);
+    }
+
+  };
 
 
   return (
@@ -410,9 +436,9 @@ const Page = () => {
 
         <button
           onClick={() => setIsAddModal(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow-md transition-all"
+          className="bg-blue-600 hover:bg-blue-700 text-white sm:px-4 sm:py-2 px-2 py-1 rounded shadow-md transition-all"
         >
-          <i className="fa-solid fa-cart-plus mr-2"></i>Add Product
+          <i className="fa-solid fa-cart-plus mr-2"></i>Add Invoice
         </button>
       </div>
 
@@ -421,7 +447,7 @@ const Page = () => {
         <div className="flex   w-full p-4">
           <label htmlFor="search" className=' border-gray-300 rounded-md p-2'>Search :</label>
           <input type="text" id="search" name='search'
-            // onChange={handleSearch} 
+            onChange={handleSearch}
             className="border border-gray-300 rounded-md p-2 w-1/2" placeholder="Search Invoice..." />
         </div>
         <div>
@@ -431,18 +457,18 @@ const Page = () => {
 
 
       <div className='sm:min-h-[62vh] h-[62vh]'>
-        <table className="min-w-full divide-y divide-gray-200 border border-gray-300 shadow-sm rounded-lg overflow-hidden text-sm">
-          <thead className="bg-gray-100 border-b text-sm text-gray-700 uppercase tracking-wider">
-            <tr>
-              <th className="px-4 py-2">Invoice Number</th>
-              <th className="px-4 py-2">Client Name</th>
-              <th className="px-4 py-2">Date</th>
-              {/* <th className="px-4 py-2">Product Quantity</th> */}
-              <th className="px-4 py-2">Total Amonut</th>
-              <th className="px-4 py-2">Actions</th>
+        <table className="min-w-full divide-y divide-gray-200 border border-gray-300 shadow-sm rounded-lg overflow-y-auto text-sm">
+          <thead className="bg-gray-100 border-b sm:text-sm text-gray-700 uppercase tracking-wider text-[10px] whitespace-nowrap">
+            <tr className=''>
+              <th className="sm:px-4 sm:py-2 px-2 py-1 hidden sm:table-cell">Invoice Number</th>
+              <th className="sm:px-4 sm:py-2 px-2 py-1">Customer Name</th>
+              <th className="sm:px-4 sm:py-2 px-2 py-1 ">Date</th>
+              {/* <th className="sm:px-4 sm:py-2 px-2 py-1">Product Quantity</th> */}
+              <th className="sm:px-4 sm:py-2 px-2 py-1 hidden sm:table-cell">Total Amonut</th>
+              <th className="sm:px-4 sm:py-2 px-2 py-1">Actions</th>
             </tr>
           </thead>
-          <tbody className='text-center'>
+          <tbody className='text-center  whitespace-nowrap text-[10px] sm:text-sm'>
             {isLoading ? (
               <tr>
                 <td colSpan="18" className="px-4 py-4 text-center">
@@ -460,8 +486,6 @@ const Page = () => {
                 <InvoiceList
                   key={invoice._id}
                   invoice={invoice}
-                  // setSelectedInvoice={setSelectedInvoice}
-                  // setIsEditModalOpen={setIsEditModalOpen}
                   openEditModal={openEditModal}
                   fetchData={fetchData}
                 />
@@ -539,7 +563,7 @@ const Page = () => {
               type="text"
               name="clientAddress"
               value={formData.clientAddress}
-              onChange={(e)=>setFormData({...formData,clientAddress:e.target.value})}
+              onChange={(e) => setFormData({ ...formData, clientAddress: e.target.value })}
               className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -551,7 +575,7 @@ const Page = () => {
               type="text"
               name="clientPhone"
               value={formData.clientPhone}
-               onChange={(e)=>setFormData({...formData,clientPhone:e.target.value})}
+              onChange={(e) => setFormData({ ...formData, clientPhone: e.target.value })}
               className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -691,7 +715,7 @@ const Page = () => {
           {/* Add Row Button */}
           <button
             onClick={addItem}
-            className="bg-gray-200 text-gray-800 px-4 py-2 rounded shadow hover:bg-gray-300 transition duration-150"
+            className="bg-gray-200 text-gray-800 sm:px-4 sm:py-2 px-2 py-1 rounded shadow hover:bg-gray-300 transition duration-150"
           >
             + Add Product Row
           </button>
@@ -700,7 +724,7 @@ const Page = () => {
           <div className="flex justify-between items-center mt-6">
             <button
               onClick={() => setIsAddModal(false)}
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-150"
+              className="bg-red-500 text-white sm:px-4 sm:py-2 px-2 py-1 rounded hover:bg-red-600 transition duration-150"
             >
               Close
             </button>
@@ -745,7 +769,7 @@ const Page = () => {
               type="text"
               name="client"
               value={isselectedInvoice.clientAddress}
-              onChange={(e)=>setSelectedInvoice({...isselectedInvoice,clientAddress:e.target.value})}
+              onChange={(e) => setSelectedInvoice({ ...isselectedInvoice, clientAddress: e.target.value })}
               className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -757,7 +781,7 @@ const Page = () => {
               type="text"
               name="client"
               value={isselectedInvoice.clientPhone}
-              onChange={(e)=>setSelectedInvoice({...isselectedInvoice,clientPhone:e.target.value})}
+              onChange={(e) => setSelectedInvoice({ ...isselectedInvoice, clientPhone: e.target.value })}
               className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -914,7 +938,7 @@ const Page = () => {
           {/* Add Row Button */}
           <button
             onClick={EditaddItem}
-            className="bg-gray-200 text-gray-800 px-4 py-2 rounded shadow hover:bg-gray-300 transition duration-150"
+            className="bg-gray-200 text-gray-800 sm:px-4 sm:py-2 px-2 py-1 rounded shadow hover:bg-gray-300 transition duration-150"
           >
             + Add Product Row
           </button>
@@ -923,7 +947,7 @@ const Page = () => {
           <div className="flex justify-between items-center mt-6">
             <button
               onClick={() => setIsEditModalOpen(false)}
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-150"
+              className="bg-red-500 text-white sm:px-4 sm:py-2 px-2 py-1 rounded hover:bg-red-600 transition duration-150"
             >
               Close
             </button>

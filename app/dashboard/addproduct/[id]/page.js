@@ -9,11 +9,11 @@ import Image from 'next/image'
 
 const Page = () => {
   const { data: session } = useSession({
-  required: true,
-  onUnauthenticated() {
-    router.push('/login');
-  },
-});
+    required: true,
+    onUnauthenticated() {
+      router.push('/login');
+    },
+  });
   const params = useParams()
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -64,7 +64,7 @@ const Page = () => {
 
   // ───── Pagination logic ─────
   const itemsPerPage = 10;
-  const indexOfLastItem  = currentPage * itemsPerPage;
+  const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const paginatedhistoryData = Array.isArray(historyData)
     ? historyData.slice(indexOfFirstItem, indexOfLastItem)
@@ -75,19 +75,20 @@ const Page = () => {
     <>
       <div className='w-full  '>
         <div className='w-full m-2 text-center'>
-          <h1 className='bg-amber-300 p-2 rounded-2xl shadow-2xl shadow-amber-300 whitespace-nowrap'>
-            {name} Product History
+          <h1 className='bg-amber-300 p-2 rounded-2xl shadow-2xl shadow-amber-300 whitespace-normal sm:whitespace-nowrap'>
+            {name} - Added History
           </h1>
+
         </div>
 
         <div className=' sm:min-h-[70vh] h-[60vh] '>
-          <table className="min-w-full divide-y  divide-gray-200 border border-gray-300 shadow-sm rounded-lg overflow-hidden text-sm">
-            <thead className="bg-gray-100 border-b text-sm text-gray-700 uppercase tracking-wider">
+          <table className="min-w-full divide-y  divide-gray-200 border border-gray-300 shadow-sm rounded-lg overflow-hidden text-xs sm:text-sm">
+            <thead className="bg-gray-100 border-b text-sm text-gray-700 uppercase tracking-wider whitespace-nowrap">
               <tr>
-                <th className="px-4 py-2">S. No.</th>
-                <th className="px-4 py-2">Product Quantity</th>
-                <th className="px-4 py-2">Date</th>
-                <th className="px-4 py-2">Actions</th>
+                <th className="sm:px-4 sm:py-2 px-1 py-1">S. No.</th>
+                <th className="sm:px-4 sm:py-2 px-1 py-1">Quantity</th>
+                <th className="sm:px-4 sm:py-2 px-1 py-1">Date</th>
+                <th className="sm:px-4 sm:py-2 px-1 py-1">Actions</th>
               </tr>
             </thead>
             <tbody className='text-center'>
@@ -144,11 +145,10 @@ const Page = () => {
             <button
               key={pageNum}
               onClick={() => setCurrentPage(pageNum + 1)}
-              className={`px-3 py-1 rounded ${
-                currentPage === pageNum + 1
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 hover:bg-gray-200'
-              }`}
+              className={`px-3 py-1 rounded ${currentPage === pageNum + 1
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-100 hover:bg-gray-200'
+                }`}
             >
               {pageNum + 1}
             </button>
@@ -201,14 +201,14 @@ const Page = () => {
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
             </div>
-            <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded float-end">
+            <button type="submit" className="bg-green-500 text-white sm:px-4 sm:py-2 px-2 py-1 rounded float-end">
               Update Product Qty
             </button>
           </form>
         </div>
         <button
           onClick={() => setIsEditModalOpen(false)}
-          className="mt-4 bg-red-500 text-white px-4 py-2 rounded float-start"
+          className="mt-4 bg-red-500 text-white sm:px-4 sm:py-2 px-2 py-1 rounded float-start"
         >
           Close
         </button>

@@ -228,15 +228,15 @@ const Page = () => {
       <div className="flex flex-col  w-full h-full">
 
         <div className="flex  w-full  p-4 items-center justify-between ">
-          <h1 className="text-2xl font-bold mb-2 ">Products</h1>
-          <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={() => setIsAddModal(true)}><i className="fa-solid fa-cart-plus mx-1"></i>Add Product</button>
+          <h1 className="sm:text-2xl font-bold mb-2 text-xl">Products</h1>
+          <button className="bg-blue-500 text-white sm:px-4 sm:py-2 px-2 py-1 rounded" onClick={() => setIsAddModal(true)}><i className="fa-solid fa-cart-plus mx-1"></i>Add Product</button>
         </div>
 
         {/* filter */}
-        <div className="flex flex-col items-center justify-center w-full ">
+        <div className="flex flex-col items-center justify-center w-full sm:text-sm text-xs">
           <div className="flex   w-full p-4">
-            <label htmlFor="search" className=' border-gray-300 rounded-md p-2'>Search :</label>
-            <input type="text" id="search" name='search' onChange={handleSearch} className="border border-gray-300 rounded-md p-2 w-1/2" placeholder="Search products..." />
+            <label htmlFor="search" className=' border-gray-300 rounded-md p-2 sm:text-sm text-xs'>Search :</label>
+            <input type="text" id="search" name='search' onChange={handleSearch} className="border border-gray-300 rounded-md p-2 w-1/2 sm:text-sm text-xs" placeholder="Search products..." />
           </div>
           <div>
 
@@ -246,19 +246,19 @@ const Page = () => {
 
 
         {/* Table */}
-        <div className="flex flex-col w-full sm:min-h-[60vh] h-[58vh] overflow-auto">
-          <table className="min-w-full divide-y divide-gray-200 border border-gray-300 shadow-sm rounded-lg overflow-hidden text-sm">
-            <thead className="bg-gray-100 border-b text-sm text-gray-700 uppercase tracking-wider">
+        <div className="flex flex-col w-full sm:min-h-[60vh] h-[58vh] overflow-auto ">
+          <table className="min-w-full divide-y divide-gray-200 border border-gray-300 shadow-sm rounded-lg overflow-hidden  ">
+            <thead className="bg-gray-100 border-b text-sm text-gray-700 uppercase tracking-wider whitespace-nowrap text-[10px] sm:text-sm">
               <tr>
-                <th className="px-4 py-2">Product Name</th>
-                <th className="px-4 py-2">Product ID</th>
-                <th className="px-4 py-2">Product Quantity</th>
-                <th className="px-4 py-2">Product Remaining</th>
-                <th className="px-4 py-2">Product Price</th>
-                <th className="px-4 py-2">Actions</th>
+                <th className="sm:px-4 sm:py-2 px-2 py-1">Product Name</th>
+                <th className="sm:px-4 sm:py-2 px-2 py-1 hidden sm:table-cell">Product ID</th>
+                <th className="sm:px-4 sm:py-2 px-2 py-1">Quantity</th>
+                <th className="sm:px-4 sm:py-2 px-2 py-1">Remaining</th>
+                <th className="sm:px-4 sm:py-2 px-2 py-1 hidden sm:table-cell">Price</th>
+                <th className="sm:px-4 sm:py-2 px-2 py-1">Actions</th>
               </tr>
             </thead>
-            <tbody className='text-center'>
+            <tbody className='text-center text-[12px] sm:text-sm'>
               {isLoading ? (
                 <tr>
                   <td colSpan="18" className="px-4 py-4 text-center">

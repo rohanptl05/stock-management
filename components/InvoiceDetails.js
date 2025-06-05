@@ -50,9 +50,9 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                         <p className="mt-1 font-semibold border-t border-b w-full">A.T. Post. Pipalkhed, (Bus stop Pachhal) Shop No. 2, Ta. Vansda Dist. Navsari.</p>
                         <div className="flex justify-between  ">
                             <div className="space-y-1 p-2   text-left">
-                                <p><span className="font-bold">Name:</span> {invoice?.client || '________________________'}</p>
-                                <p><span className="font-bold">Add.:</span> {invoice?.clientAddress || '________________________'}</p>
-                                <p><span className="font-bold">Mo.:</span> {invoice?.clientPhone || '________________'}</p>
+                                <p><span className="font-bold">Name:</span> {invoice?.client || '_________________'}</p>
+                                <p><span className="font-bold">Add.:</span> {invoice?.clientAddress || '_________________'}</p>
+                                <p><span className="font-bold">Mo.:</span> {invoice?.clientPhone || '_________________'}</p>
                             </div>
                             <div className="text-right border-l px-2 ">
                                 <p><span className="font-bold">Bill No:</span> <span className="text-lg font-bold">{invoice?.invoiceNumber || '201'}</span></p>
@@ -131,10 +131,10 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                     {/* Footer */}
                     <div className="flex justify-between mt-2 text-xs p-4">
                         <p className="font-bold">I.D.: _________________________</p>
-                        <p className="font-bold">TOTAL: ₹{invoice?.grandTotal?.toFixed(2) || "0.00"}</p>
+                        
                     </div>
-                    <div className="mt-2 p-4">
-                        <p className="text-xs"><span className="font-bold">WARRANTY:</span> _______________________________________</p>
+                    <div className="flex justify-between mt-2 text-xs p-4">
+                         <p className="font-bold">WARRANTY: ____________________</p>
                     </div>
                     <div className="flex justify-between items-end mt-4 text-xs p-4">
                         <p className="italic">Received Signature…</p>

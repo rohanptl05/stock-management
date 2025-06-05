@@ -23,11 +23,11 @@ const RechargeHistoryList = ({ rechargehistory, index,setSelectedRechargeHistory
   };
   return (
     <tr key={rechargehistory._id}>
-      <td className="border-b px-4 py-2 whitespace-nowrap font-bold"> {index + 1}</td>
+      <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap  font-bold"> {index + 1}</td>
 
-      <td className="border-b px-4 py-2 whitespace-nowrap">{rechargehistory?.addBalance}</td>
-      <td className="border-b px-4 py-2 whitespace-nowrap">{rechargehistory?.useBalance}</td>
-      <td className="border-b px-4 py-2 whitespace-nowrap">
+      <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap ">{rechargehistory?.addBalance}</td>
+      <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap ">{rechargehistory?.useBalance}</td>
+      <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap ">
         {rechargehistory?.date ? new Date(rechargehistory.date).toLocaleString('en-IN', {
           day: '2-digit',
           month: 'short',
@@ -40,11 +40,11 @@ const RechargeHistoryList = ({ rechargehistory, index,setSelectedRechargeHistory
 
 
 
-      <td className="border-b px-4 py-2 whitespace-nowrap">
+      <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap ">
         {/* Add any action buttons here, e.g., Edit, Delete */}
         <button
           onClick={() => {setSelectedRechargeHistory(rechargehistory) ; setIsEditHistoryModalOpen(true)}}
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-2"
+          className="bg-green-500 text-white sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap rounded hover:bg-green-600 mr-2"
         >
         <i className="fa-solid fa-pen-to-square"></i>
         </button>
@@ -53,7 +53,7 @@ const RechargeHistoryList = ({ rechargehistory, index,setSelectedRechargeHistory
     
         <button
           onClick={handleDelete}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          className="bg-red-500 text-white sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap rounded hover:bg-red-600"
         >
           <i className="fa-solid fa-trash"></i>
         </button>

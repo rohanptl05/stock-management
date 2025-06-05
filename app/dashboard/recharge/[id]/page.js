@@ -9,12 +9,12 @@ import RechargeHistoryList from '@/components/RechargeHistoryList'
 
 const Page = () => {
   const { data: session } = useSession({
-  required: true,
-  onUnauthenticated() {
-    router.push('/login');
-  },
-});
- const params = useParams()
+    required: true,
+    onUnauthenticated() {
+      router.push('/login');
+    },
+  });
+  const params = useParams()
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -27,6 +27,8 @@ const Page = () => {
   const [selectedRechargeHistory, setSelectedRechargeHistory] = useState(null);
   const [IsEditHistoryModalOpen, setIsEditHistoryModalOpen] = useState(false);
   const [initialType, setInitialType] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
 
   useEffect(() => {
 
@@ -62,36 +64,52 @@ const Page = () => {
   }
 
   useEffect(() => {
-  if (IsEditHistoryModalOpen && selectedRechargeHistory) {
-    if (selectedRechargeHistory.addBalance > 0) {
-      setInitialType("add");
-    } else if (selectedRechargeHistory.useBalance > 0) {
-      setInitialType("use");
+    if (IsEditHistoryModalOpen && selectedRechargeHistory) {
+      if (selectedRechargeHistory.addBalance > 0) {
+        setInitialType("add");
+      } else if (selectedRechargeHistory.useBalance > 0) {
+        setInitialType("use");
+      }
     }
-  }
-}, [IsEditHistoryModalOpen, selectedRechargeHistory]);
+  }, [IsEditHistoryModalOpen, selectedRechargeHistory]);
 
 
 
+  const itemsPerPage = 8;
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  // const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
 
+
+
+  const paginatedRechargehistoryData = (Array.isArray(RechargehistoryData) ? RechargehistoryData : []).slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil((Array.isArray(RechargehistoryData) ? RechargehistoryData.length : 0) / itemsPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
 
   return (
     <>
-      <div className='h-full w- full'>
+      <div className='h-full w-full'>
         {/* <header></header> */}
         <div className='w-full m-2 text-center '>
           <h1 className='bg-amber-300 p-2 rounded-2xl shadow-2xl shadow-amber-300 whitespace-nowrap'>{name} Recharge Historys</h1>
         </div>
 
-        <div className='flex'>
-          <table className="min-w-full divide-y divide-gray-200 border border-gray-300 shadow-sm rounded-lg overflow-hidden text-sm">
+        <div className=' sm:min-h-[70vh] h-[60vh] overflow-x-auto sm:overflow-hidden '>
+          <table className="min-w-full divide-y divide-gray-200 border border-gray-300 shadow-sm rounded-lg  sm:text-sm text-[10px] overflow-x-auto  ">
             <thead className="bg-gray-100 border-b text-sm text-gray-700 uppercase tracking-wider">
               <tr>
-                <th className="px-4 py-2">Index</th>
-                <th className="px-4 py-2"> Add balance</th>
-                <th className="px-4 py-2">Use balanace</th>
-                <th className="px-4 py-2">Date</th>
-                <th className="px-4 py-2">Actions</th>
+                <th className="sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap">Index</th>
+                <th className="sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap"> Add balance</th>
+                <th className="sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap">Use balanace</th>
+                <th className="sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap">Date</th>
+                <th className="sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap">Actions</th>
               </tr>
             </thead>
             <tbody className='text-center'>
@@ -107,12 +125,12 @@ const Page = () => {
                     />
                   </td>
                 </tr>
-              ) : RechargehistoryData.length > 0 ? (
-                RechargehistoryData.map((rechargehistory, index) => (
+              ) : paginatedRechargehistoryData.length > 0 ? (
+                paginatedRechargehistoryData.map((rechargehistory, index) => (
 
                   <RechargeHistoryList
                     key={rechargehistory._id}
-                    index={index}
+                    index={indexOfFirstItem + index}
                     rechargehistory={rechargehistory}
                     setIsEditHistoryModalOpen={setIsEditHistoryModalOpen}
                     setSelectedRechargeHistory={setSelectedRechargeHistory}
@@ -131,6 +149,34 @@ const Page = () => {
 
         </div>
 
+      {/* pagination */}
+      <div className="flex justify-center items-center gap-2 mt-4">
+        <button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(currentPage - 1)}
+          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+        >
+          Prev
+        </button>
+
+        {[...Array(totalPages)].map((_, pageNum) => (
+          <button
+            key={pageNum}
+            onClick={() => setCurrentPage(pageNum + 1)}
+            className={`px-3 py-1 rounded ${currentPage === pageNum + 1 ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
+          >
+            {pageNum + 1}
+          </button>
+        ))}
+
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(currentPage + 1)}
+          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
       </div>
 
 
@@ -174,12 +220,12 @@ const Page = () => {
 
 
 
-            <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded float-end">Update Product Que.</button>
+            <button type="submit" className="bg-green-500 text-white sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap rounded float-end">Update Product Que.</button>
           </form>
         </div>
         <button
           // onClick={() => setIsEditModalOpen(false)}
-          className="mt-4 bg-red-500 text-white px-4 py-2 rounded float-start"
+          className="mt-4 bg-red-500 text-white sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap rounded float-start"
         >
           Close
         </button>
@@ -278,7 +324,7 @@ const Page = () => {
               ></textarea>
             </div>
 
-            <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded float-end">
+            <button type="submit" className="bg-green-500 text-white sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap rounded float-end">
               Update Amount
             </button>
           </form>
@@ -286,7 +332,7 @@ const Page = () => {
 
         <button
           onClick={() => setIsEditHistoryModalOpen(false)}
-          className="mt-4 bg-red-500 text-white px-4 py-2 rounded float-start"
+          className="mt-4 bg-red-500 text-white sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap rounded float-start"
         >
           Close
         </button>

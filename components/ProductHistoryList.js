@@ -25,15 +25,15 @@ const ProductHistoryList = ({product,index,setSelectedProductQue,setIsEditModalO
   return (
      <tr key={product._id}>
            
-            <td className="border-b px-4 py-2 whitespace-nowrap font-bold"> {index  }</td>
+            <td className="border-b sm:px-4 sm:py-2 px-1 py-1 whitespace-nowrap font-bold"> {index  }</td>
             
-            <td className="border-b px-4 py-2 whitespace-nowrap">{product.productQuantity}</td>
+            <td className="border-b sm:px-4 sm:py-2 px-1 py-1 whitespace-nowrap">{product.productQuantity}</td>
          
-            <td className="border-b px-4 py-2 whitespace-nowrap">
+            <td className="border-b sm:px-4 sm:py-2 px-1 py-1 whitespace-nowrap">
                 {new Date(product.date).toLocaleDateString('en-GB')}
             </td>
           
-            <td className="border-b px-4 py-2 whitespace-nowrap">
+            <td className="border-b sm:px-4 sm:py-2 px-1 py-1 whitespace-nowrap">
               
                 <button onClick={() => { setSelectedProductQue(product); setIsEditModalOpen(true); }} className="bg-yellow-500 text-white px-2 py-1 rounded mx-2"><i className="fa-solid fa-pen-to-square"></i></button>
                 <button onClick={() => {handleDeleted()}} className="bg-red-500 text-white px-2 py-1 rounded mx-2"><i className="fa-solid fa-trash"></i></button>

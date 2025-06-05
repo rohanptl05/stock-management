@@ -25,20 +25,20 @@ const ProductList = ({ product, setSelectedProduct, setIsEditModalOpen, setViewo
 
     return (
         <tr key={product._id}>
-            <td className="border-b px-4 py-2 whitespace-nowrap font-bold"> <Link href={`addproduct/${product._id}?name=${encodeURIComponent(product.productName)}`} className="hover:text-blue-900">{product.productName}</Link></td>
+            <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap font-bold uppercase"> <Link href={`addproduct/${product._id}?name=${encodeURIComponent(product.productName)}`} className="hover:text-blue-900">{product.productName}</Link></td>
 
-            <td className="border-b px-4 py-2 whitespace-nowrap">{product.productId}</td>
-            <td className="border-b px-4 py-2 whitespace-nowrap">{product.productQuantity}</td>
-            <td className={`border-b border-black px-4 py-2 whitespace-nowrap `}>
+            <td className="border-b sm:px-4 sm:py-2 px-2 py-1 hidden sm:table-cell whitespace-nowrap">{product.productId}</td>
+            <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap">{product.productQuantity}</td>
+            <td className={`border-b border-black sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap `}>
                 {Number(product.productQuantityremaining)}
             </td>
-            <td className="border-b px-4 py-2 whitespace-nowrap">{product.productPrice}</td>
+            <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap hidden sm:table-cell">{product.productPrice}</td>
 
-            <td className="border-b px-4 py-2 whitespace-nowrap">
-                <button onClick={() => { setSelectedProduct(product); setIsQuantityOpen(true); }} className="bg-green-500 text-white px-2 py-1 rounded mx-2" title='Add Quantity'><i className="fa-regular fa-square-plus"></i></button>
-                <button onClick={() => { setSelectedProduct(product); setViewopen(true) }} className="bg-blue-500 text-white px-2 py-1 rounded mx-2"><i className="fa-solid fa-eye"></i></button>
-                <button onClick={() => { setSelectedProduct(product); setIsEditModalOpen(true); }} className="bg-yellow-500 text-white px-2 py-1 rounded mx-2"><i className="fa-solid fa-pen-to-square"></i></button>
-                <button onClick={() => { handleDeleted() }} className="bg-red-500 text-white px-2 py-1 rounded mx-2"> <i className="fa-solid fa-trash"></i></button>
+            <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap">
+                <button onClick={() => { setSelectedProduct(product); setIsQuantityOpen(true); }} className="bg-green-500 text-white sm:px-2 sm:py-1 rounded sm:mx-2 px-1 py-0.5  mx-1" title='Add Quantity'><i className="fa-regular fa-square-plus"></i></button>
+                <button onClick={() => { setSelectedProduct(product); setViewopen(true) }} className="bg-blue-500 text-white sm:px-2 sm:py-1 rounded sm:mx-2 px-1 py-0.5 mx-1"><i className="fa-solid fa-eye"></i></button>
+                <button onClick={() => { setSelectedProduct(product); setIsEditModalOpen(true); }} className="bg-yellow-500 text-white sm:px-2 sm:py-1 rounded sm:mx-2 px-1 py-0.5 mx-1"><i className="fa-solid fa-pen-to-square"></i></button>
+                <button onClick={() => { handleDeleted() }} className="bg-red-500 text-white sm:px-2 sm:py-1 rounded sm:mx-2 px-1 py-0.5 mx-1"> <i className="fa-solid fa-trash"></i></button>
             </td>
         </tr>
     )
