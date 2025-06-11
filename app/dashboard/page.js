@@ -106,7 +106,8 @@ const Page = () => {
                       {item.operatorName.charAt(0).toUpperCase() + item.operatorName.slice(1).toLowerCase()} Balance
                     </h2>
 
-                    <p className="text-gray-600">₹ {item.remainingBalance}</p>
+                  <p className="text-gray-600">₹ {item.remainingBalance?.toFixed(2)}</p>
+
                   </Link>
                 </div>
               </div>

@@ -226,8 +226,8 @@ const Page = () => {
                     </Link>
                   </td>
 
-                  <td className="sm:px-4 sm:py-2 px-2 py-1 border-b sm:table-cell hidden">{recharge.totalBalance}</td>
-                  <td className="sm:px-4 sm:py-2 px-2 py-1 border-b">{recharge.remainingBalance}</td>
+                  <td className="sm:px-4 sm:py-2 px-2 py-1 border-b sm:table-cell hidden">{recharge.totalBalance?.toFixed(2)}</td>
+                  <td className="sm:px-4 sm:py-2 px-2 py-1 border-b">{recharge.remainingBalance?.toFixed(2)}</td>
                   <td className="sm:px-4 sm:py-2 px-2 py-1 border-b">
                     <button
                       onClick={() => {

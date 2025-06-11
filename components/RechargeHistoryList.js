@@ -25,8 +25,8 @@ const RechargeHistoryList = ({ rechargehistory, index,setSelectedRechargeHistory
     <tr key={rechargehistory._id}>
       <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap  font-bold"> {index + 1}</td>
 
-      <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap ">{rechargehistory?.addBalance}</td>
-      <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap ">{rechargehistory?.useBalance}</td>
+      <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap ">{rechargehistory?.addBalance?.toFixed(2)}</td>
+      <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap ">{rechargehistory?.useBalance?.toFixed(2)}</td>
       <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap ">
         {rechargehistory?.date ? new Date(rechargehistory.date).toLocaleString('en-IN', {
           day: '2-digit',
