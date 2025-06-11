@@ -8,7 +8,7 @@ import Invoice from "@/models/Invoice";
 export const fetchProducts = async (userId, status) => {
   await connectDb();
 
-  const products = await Product.find({ user: userId, recordStatus: status }).sort({ date: -1 });
+  const products = await Product.find({ user: userId, recordStatus: status }).sort({ date: 1 });
 
   if (!products || products.length === 0) {
     return {};

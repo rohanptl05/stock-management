@@ -11,11 +11,11 @@ import Image from 'next/image';
 
 const Page = () => {
   const { data: session } = useSession({
-  required: true,
-  onUnauthenticated() {
-    router.push('/login');
-  },
-});
+    required: true,
+    onUnauthenticated() {
+      router.push('/login');
+    },
+  });
   const router = useRouter();
   const reportRef = useRef(null);
   const [invoices, setInvoices] = useState([]);
@@ -28,7 +28,7 @@ const Page = () => {
   const [toDate, setToDate] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-  const [isLoading,setisLoading] =useState(false)
+  const [isLoading, setisLoading] = useState(false)
 
   useEffect(() => {
 
@@ -57,7 +57,7 @@ const Page = () => {
   };
 
   useEffect(() => {
-   if (!Array.isArray(originalInvoices)) return;
+    if (!Array.isArray(originalInvoices)) return;
 
     let filteredInvoices = [...originalInvoices];
 
@@ -216,7 +216,7 @@ const Page = () => {
             </div>
 
             {/* Status */}
-            <div className="flex items-center gap-1 min-w-[120px] text-xs sm:text-sm">
+            {/* <div className="flex items-center gap-1 min-w-[120px] text-xs sm:text-sm">
               <label htmlFor="status" className="text-gray-700 whitespace-nowrap text-xs sm:text-sm">Status:</label>
               <select
                 id="status"
@@ -227,7 +227,7 @@ const Page = () => {
                 <option className="text-xs sm:text-sm  " value="PAID">Paid</option>
                 <option className="text-xs sm:text-sm  " value="PENDING">Pending</option>
               </select>
-            </div>
+            </div> */}
 
             {/* Total Amount */}
             <div className="flex items-center gap-1 min-w-[150px] text-xs sm:text-sm">
@@ -243,7 +243,7 @@ const Page = () => {
               </select>
             </div>
 
-         
+
 
             {/* From Date */}
             <div className="flex items-center gap-1 min-w-[150px]">
@@ -272,56 +272,56 @@ const Page = () => {
 
 
 
-         
 
-            <div className="overflow-x-auto  sm:w-full sm:overflow-visible sm:min-h-[68vh] h-[45vh]">
-              <table className="w-[300px] sm:w-full text-xs sm:text-sm">
 
-                <thead className="bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 uppercase text-sm ">
+          <div className="overflow-x-auto  sm:w-full sm:overflow-visible sm:min-h-[68vh] h-[45vh]">
+            <table className="w-[300px] sm:w-full text-xs sm:text-sm">
+
+              <thead className="bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 uppercase text-sm ">
+                <tr>
+                  <th className="px-4 py-2  border-b text-xs sm:text-sm">Invoice No. #</th>
+                  <th className="px-4 py-2  border-b text-xs sm:text-sm">Client Name</th>
+                  <th className="px-4 py-2  border-b text-xs sm:text-sm">Date</th>
+                  {/* <th className="px-4 py-2 border-b  text-xs sm:text-sm">Status</th> */}
+                  <th className="px-4 py-2  border-b text-xs sm:text-sm">Total Amout</th>
+
+                </tr>
+              </thead>
+              <tbody>
+
+
+
+                {isLoading ? (
                   <tr>
-                    <th className="px-4 py-2  border-b text-xs sm:text-sm">Invoice No. #</th>
-                    <th className="px-4 py-2  border-b text-xs sm:text-sm">Client Name</th>
-                    <th className="px-4 py-2  border-b text-xs sm:text-sm">Date</th>
-                    <th className="px-4 py-2 border-b  text-xs sm:text-sm">Status</th>
-                    <th className="px-4 py-2  border-b text-xs sm:text-sm">Total Amout</th>
-
+                    <td colSpan="18" className="px-4 py-4 text-center">
+                      <Image
+                        width={2000}
+                        height={2000}
+                        src="/assets/infinite-spinner.svg"
+                        alt="Loading..."
+                        className="w-6 h-6 mx-auto"
+                      />
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-
-
-
-                   {isLoading ? (
-                               <tr>
-                                 <td colSpan="18" className="px-4 py-4 text-center">
-                                   <Image
-                                     width={2000}
-                                     height={2000}
-                                     src="/assets/infinite-spinner.svg"
-                                     alt="Loading..."
-                                     className="w-6 h-6 mx-auto"
-                                   />
-                                 </td>
-                               </tr>
-                             ) : paginatedInvoices.length > 0 ? 
-                           (paginatedInvoices.map((Reportinvoice, index) => (
+                ) : paginatedInvoices.length > 0 ?
+                  (paginatedInvoices.map((Reportinvoice, index) => (
                     <ReportinvoiceItems key={Reportinvoice._id} invoices={Reportinvoice} />
 
-                 ) )):(
+                  ))) : (
                     <tr>
-                <td colSpan="8" className="px-4 py-4 text-center text-gray-500">
-                  No products found.
-                </td>
-              </tr>
+                      <td colSpan="8" className="px-4 py-4 text-center text-gray-500">
+                        No products found.
+                      </td>
+                    </tr>
                   )
                 }
 
 
-                </tbody>
-              </table>
-            </div>
+              </tbody>
+            </table>
+          </div>
 
-       
+
         </div>
 
         {/* button paginations */}
@@ -367,10 +367,10 @@ const Page = () => {
                 <span className="font-medium">Search:</span>
                 <span>{searchTerm || "—"}</span>
               </div>
-              <div className="flex items-center space-x-1">
+              {/* <div className="flex items-center space-x-1">
                 <span className="font-medium">Status:</span>
                 <span>{selectedStatus || "—"}</span>
-              </div>
+              </div> */}
               <div className="flex items-center space-x-1">
                 <span className="font-medium">Total:</span>
                 <span>
@@ -399,7 +399,7 @@ const Page = () => {
                       <th className="px-2 py-2 whitespace-nowrap border-r border-black">Invoice No. #</th>
                       <th className="px-2 py-2 whitespace-nowrap border-r border-black">Client Name</th>
                       <th className="px-2 py-2 whitespace-nowrap border-r border-black">Date</th>
-                      <th className="px-2 py-2 whitespace-nowrap border-r border-black">Status</th>
+                      {/* <th className="px-2 py-2 whitespace-nowrap border-r border-black">Status</th> */}
                       <th className="px-2 py-2 whitespace-nowrap">Total Amount</th>
                     </tr>
                   </thead>
@@ -410,7 +410,14 @@ const Page = () => {
                           {invoice?.invoiceNumber}
                         </td>
                         <td className="px-2 py-2 whitespace-nowrap border-r border-black">
-                          {invoice?.client}
+                          {
+                            invoice.client
+                              .toLowerCase()
+                              .split(' ')
+                              .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                              .join(' ')
+                          }
+
                         </td>
                         <td className="px-2 py-2 whitespace-nowrap border-r border-black">
                           {new Date(invoice?.date).toLocaleDateString("en-IN", {
@@ -419,9 +426,9 @@ const Page = () => {
                             day: "2-digit",
                           })}
                         </td>
-                        <td className="px-2 py-2 whitespace-nowrap border-r border-black">
+                        {/* <td className="px-2 py-2 whitespace-nowrap border-r border-black">
                           <span className="text-xs font-semibold">{invoice?.status}</span>
-                        </td>
+                        </td> */}
                         <td className="px-2 py-2 whitespace-nowrap">
                           {invoice?.grandTotal}
                         </td>

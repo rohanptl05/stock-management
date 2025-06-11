@@ -613,13 +613,16 @@ const Page = () => {
                           }
                         >
                           <option value="">-- Select --</option>
-                          {getFilteredOptions(index).map((product) => (
-                            <option key={product._id} value={product._id}>
-                              {product.productName}
-                            </option>
-                          ))}
+                          {getFilteredOptions(index)
+                            .sort((a, b) => a.productName.localeCompare(b.productName)) // Sort ascending A-Z
+                            .map((product) => (
+                              <option key={product._id} value={product._id}>
+                                {product.productName.toUpperCase()}
+                              </option>
+                            ))}
                         </select>
                       </td>
+
 
                       {/* Available Quantity */}
                       <td className="border p-2 text-center">

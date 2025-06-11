@@ -25,7 +25,7 @@ const ProductHistoryList = ({product,index,setSelectedProductQue,setIsEditModalO
   return (
      <tr key={product._id}>
            
-            <td className="border-b sm:px-4 sm:py-2 px-1 py-1 whitespace-nowrap font-bold"> {index  }</td>
+            <td className="border-b sm:px-4 sm:py-2 px-1 py-1 whitespace-nowrap font-bold"> {index}</td>
             
             <td className="border-b sm:px-4 sm:py-2 px-1 py-1 whitespace-nowrap">{product.productQuantity}</td>
          

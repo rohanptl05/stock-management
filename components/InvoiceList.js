@@ -35,13 +35,29 @@ const InvoiceList = ({ invoice, setSelectedInvoice, setIsEditModalOpen, fetchDat
       <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap text-center">
   {/* Full client name on desktop */}
   <span className="hidden sm:inline">
-    {invoice.client}
+    {
+  invoice.client
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
+
   </span>
 
   {/* Truncated name (max 7 chars) on mobile */}
   <span className="inline sm:hidden">
-    {invoice.client.length > 7 ? `${invoice.client.slice(0, 7)}...` : invoice.client}
-  </span>
+    {
+  invoice.client.length > 7
+    ? (  invoice.client
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')).slice(0, 7) + "..."
+    : invoice.client.charAt(0).toUpperCase() + invoice.client.slice(1).toLowerCase()
+}
+
+ </span>
 </td>
 
 

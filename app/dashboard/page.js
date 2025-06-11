@@ -4,15 +4,16 @@ import { FaBoxOpen, FaWallet, FaHistory, FaShoppingCart } from 'react-icons/fa';
 import { useSession } from 'next-auth/react';
 import { fetchProducts } from '@/app/api/actions/productactions';
 import { fetchRecharge } from '@/app/api/actions/rechargeactions';
-import {fetchInvoices} from "@/app/api/actions/invoiceactions"
+import { fetchInvoices } from "@/app/api/actions/invoiceactions"
+import Link from 'next/link';
 
 const Page = () => {
   const { data: session } = useSession({
-  required: true,
-  onUnauthenticated() {
-    router.push('/login');
-  },
-});
+    required: true,
+    onUnauthenticated() {
+      router.push('/login');
+    },
+  });
   const [productQueueCount, setProductQueueCount] = useState(0);
 
   const [rechargeBalance, setRechargeBalance] = useState(0);
@@ -29,10 +30,10 @@ const Page = () => {
     const productResponse = await fetchProducts(session?.user?.id, "active");
     const rechargerResponce = await fetchRecharge(session?.user?.id, "active");
     const invoiceResponse = await fetchInvoices(session?.user?.id, "active");
-    if(invoiceResponse.length > 0){
+    if (invoiceResponse.length > 0) {
 
       setTotalOrders(invoiceResponse.length);
-    }else{
+    } else {
       setTotalOrders(0)
     }
     // console.log("object",response)
@@ -58,19 +59,23 @@ const Page = () => {
   return (
     <>
       <div className="min-h-screen  bg-gray-50 p-6">
-        <h1 className="text-3xl font-bold text-center mb-6 text-blue-700">Shop Dashboard</h1>
+        <h1 className="text-3xl font-bold text-center mb-6 text-blue-700">Dashboard</h1>
 
-      <h2 className='text-center p-3 rounded-3xl'>Product &amp;&amp; Invoice</h2>
+        <h2 className='text-center p-3 rounded-3xl'>Product &amp; Invoice</h2>
 
         <div className=" grid grid-cols-2 md:grid-cols- gap-6">
           {/* Product Queue */}
+
           <div className="bg-white p-4 rounded-xl shadow-lg flex items-center gap-4">
             <FaBoxOpen className="text-blue-600 text-3xl" />
             <div>
-              <h2 className="text-lg font-semibold">Product Queue</h2>
-              <p className="text-gray-600">{productQueueCount} items</p>
+              <Link href={`/dashboard/addproduct`} className='hover:bg-amber-600'>
+                <h2 className="text-lg font-semibold"> Total Product </h2>
+                <p className="text-gray-600">{productQueueCount} items</p>
+              </Link>
             </div>
           </div>
+
 
 
 
@@ -78,8 +83,10 @@ const Page = () => {
           <div className="bg-white p-4 rounded-xl shadow-lg flex items-center gap-4">
             <FaShoppingCart className="text-purple-600 text-3xl" />
             <div>
-              <h2 className="text-lg font-semibold">Total Orders</h2>
-              <p className="text-gray-600">{totalOrders}</p>
+              <Link href={`/dashboard/salesproduct`} className='hover:bg-amber-600'>
+                <h2 className="text-lg font-semibold">Total Invoice</h2>
+                <p className="text-gray-600">{totalOrders}</p>
+              </Link>
             </div>
           </div>
         </div>
@@ -90,11 +97,17 @@ const Page = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-3">
           {recharge.length > 0 ? (
             recharge.map((item, i) => (
+
               <div key={i} className="bg-white p-4 rounded-xl shadow-lg flex items-center gap-4">
                 <FaWallet className="text-green-600 text-3xl" />
                 <div>
-                  <h2 className="text-lg font-semibold">{item.operatorName} Balance</h2>
-                  <p className="text-gray-600">₹ {item.remainingBalance}</p>
+                  <Link href={`dashboard/recharge/${item._id}?name=${encodeURIComponent(item.operatorName)}`}>
+                    <h2 className="text-lg font-semibold">
+                      {item.operatorName.charAt(0).toUpperCase() + item.operatorName.slice(1).toLowerCase()} Balance
+                    </h2>
+
+                    <p className="text-gray-600">₹ {item.remainingBalance}</p>
+                  </Link>
                 </div>
               </div>
             ))
@@ -120,7 +133,7 @@ const Page = () => {
             {product.length > 0 ?
               product.map((item, i) =>
                 <li key={i} className="mb-2 ">
-                  {item.productName} - Remaining: {item.productQuantityremaining}
+                   {item.productName.charAt(0).toUpperCase() + item.productName.slice(1).toLowerCase()} - Remaining: {item.productQuantityremaining}
                 </li>
               ) : (
                 <li>No products with low stock.</li>

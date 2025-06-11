@@ -76,9 +76,9 @@ const Page = () => {
       <div className='w-full  '>
         <div className='w-full m-2 text-center'>
           <h1 className='bg-amber-300 p-2 rounded-2xl shadow-2xl shadow-amber-300 whitespace-normal sm:whitespace-nowrap'>
-            {name} - Added History
+             {name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()} - Activity History
           </h1>
-
+ 
         </div>
 
         <div className=' sm:min-h-[70vh] h-[60vh] '>

@@ -38,28 +38,6 @@ export const ADDinvoice = async (data) => {
     });
 
 
-    // After newInvoice is created
-    // const soldQuantities = await Invoice.aggregate([
-    //   { $unwind: "$items" },
-    //   {
-    //     $group: {
-    //       _id: "$items.productId",
-    //       totalSold: { $sum: "$items.item_quantity" },
-    //     },
-    //   },
-    // ]);
-
-    // for (const sold of soldQuantities) {
-    //   const product = await Product.findById(sold._id);
-    //   if (!product) continue;
-
-    //   const remainingQty = product.productQuantity - sold.totalSold;
-
-    //   await Product.updateOne(
-    //     { _id: sold._id },
-    //     { $set: { productQuantityremaining: remainingQty } }
-    //   );
-    // }
     await recalculateProductQuantities();
 
     return {
@@ -79,7 +57,7 @@ export const ADDinvoice = async (data) => {
 export const fetchInvoices = async (userId, status) => {
   await connectDB();
   try {
-    const invoice = await Invoice.find({ user: userId, recordStatus: status }).sort({ date: -1 });
+    const invoice = await Invoice.find({ user: userId, recordStatus: status }).sort({ date: 1 });
 
     if (!invoice || invoice.length === 0) {
       return {};

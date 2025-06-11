@@ -122,7 +122,7 @@ export default function RootLayout({ children }) {
                 <li className="w-full">
                   <Link prefetch={true} className={`block px-4 py-2 rounded-2xl hover:bg-cyan-500 ${pathname === "/dashboard/recharge" ? "bg-cyan-500 text-white" : ""
                     }`} href="/dashboard/recharge" onClick={handleLinkClick}>
-                   <i className="fa-solid fa-cart-shopping mx-2"></i> <span>recharge Balance</span>
+                   <i className="fa-solid fa-cart-shopping mx-2"></i> <span>Recharge Balance</span>
                   </Link>
                 </li>
 

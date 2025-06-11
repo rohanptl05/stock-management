@@ -50,8 +50,19 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                         <p className="mt-1 font-semibold border-t border-b w-full">A.T. Post. Pipalkhed, (Bus stop Pachhal) Shop No. 2, Ta. Vansda Dist. Navsari.</p>
                         <div className="flex justify-between  ">
                             <div className="space-y-1 p-2   text-left">
-                                <p><span className="font-bold">Name:</span> {invoice?.client || '_________________'}</p>
-                                <p><span className="font-bold">Add.:</span> {invoice?.clientAddress || '_________________'}</p>
+                                <p>
+                                    <span className="font-bold">Name:</span>{' '}
+                                    {(invoice.client ?? '_________________')
+                                        .toLowerCase()
+                                        .split(' ')
+                                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                        .join(' ')}
+                                </p>
+                                <p><span className="font-bold">Add.:</span> {(invoice?.clientAddress || '_________________')
+                                    .toLowerCase()
+                                    .split(' ')
+                                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                    .join(' ')}</p>
                                 <p><span className="font-bold">Mo.:</span> {invoice?.clientPhone || '_________________'}</p>
                             </div>
                             <div className="text-right border-l px-2 ">
@@ -77,7 +88,14 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                                 {invoice?.items?.map((item, index) => (
                                     <tr key={index}>
                                         <td className="border-l p-1">{index + 1}</td>
-                                        <td className="border-l p-1 text-left">{item.item_name}</td>
+                                        <td className="border-l p-1 text-left">
+                                            {item.item_name
+                                                .toLowerCase()
+                                                .split(' ')
+                                                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                                .join(' ')}
+                                        </td>
+
                                         <td className="border-l p-1">{item.item_quantity}</td>
                                         <td className="border-l p-1">₹{item.item_price.toFixed(2)}</td>
                                         <td className="border-l p-1">₹{(item.item_price * item.item_quantity).toFixed(2)}</td>
@@ -131,10 +149,10 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                     {/* Footer */}
                     <div className="flex justify-between mt-2 text-xs p-4">
                         <p className="font-bold">I.D.: _________________________</p>
-                        
+
                     </div>
                     <div className="flex justify-between mt-2 text-xs p-4">
-                         <p className="font-bold">WARRANTY: ____________________</p>
+                        <p className="font-bold">WARRANTY: ____________________</p>
                     </div>
                     <div className="flex justify-between items-end mt-4 text-xs p-4">
                         <p className="italic">Received Signature…</p>
@@ -153,8 +171,8 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
 
 
             <div ref={reportRef}
-            // style={{ display: 'none' }}
-            className={`bg-white min-w-[794px] min-h-[1123px] w-[994px] p-8 text-black mx-auto  rounded shadow-lg hidden  `}
+                // style={{ display: 'none' }}
+                className={`bg-white min-w-[794px] min-h-[1123px] w-[994px] p-8 text-black mx-auto  rounded shadow-lg hidden  `}
             >
                 <div
 
@@ -224,8 +242,16 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                         >
                             {/* Client Info */}
                             <div style={{ width: '60%', textAlign: 'left', paddingRight: '10px' }}>
-                                <p style={{ wordSpacing: '2px', letterSpacing: '0.5px' }}><strong>Name:</strong> {invoice?.client || '________________________'}</p>
-                                <p><strong>Add.:</strong> {invoice?.clientAddress || '________________________'}</p>
+                                <p style={{ wordSpacing: '2px', letterSpacing: '0.5px' }}><strong>Name:</strong>   {(invoice.client ?? '_________________')
+                                        .toLowerCase()
+                                        .split(' ')
+                                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                        .join(' ')}</p>
+                                <p><strong>Add.:</strong>{(invoice?.clientAddress || '_________________')
+                                    .toLowerCase()
+                                    .split(' ')
+                                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                    .join(' ')}</p>
                                 <p><strong>Mo.:</strong> {invoice?.clientPhone || '________________'}</p>
                             </div>
 
@@ -276,7 +302,12 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                                 {(invoice?.items || []).map((item, index) => (
                                     <tr key={index}>
                                         <td style={cellBody}>{index + 1}</td>
-                                        <td style={{ ...cellBody, textAlign: 'left' }}>{item.item_name}</td>
+                                        <td style={{ ...cellBody, textAlign: 'left' }}> {item.item_name
+                                                .toLowerCase()
+                                                .split(' ')
+                                                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                                .join(' ')}</td>
+                                        
                                         <td style={cellBody}>{item.item_quantity}</td>
                                         <td style={cellBody}>₹{item.item_price.toFixed(2)}</td>
                                         <td style={cellBody}>
