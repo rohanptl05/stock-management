@@ -8,6 +8,7 @@ import ExtraExpensesList from '@/components/ExtraExpensesList'
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import Image from 'next/image'
+import { toast } from 'sonner'
 
 const Page = () => {
   const { data: session } = useSession({
@@ -16,6 +17,7 @@ const Page = () => {
       router.push('/login');
     },
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const userId = session?.user?.id;
   const [formData, setFormData] = useState({
     amount: "",
@@ -72,10 +74,11 @@ const Page = () => {
         setMonthlyTotalAmount(currentMonthTotal);
         setIsLoading(false)
       } else {
-        alert("Failed to fetch user data.");
+       
+        toast.error("Failed to fetch user data.")
       }
     } else {
-      alert("User ID not found.");
+      toast.error("User ID not found.");
     }
   };
 
@@ -93,6 +96,8 @@ const Page = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+     if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
       setIsLoading(true);
       formData.user = userId;
@@ -102,47 +107,51 @@ const Page = () => {
 
         const response = await ADDExpense(formData);
         if (!response) {
-          alert("Failed to add expense.");
+          toast.error("Failed to add expense.");
           return;
         }
         if (response.success) {
-          alert("Expense added successfully.");
+          toast.success("Expense added successfully.");
           getData();
         }
 
         setFormData({ amount: "", date: "", type: "", description: "" });
         setModalOpen(false);
       } else {
-        alert("User ID not found.");
+        toast.error("User ID not found.");
       }
     } catch (err) {
       console.error(err);
-      alert("Something went wrong.");
+     toast.error("Something went wrong.");
     } finally {
       setIsLoading(false);
+       setIsSubmitting(false);
     }
   };
 
   const handleeditSubmit = async (e) => {
     e.preventDefault();
+     if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
       setIsLoading(true);
       const response = await EditExpense(selectExinvoice._id, selectExinvoice);
       if (!response) {
-        alert("Failed to edit expense.");
+        toast.error("Failed to edit expense.");
         return;
       }
       if (response.success) {
-        alert("Expense edited successfully.");
+        toast.success("Expense edited successfully.");
         getData();
       }
       // setSelectExinvoice({ amount: "", date: "", type: "", description: "" });
       seteditModalOpen(false);
     } catch (err) {
       console.error(err);
-      alert("Something went wrong.");
+      toast.error("Something went wrong.");
     } finally {
       setIsLoading(false);
+       setIsSubmitting(false);
     }
   };
 
@@ -529,9 +538,11 @@ const Page = () => {
                 </button>
                 <button
                   type="submit"
+                  disabled={isSubmitting} 
                   className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition"
                 >
-                  Update Expense
+                {isSubmitting ? "updating..." : " Update Expense"}
+                 
                 </button>
               </div>
             </form>
@@ -618,9 +629,11 @@ const Page = () => {
               </button>
               <button
                 type="submit"
+                disabled={isSubmitting} 
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
               >
-                Add Expense
+                 {isSubmitting ? "Adding..." : " Add Expense"}
+               
               </button>
             </div>
           </form>

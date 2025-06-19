@@ -7,14 +7,15 @@ import { createProduct, fetchProducts, updateProduct } from '@/app/api/actions/p
 import ProductList from '@/components/ProductList';
 import { AddProductHistory } from '@/app/api/actions/productHistoryactions';
 import Image from 'next/image';
+import { Toaster, toast } from 'sonner'
 
 const Page = () => {
   const { data: session } = useSession({
-  required: true,
-  onUnauthenticated() {
-    router.push('/login');
-  },
-});
+    required: true,
+    onUnauthenticated() {
+      router.push('/login');
+    },
+  });
   const [isAddModalOpen, setIsAddModal] = useState(false);
   const [formData, setFormData] = useState({
     user: session?.user?.id,
@@ -35,8 +36,9 @@ const Page = () => {
   const [viewopen, setViewopen] = useState(false);
   const [isQuantityOpen, setIsQuantityOpen] = useState(false);
   const [newQuantity, setNewQuantity] = useState(0);
-  // const [serchText,setSearchText]=useState({})
-   const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
 
   useEffect(() => {
 
@@ -48,7 +50,8 @@ const Page = () => {
     const response = await fetchProducts(session?.user?.id, 'active');
     if (response.error) {
       console.log('Error fetching products:', response.error);
-      alert('Error fetching products: ' + response.error);
+      // alert('Error fetching products: ' + response.error);
+      toast.error('Error fetching products: ' + response.error)
       setIsLoading(false);
       return;
     }
@@ -80,17 +83,20 @@ const Page = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     const response = await createProduct(formData);
 
     if (response.error) {
       console.log('Error creating product:', response.error);
-      alert('Error creating product: ' + response.error);
+      // alert('Error creating product: ' + response.error);
+      toast.error('Error creating product: ' + response.error)
       return;
     }
 
     if (response.status === 200) {
-      alert(response.message);
+      // alert(response.message);
+      toast.success(response.message)
       setFormData({
         user: session?.user?.id,
         productName: '',
@@ -103,43 +109,56 @@ const Page = () => {
         productDescription: '',
       });
     }
-
     setIsAddModal(false);
+    setIsSubmitting(false);
     fetchData();
   };
 
   const EdithandleSubmit = async (e) => {
     e.preventDefault();
 
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+
     try {
       const response = await updateProduct(selectedProduct);
 
       if (response.error) {
-        alert(`Error updating product: ${response.error}`);
+        // alert(`Error updating product: ${response.error}`);
+        toast.error(`Error updating product: ${response.error}`)
         return;
       }
 
       if (response.status === 200) {
-        alert(response.message);
+        // alert(response.message);
+        toast.success(response.message)
         setSelectedProduct(null);
         setIsEditModalOpen(false);
         fetchData(); // Refresh the product list
       } else {
-        alert("Unexpected response from server.");
+        // alert("Unexpected response from server.");
+        toast.error("Unexpected response from server.")
       }
+       
     } catch (error) {
       console.error("Unexpected error during product update:", error);
-      alert("Something went wrong while updating the product.");
+      // alert("Something went wrong while updating the product.");
+      toast.error("Something went wrong while updating the product.")
     }
+     setIsSubmitting(false);
   };
 
   const AddQuehandleSubmit = async (e) => {
     e.preventDefault();
+ if (isSubmitting) return; 
 
+  setIsSubmitting(true);
     const updatedQuantity = parseFloat(selectedProduct?.productQuantity || 0) + parseFloat(newQuantity || 0);
 
     if (updatedQuantity < 0) {
-      alert("Quantity cannot be negative");
+      // alert("Quantity cannot be negative");
+      toast.warning("Quantity cannot be negative")
       return;
     }
 
@@ -160,40 +179,45 @@ const Page = () => {
       const historyData = await AddProductHistory(updateHistory)
 
       if (res.error) {
-        alert('Error updating product: ' + res.error);
+        // alert('Error updating product: ' + res.error);
+        toast.error('Error updating product: ' + res.error)
         return;
       }
 
 
       if (res.status === 200) {
-        alert(res.message);
         setIsQuantityOpen(false);
+        fetchData();
+        
+        // alert(res.message);
+        toast.success(res.message)
         setSelectedProduct(null);
         setNewQuantity(0);
-        fetchData();
 
-        fetchData();
+        
       }
     } catch (error) {
       console.error(error);
-      alert("Unexpected error updating product");
+      // alert("Unexpected error updating product");
+      toast.error("Unexpected error updating product");
     }
+    setIsSubmitting(false);
   };
 
-  const handleSearch =async (e) => {
-   const searchTerm = e.target.value.trim();
+  const handleSearch = async (e) => {
+    const searchTerm = e.target.value.trim();
 
-  console.log("Search Text:", searchTerm);
-  if (!searchTerm) {
+    console.log("Search Text:", searchTerm);
+    if (!searchTerm) {
       await fetchData();
       return;
     }
 
-       try {
+    try {
       const searchData = [...OriginalProduct].filter((product) => {
         const productName = product.productName.toLowerCase().includes(searchTerm.toLowerCase());
         const productCategory = product.productCategory.toLowerCase().includes(searchTerm.toLowerCase());
-       const productId = String(product.productId || '').toLowerCase().includes(searchTerm);
+        const productId = String(product.productId || '').toLowerCase().includes(searchTerm);
 
         return productName || productCategory || productId;
       });
@@ -204,7 +228,7 @@ const Page = () => {
       console.error("Error searching clients:", error);
     }
 
-};
+  };
 
   const itemsPerPage = 7;
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -263,8 +287,8 @@ const Page = () => {
                 <tr>
                   <td colSpan="18" className="px-4 py-4 text-center">
                     <Image
-                    width={2000}
-                    height={2000}
+                      width={2000}
+                      height={2000}
                       src="/assets/infinite-spinner.svg"
                       alt="Loading..."
                       className="w-6 h-6 mx-auto"
@@ -298,35 +322,35 @@ const Page = () => {
 
 
 
-        
-      {/* pagination */}
-      <div className="flex justify-center items-center gap-2 mt-4">
-        <button
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage(currentPage - 1)}
-          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
-        >
-          Prev
-        </button>
 
-        {[...Array(totalPages)].map((_, pageNum) => (
+        {/* pagination */}
+        <div className="flex justify-center items-center gap-2 mt-4">
           <button
-            key={pageNum}
-            onClick={() => setCurrentPage(pageNum + 1)}
-            className={`px-3 py-1 rounded ${currentPage === pageNum + 1 ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(currentPage - 1)}
+            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
           >
-            {pageNum + 1}
+            Prev
           </button>
-        ))}
 
-        <button
-          disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage(currentPage + 1)}
-          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
-        >
-          Next
-        </button>
-      </div>
+          {[...Array(totalPages)].map((_, pageNum) => (
+            <button
+              key={pageNum}
+              onClick={() => setCurrentPage(pageNum + 1)}
+              className={`px-3 py-1 rounded ${currentPage === pageNum + 1 ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
+            >
+              {pageNum + 1}
+            </button>
+          ))}
+
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(currentPage + 1)}
+            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
 
 
 
@@ -388,7 +412,7 @@ const Page = () => {
               <label htmlFor="productDescription" className="block text-sm font-medium text-gray-700">Product Description</label>
               <textarea id="productDescription" value={formData.productDescription} onChange={handleChange} rows={4} className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
             </div>
-            <button type="submit" onClick={(e) => handleSubmit} className="bg-green-500 text-white px-4 py-2 rounded float-end">Add Product</button>
+            <button type="submit" disabled={isSubmitting} className="bg-green-500 text-white px-4 py-2 rounded float-end"> {isSubmitting ? "Adding..." : "Add Product"}</button>
           </form>
         </div>
         <button
@@ -448,7 +472,7 @@ const Page = () => {
               <label htmlFor="productDescription" className="block text-sm font-medium text-gray-700">Product Description</label>
               <textarea id="productDescription" value={selectedProduct?.productDescription} onChange={EdithandleChange} rows={4} className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
             </div>
-            <button type="submit" onClick={(e) => EdithandleSubmit} className="bg-green-500 text-white px-4 py-2 rounded float-end">Update Product</button>
+            <button type="submit" disabled={isSubmitting} className="bg-green-500 text-white px-4 py-2 rounded float-end"> {isSubmitting ? "Updating..." : "Update Product"}</button>
           </form>
         </div>
         <button
@@ -512,7 +536,7 @@ const Page = () => {
               <input type="number" id="newproductQuantity" onChange={handleQuantityChange} className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
             </div>
 
-            <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded float-end">Add Product Que.</button>
+            <button type="submit"  disabled={isSubmitting} className="bg-green-500 text-white px-4 py-2 rounded float-end">{isSubmitting ? "Adding..." : "Add Product Que."}</button>
           </form>
         </div>
         <button

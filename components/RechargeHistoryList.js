@@ -1,6 +1,7 @@
 "use client"
 import React from 'react'
 import {deleteRechargeHistory} from "@/app/api/actions/rechargeHistoryactions"
+import { toast } from 'sonner';
 
 const RechargeHistoryList = ({ rechargehistory, index,setSelectedRechargeHistory,setIsEditHistoryModalOpen,fetchData }) => {
   // console.log(rechargehistory, "RechargehistoryData")
@@ -9,15 +10,15 @@ const RechargeHistoryList = ({ rechargehistory, index,setSelectedRechargeHistory
       try {
         const response = await deleteRechargeHistory(rechargehistory._id)
         if (response.status === 200) {
-          alert(response.message);
+          toast.success(response.message);
           fetchData();
           // Optionally, you can trigger a refresh of the list or update the state here
         } else {
-          alert("Failed to delete recharge history.");
+          toast.error("Failed to delete recharge history.");
         }
       } catch (error) {
         console.error("Error deleting recharge history:", error);
-        alert("An error occurred while deleting recharge history.");
+        toast.error("An error occurred while deleting recharge history.");
       }
     }
   };

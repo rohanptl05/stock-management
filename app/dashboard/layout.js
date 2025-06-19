@@ -13,8 +13,8 @@ import { useTransition } from 'react';
 
 
 export default function RootLayout({ children }) {
-  const [isOpen, setIsOpen] = useState(false); // Sidebar toggle state
-  const [user, setUser] = useState([])  // const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false); 
+  const [user, setUser] = useState([])  
    const [isPending, startTransition] = useTransition();
   const { data: session, status: sessionStatus } = useSession({
   required: true,

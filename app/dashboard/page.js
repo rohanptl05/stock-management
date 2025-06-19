@@ -47,7 +47,7 @@ const Page = () => {
     }
     if (rechargerResponce.length > 0) {
       setRecharge(rechargerResponce)
-      console.log("object", rechargerResponce)
+      // console.log("object", rechargerResponce)
     } else {
       setRecharge([]);
     }
@@ -103,10 +103,28 @@ const Page = () => {
                 <div>
                   <Link href={`dashboard/recharge/${item._id}?name=${encodeURIComponent(item.operatorName)}`}>
                     <h2 className="text-lg font-semibold">
-                      {item.operatorName.charAt(0).toUpperCase() + item.operatorName.slice(1).toLowerCase()} Balance
+                      {item.operatorName.charAt(0).toUpperCase() + item.operatorName.slice(1).toLowerCase()}
                     </h2>
 
-                  <p className="text-gray-600">₹ {item.remainingBalance?.toFixed(2)}</p>
+                    <table className="w-full text-sm text-left text-gray-600">
+                      <tbody>
+                        <tr className="">
+                          <th className="py-2 pr-4 font-medium text-gray-700">Balance :</th>
+                          <td className="py-2">₹ {(item?.remainingBalance ?? 0).toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                          <th className="py-2 pr-4 font-medium text-gray-700">Used Balance :</th>
+                          <td className="py-2">
+                            ₹ {(item?.totalBalance && item?.remainingBalance
+                              ? item.totalBalance - item.remainingBalance
+                              : 0
+                            ).toFixed(2)}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+
 
                   </Link>
                 </div>
@@ -134,7 +152,7 @@ const Page = () => {
             {product.length > 0 ?
               product.map((item, i) =>
                 <li key={i} className="mb-2 ">
-                   {item.productName.charAt(0).toUpperCase() + item.productName.slice(1).toLowerCase()} - Remaining: {item.productQuantityremaining}
+                  {item.productName.charAt(0).toUpperCase() + item.productName.slice(1).toLowerCase()} - Remaining: {item.productQuantityremaining}
                 </li>
               ) : (
                 <li>No products with low stock.</li>

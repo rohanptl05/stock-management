@@ -6,6 +6,7 @@ import { fetchRecharge, createRecharge, updateRecharge, deleteRecharge } from "@
 import { createRechargeHistory } from "@/app/api/actions/rechargeHistoryactions";
 import Link from "next/link";
 import Image from "next/image";
+import {toast } from "sonner";
 
 const Page = () => {
   const { data: session } = useSession({
@@ -15,6 +16,7 @@ const Page = () => {
     },
   });
   const userId = session?.user?.id;
+const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [isAddModal, setIsAddModal] = useState(false);
   const [rechargeData, setRechargeData] = useState([]);
@@ -77,6 +79,7 @@ const Page = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setIsSubmitting(true)
 
     try {
       const response = await createRecharge(formData);
@@ -93,16 +96,17 @@ const Page = () => {
           description: "",
           date: new Date(),
         });
-        alert(response.message || "Recharge added successfully.");
+        toast.success(response.message || "Recharge added successfully.");
       } else {
         // Show error message for duplicates or other failures
-        alert(response.message || "Something went wrong.");
+        toast.error(response.message || "Something went wrong.");
       }
     } catch (error) {
       console.error("Error creating recharge:", error);
-      alert("Server error. Please try again.");
+      toast.error("Server error. Please try again.");
     } finally {
       setLoading(false);
+      setIsSubmitting(false)
     }
   };
 
@@ -111,6 +115,7 @@ const Page = () => {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setIsSubmitting(true)
     try {
       const response = await updateRecharge(editData._id, editData);
       if (response.status === 200) {
@@ -123,44 +128,54 @@ const Page = () => {
 
 
         });
-        alert(response.message || "Recharge updated successfully.");
+        toast.success(response.message || "Recharge updated successfully.");
       }
       else {
-        alert(response.message || "Something went wrong.");
+        toast.error(response.message || "Something went wrong.");
       }
     }
     catch (error) {
       console.error("Error updating recharge:", error);
-      alert("Server error. Please try again.");
+      toast.error("Server error. Please try again.");
     } finally {
       setLoading(false);
+      setIsSubmitting(false)
     }
   }
 
   const handleDelete = async (id) => {
 
-    if (!confirm("Are you sure you want to delete this recharge? This action cannot be undone.")) {
-      return;
-    }
-    setLoading(true);
+    toast.warning("Are you sure you want to delete this record?", {
+      action: {
+        label: "Yes, Delete",
+        onClick: async () => {
+          setLoading(true);
     try {
       const response = await deleteRecharge(id);
       if (response.status === 200) {
         fetchRechargeData();
-        alert(response.message || "Recharge deleted successfully.");
+        toast.success(response.message || "Recharge deleted successfully.");
       }
       else {
-        alert(response.message || "Something went wrong.");
+        toast.warning(response.message || "Something went wrong.");
       }
     }
     catch (error) {
       console.error("Error deleting recharge:", error);
-      alert("Server error. Please try again.");
+      toast.error("Server error. Please try again.");
     }
-    finally {
-      setLoading(false);
+        },
+      },
+      cancel: {
+        label: "Cancel",
+        onClick: () => {
+          toast.info("Delete cancelled");
+        },
+      },
     }
-  }
+  )}
+    
+  
 
   const itemsPerPage = 5;
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -434,7 +449,7 @@ const Page = () => {
               (selectedType === "add" && !AddBalance.addBalance) ||
               (selectedType === "use" && !AddBalance.useBalance)
             ) {
-              alert("Please select a type and enter the amount.");
+              toast.warning("Please select a type and enter the amount.");
               setLoading(false);
               return;
             }
@@ -444,7 +459,7 @@ const Page = () => {
               selectedType === "use" &&
               AddBalance.useBalance > AddBalance.remainingBalance
             ) {
-              alert(
+              toast.warning(
                 `You cannot use more than the available balance (${AddBalance.remainingBalance}).`
               );
               setLoading(false);
@@ -472,13 +487,13 @@ const Page = () => {
                   remainingBalance: 0,
                 });
                 setSelectedType("");
-                alert(response.message || "Balance added successfully.");
+                toast.success(response.message || "Balance added successfully.");
               } else {
-                alert(response.message || "Something went wrong.");
+                toast.warning(response.message || "Something went wrong.");
               }
             } catch (error) {
               console.error("Error adding balance:", error);
-              alert("Server error. Please try again.");
+              toast.error("Server error. Please try again.");
             } finally {
               setLoading(false);
             }

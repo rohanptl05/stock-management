@@ -1,18 +1,37 @@
 import React from 'react'
 import { RestoreInvoice } from '@/app/api/actions/invoiceactions';
+import { toast } from 'sonner';
+
 
 const DeActiveinvoices = ({invoice,fetchData}) => {
      const handleRestore = async () => {
-            if (window.confirm("Are you sure you want to delete this invoice?")) {
-                const response = await RestoreInvoice(invoice._id);
+
+
+        toast.warning("Are you sure you want to delete this record?", {
+      action: {
+        label: "Yes, Delete",
+        onClick: async () => {
+            const response = await RestoreInvoice(invoice._id);
                 if (response.success) {
-                    alert("Restore successfully!");
+                    toast.success("Restore successfully!");
                     
                     fetchData();
                 } else {
-                    alert("Failed to Restore.");
+                    toast.error("Failed to Restore.");
                 }
-            }
+           
+        },
+      },
+      cancel: {
+        label: "Cancel",
+        onClick: () => {
+          toast.info("Delete cancelled");
+        },
+      },
+    }
+    );
+          
+          
         };
   return (
     <tr className='hover:bg-gray-50 transition duration-300 border-b'>

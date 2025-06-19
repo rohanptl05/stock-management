@@ -1,19 +1,35 @@
 import React from 'react'
 import { RestoreProduct } from '@/app/api/actions/productactions';
+import { toast } from 'sonner';
 
 const DeActiveProduct = ({ index, product, fetchData }) => {
     // console.log(product)
     const handleRestore = async () => {
-        if (window.confirm("Are you sure you want to Restore this Product?")) {
-            const response = await RestoreProduct(product._id);
+          toast.warning("Are you sure you want to delete this record?", {
+      action: {
+        label: "Yes, Delete",
+        onClick: async () => {
+        const response = await RestoreProduct(product._id);
             if (response.success) {
-                alert("Restore successfully!");
+                toast.success("Restore successfully!");
 
                 fetchData();
             } else {
-                alert("Failed to Restore.");
+                toast.error("Failed to Restore.");
             }
-        }
+        },
+      },
+      cancel: {
+        label: "Cancel",
+        onClick: () => {
+          toast.info("Delete cancelled");
+        },
+      },
+    }
+    );
+       
+          
+       
     };
     return (
         <tr className='hover:bg-gray-50 transition duration-300 border-b'>

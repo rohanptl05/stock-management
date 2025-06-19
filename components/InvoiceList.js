@@ -3,26 +3,67 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation'; // ✅ Correct for App Router
 import { invoiceDelete } from '@/app/api/actions/invoiceactions';
+import { toast } from 'sonner';
 
 const InvoiceList = ({ invoice, setSelectedInvoice, setIsEditModalOpen, fetchData, openEditModal }) => {
   const router = useRouter(); // ✅ useRouter from 'next/navigation'
 
   const handleDeleted = async () => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this invoice record?");
-    if (!confirmDelete) return;
 
-    try {
+
+  toast.warning("Are you sure you want to delete this record?", {
+      action: {
+        label: "Yes, Delete",
+        onClick: async () => {
+       try {
       const res = await invoiceDelete(invoice._id);
       if (res.status === 200) {
-        alert(res.message);
+        toast.success(res.message);
         fetchData();
       } else {
-        alert(res.message || "Failed to delete record.");
+        toast.error(res.message || "Failed to delete record.");
       }
     } catch (error) {
       console.error("Delete failed:", error);
-      alert("Something went wrong while deleting.");
+      toast.error("Something went wrong while deleting.");
     }
+
+
+        },
+      },
+      cancel: {
+        label: "Cancel",
+        onClick: () => {
+          toast.info("Delete cancelled");
+        },
+      },
+    }
+    );
+
+
+
+
+
+
+
+
+
+
+    // const confirmDelete = window.confirm("Are you sure you want to delete this invoice record?");
+    // if (!confirmDelete) return;
+
+    // try {
+    //   const res = await invoiceDelete(invoice._id);
+    //   if (res.status === 200) {
+    //     toast.success(res.message);
+    //     fetchData();
+    //   } else {
+    //     toast.error(res.message || "Failed to delete record.");
+    //   }
+    // } catch (error) {
+    //   console.error("Delete failed:", error);
+    //   toast.error("Something went wrong while deleting.");
+    // }
   };
 
   const handleView = () => {

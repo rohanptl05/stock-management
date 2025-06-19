@@ -7,6 +7,7 @@ import { Camera } from "lucide-react";
 import Image from "next/image";
 import { deleteCompanyLogo, deleteProfile } from "@/app/api/actions/useractions";
 import { changeUserPassword } from "@/app/api/actions/useractions";
+import { toast } from "sonner";
 
 export default function ProfilePage() {
   const { data: session } = useSession({
@@ -27,6 +28,8 @@ export default function ProfilePage() {
     oldPassword: "",
     newPassword: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
 
   const [passwordError, setPasswordError] = useState(null);
 
@@ -71,15 +74,17 @@ export default function ProfilePage() {
 
   const handleSubmit = async (e, type) => {
     e.preventDefault();
-    setIsLoading(true)
+    setIsLoading(true);
+     setIsSubmitting(true);
     const success = await updateProfile(form, session.user.email);
     if (success) {
-      alert(`${type} updated successfully`);
+      toast.success(`${type} updated successfully`);
       if (type === "User") setUserModalOpen(false);
       if (type === "Company") setCompanyModalOpen(false);
       loadData();
     }
     setIsLoading(false)
+    setIsSubmitting(false)
   };
 
   const handlePasswordChange = (e) => {
@@ -88,24 +93,89 @@ export default function ProfilePage() {
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     const { oldPassword, newPassword } = passwords;
-    if (!oldPassword || !newPassword) return alert("Please fill both fields");
+   if (!oldPassword || !newPassword) {
+  toast.warning("Please fill both fields");
+  setIsSubmitting(false);
+  return;
+}
+
 
     const res = await changeUserPassword(session?.user?.email, oldPassword, newPassword);
 
     if (res.success) {
-      alert("Password changed successfully");
+      toast.success("Password changed successfully");
       setModalOpen(false);
       setPasswords({ oldPassword: "", newPassword: "" });
     } else {
-      alert(res.message || "Failed to change password");
+      toast.error(res.message || "Failed to change password");
     }
+    setIsSubmitting(false)
   };
+
+
+  // Reusable Components
+
+const InputField = ({ field, value, onChange }) => (
+  <div>
+    <label htmlFor={field} className="block text-sm font-medium text-gray-600 capitalize">{field}</label>
+    <input
+      id={field}
+      name={field}
+      value={value}
+      onChange={onChange}
+      className="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      type="text"
+      placeholder={`Enter ${field}`}
+    />
+  </div>
+);
+
+const ReadOnlyField = ({ label, value }) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-600">{label}</label>
+    <input
+      value={value}
+      disabled
+      className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-100 mt-1"
+    />
+  </div>
+);
+
+const Modal = ({ title, children, onClose }) => (
+  <div className="fixed inset-0 bg-opacity-40 flex justify-center items-center z-50">
+    <div className="bg-white rounded-2xl p-8 w-full max-w-xl shadow-2xl border border-gray-200">
+      <h3 className="text-xl font-semibold mb-6 text-gray-800">{title}</h3>
+      {children}
+    </div>
+  </div>
+);
+
+const ModalActions = ({ onClose }) => (
+  <div className="flex justify-end gap-3 pt-4">
+    <button
+      type="button"
+      onClick={onClose}
+      className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+    >
+      Cancel
+    </button>
+    <button
+      type="submit"
+     disabled={isSubmitting}
+      className="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+    >
+      {isSubmitting ? "updating..." : "Save"}
+    </button>
+  </div>
+);
 
   if (!session) return null;
 
   return (
+     <>
     <div className="p-6 max-w-5xl mx-auto space-y-10 font-sans">
       {/* User Info */}
       <div className="bg-white shadow-lg flex-col-2  rounded-2xl p-8 border border-gray-200">
@@ -169,35 +239,7 @@ export default function ProfilePage() {
             </div>
 
 
-            {/* {form.image && (
-              <div
-                className="ml-4 bg-white rounded-full p-2 shadow-md hover:scale-110 transition cursor-pointer"
-                onClick={() =>
-
-                  deleteProfile(form._id)
-                    .then(() => {
-                      alert("Profile  successfully");
-                      loadData();
-                    })
-                }
-                title="Remove company logo"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-5 h-5 text-red-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4"
-                  />
-                </svg>
-              </div>
-            )} */}
+         
           </div>
           <div className="flex gap-2 m-2"><strong>Name:</strong> {form.name}</div>
           <div className="flex gap-2 m-2"><strong>Email:</strong> {form.email}</div>
@@ -223,9 +265,7 @@ export default function ProfilePage() {
             <i className="fa-solid fa-pen-to-square"></i>
           </button>
         </div>
-        {/* <div className=" flex-col-2 gap-6 text-gray-700">
-          <div className="flex gap-2 m-2"><strong>Change your password here</strong></div>
-        </div> */}
+     
 
       </div>
 
@@ -285,60 +325,11 @@ export default function ProfilePage() {
 
 
     </div>
+
+
+
+
+   </>
   );
 }
 
-// Reusable Components
-
-const InputField = ({ field, value, onChange }) => (
-  <div>
-    <label htmlFor={field} className="block text-sm font-medium text-gray-600 capitalize">{field}</label>
-    <input
-      id={field}
-      name={field}
-      value={value}
-      onChange={onChange}
-      className="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      type="text"
-      placeholder={`Enter ${field}`}
-    />
-  </div>
-);
-
-const ReadOnlyField = ({ label, value }) => (
-  <div>
-    <label className="block text-sm font-medium text-gray-600">{label}</label>
-    <input
-      value={value}
-      disabled
-      className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-100 mt-1"
-    />
-  </div>
-);
-
-const Modal = ({ title, children, onClose }) => (
-  <div className="fixed inset-0 bg-opacity-40 flex justify-center items-center z-50">
-    <div className="bg-white rounded-2xl p-8 w-full max-w-xl shadow-2xl border border-gray-200">
-      <h3 className="text-xl font-semibold mb-6 text-gray-800">{title}</h3>
-      {children}
-    </div>
-  </div>
-);
-
-const ModalActions = ({ onClose }) => (
-  <div className="flex justify-end gap-3 pt-4">
-    <button
-      type="button"
-      onClick={onClose}
-      className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-    >
-      Cancel
-    </button>
-    <button
-      type="submit"
-      className="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-    >
-      Save
-    </button>
-  </div>
-);

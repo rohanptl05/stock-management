@@ -1,25 +1,63 @@
 import React from 'react'
 import Link from 'next/link'
 import { productDelete } from "@/app/api/actions/productactions"
+import { toast } from 'sonner';
 
 const ProductList = ({ product, setSelectedProduct, setIsEditModalOpen, setViewopen, setIsQuantityOpen, fetchData }) => {
     const handleDeleted = async () => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this record?");
-        if (!confirmDelete) return;
 
-        try {
+
+toast.warning("Are you sure you want to delete this record?", {
+  action: {
+    label: "Yes, Delete",
+    onClick: async () => {
+       try {
             const res = await productDelete(product._id);
             if (res.status === 200) {
-                alert("Product history successfully deleted.");
+               
+                toast.success("Product history successfully deleted.")
 
                 fetchData();
             } else {
-                alert(res.message || "Failed to delete record.");
+               
+                toast.error(res.message || "Failed to delete record.")
             }
         } catch (error) {
             console.error("Delete failed:", error);
-            alert("Something went wrong while deleting.");
+           
+            toast.error("Something went wrong while deleting.")
         }
+    },
+  },
+  cancel: {
+    label: "Cancel",
+    onClick: () => {
+      toast.info("Delete cancelled");
+    },
+  },
+}
+);
+
+
+        // const confirmDelete = window.confirm("Are you sure you want to delete this record?");
+        // if (!confirmDelete) return;
+
+        // try {
+        //     const res = await productDelete(product._id);
+        //     if (res.status === 200) {
+               
+        //         toast.success("Product history successfully deleted.")
+
+        //         fetchData();
+        //     } else {
+               
+        //         toast.error(res.message || "Failed to delete record.")
+        //     }
+        // } catch (error) {
+        //     console.error("Delete failed:", error);
+           
+        //     toast.error("Something went wrong while deleting.")
+        // }
     };
    
 

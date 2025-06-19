@@ -75,7 +75,7 @@ export const ADDExpense = async (data) => {
         }
    
     
-        return { success: true, message: "ExInvoice deleted successfully" };
+        return { success: true,status:200, message: "ExInvoice deleted successfully" };
       } catch (error) {
         console.error("Error deleting invoice:", error);
         return { error: "Failed to delete invoice" };

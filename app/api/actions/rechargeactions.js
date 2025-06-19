@@ -67,21 +67,6 @@ export const updateRecharge = async (id, data) => {
     await connectDb();
     let ndata = { ...data };
 
-    // Find the existing recharge
-    // let existingRecharge = await Recharge.findById(id);
-
-    // if (!existingRecharge) {
-    //   return { status: 404, message: "Recharge not found" };
-    // }
-
-    // // Update the recharge
-    // existingRecharge.operatorName = ndata.operatorName;
-    // existingRecharge.totalBalance = ndata.totalBalance;
-    // existingRecharge.remainingBalance = ndata.remainingBalance;
-    // existingRecharge.previousBalance = ndata.previousBalance;
-    // existingRecharge.description = ndata.description || "";
-    // existingRecharge.date = ndata.date || new Date();
-
     // await existingRecharge.save();
     let existingRecharge = await Recharge.findOneAndUpdate(
       { _id: id },

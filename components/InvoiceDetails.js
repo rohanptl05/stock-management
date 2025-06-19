@@ -18,9 +18,7 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
         padding: '6px',
         borderRight: '1px solid #000',
         textAlign: 'center',
-        // borderLeft: '1px solid #000', // Remove left border for first column
-        // borderBottom: "none",
-        //   borderRight: 'none', // Remove right border for last column
+       
     };
 
 

@@ -37,6 +37,8 @@ const Page = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
 
 
   useEffect(() => {
@@ -64,6 +66,7 @@ const Page = () => {
 
   const handleEditRechageHistorySubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     setIsEditHistoryModalOpen(false);
     setIsLoading(true);
     const res = await editRechargeHistory(selectedRechargeHistory._id, selectedRechargeHistory);
@@ -72,6 +75,7 @@ const Page = () => {
       fetchData();
       setIsLoading(false);
     }
+    setIsSubmitting(false)
   }
 
 
@@ -470,57 +474,8 @@ const Page = () => {
 
 
 
-      {/* Quantity edit Modal */}
-      <Modal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        title="EDIT PRODUCT QUANTITY"
-        className="max-h-[80vh] sm:max-h-[75vh] overflow-y-auto"
-      >
-        <div >
-          <form className='p-3 '
-          // onSubmit={EditQuehandleSubmit}
-          >
-            <div className="mb-4">
-              <label htmlFor="newproductQuantity" className="block text-sm font-medium text-gray-700">Product Quantity</label>
-              <input
-                type="number"
-                id="productQuantity"  // Ensure this matches the field name in the object
-                // value={selectedProductQue?.productQuantity || ''}
-                // onChange={EdithandleChange}
-                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="date" className="block text-sm font-medium text-gray-700">Date</label>
-              <input
-                type="date"
-                id="date"
-                // value={
-                //   selectedProductQue?.date
-                //     ? new Date(selectedProductQue.date).toISOString().split('T')[0]
-                //     : ''
-                // }
-                // onChange={EdithandleChange}
-                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              />
-
-
-            </div>
-
-
-
-            <button type="submit" className="bg-green-500 text-white sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap rounded float-end">Update Product Que.</button>
-          </form>
-        </div>
-        <button
-          // onClick={() => setIsEditModalOpen(false)}
-          className="mt-4 bg-red-500 text-white sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap rounded float-start"
-        >
-          Close
-        </button>
-
-      </Modal>
+      
+     
 
 
       {/* history eddit amount */}
@@ -614,8 +569,10 @@ const Page = () => {
               ></textarea>
             </div>
 
-            <button type="submit" className="bg-green-500 text-white sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap rounded float-end">
-              Update Amount
+            <button type="submit" 
+            disabled={isSubmitting}
+            className="bg-green-500 text-white sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap rounded float-end">
+               {isSubmitting ? "updating..." : "Update Amount"} 
             </button>
           </form>
         </div>

@@ -7,6 +7,7 @@ import Modal from '@/components/Modal'
 import { fetchInvoices, UpdateInvoice } from "@/app/api/actions/invoiceactions"
 import InvoiceList from '@/components/InvoiceList'
 import Image from 'next/image'
+import { toast } from 'sonner'
 
 const Page = () => {
   const { data: session } = useSession({
@@ -36,6 +37,9 @@ const Page = () => {
   const [isselectedInvoice, setSelectedInvoice] = useState([])
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [originalItemQuantities, setOriginalItemQuantities] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+const [error, setError] = useState("");
+
 
 
   const openEditModal = (invoice) => {
@@ -246,11 +250,13 @@ const Page = () => {
     return products.filter((product) => !selectedIds.includes(product._id));
   };
 
-
-  const handleSale = async () => {
-
+  
+  const handleSale = async (e) => {
+    e.preventDefault();
+    
+    setIsSubmitting(true)
     if (warnings.some(w => w)) {
-      alert('Please fix all quantity warnings before submitting')
+      toast.warning('Please fix all quantity warnings before submitting')
       return
     }
 
@@ -259,18 +265,18 @@ const Page = () => {
         item => !item.item_quantity || isNaN(item.item_quantity) || parseInt(item.item_quantity) <= 0
       )
     ) {
-      alert('Please enter valid quantity for all items.')
+      toast.warning('Please enter valid quantity for all items.')
       return
     }
 
 
     if (!formData.client.trim()) {
-      alert('Please enter customer name.')
+      toast.warning('Please enter customer name.')
       return
     }
 
     if (formData.items.some(item => !item.productId)) {
-      alert('Please select all products.')
+      toast.warning('Please select all products.')
       return
     }
 
@@ -279,7 +285,7 @@ const Page = () => {
         item => !item.item_quantity || isNaN(item.item_quantity) || parseInt(item.item_quantity) <= 0
       )
     ) {
-      alert('Please enter valid quantity for all items.')
+      toast.warning('Please enter valid quantity for all items.')
       return
     }
 
@@ -308,7 +314,7 @@ const Page = () => {
     try {
       const res = await ADDinvoice(saleData)
       if (res) {
-        alert('Invoice created successfully!')
+        toast.success('Invoice created successfully!')
         setFormData({
           client: '',
           clientPhone: '',
@@ -320,20 +326,26 @@ const Page = () => {
           balance_due_amount: 0,
           imageURL: ''
         })
-        fetchData()
+       
         setIsAddModal(false)
       }
     } catch (err) {
       console.error(err)
-      alert(err?.response?.data?.message || 'Something went wrong')
+      toast.error(err?.response?.data?.message || 'Something went wrong')
+    }
+    finally{
+      setIsSubmitting(false)
+       fetchData()
     }
   }
 
 
-  const handleSaleEdit = async () => {
+  const handleSaleEdit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true)
 
     if (warnings.some(w => w)) {
-      alert('Fix quantity warnings before submitting.')
+      toast.warning('Fix quantity warnings before submitting.')
       return
     }
 
@@ -342,18 +354,18 @@ const Page = () => {
         item => !item.item_quantity || isNaN(item.item_quantity) || parseInt(item.item_quantity) <= 0
       )
     ) {
-      alert('Please enter valid quantity for all items.')
+      toast.warning('Please enter valid quantity for all items.')
       return
     }
 
 
     if (!isselectedInvoice.client.trim()) {
-      alert('Please enter customer name.')
+      toast.warning('Please enter customer name.')
       return
     }
 
     if (isselectedInvoice.items.some(item => !item.productId)) {
-      alert('Please select all products.')
+      toast.warning('Please select all products.')
       return
     }
 
@@ -362,7 +374,7 @@ const Page = () => {
         item => !item.item_quantity || isNaN(item.item_quantity) || parseInt(item.item_quantity) <= 0
       )
     ) {
-      alert('Please enter valid quantity for all items.')
+      toast.warning('Please enter valid quantity for all items.')
       return
     }
 
@@ -374,13 +386,33 @@ const Page = () => {
       fetchData();
       setSelectedInvoice([]);
       setIsEditModalOpen(false);
-      alert(res.message);
+      toast.success(res.message);
     } else {
-      alert(res.message);
+      toast.error(res.message);
     }
 
     // console.log("edit sale:", isselectedInvoice)
+    setIsSubmitting(false)
   }
+
+
+
+  const handlePhoneChange = (e) => {
+  const value = e.target.value;
+
+  // Allow only digits
+  if (!/^\d*$/.test(value)) return;
+
+  // Update state
+  setSelectedInvoice({ ...isselectedInvoice, clientPhone: value });
+
+  // Validate length
+  if (value.length !== 10) {
+    setError("Phone number must be exactly 10 digits");
+  } else {
+    setError("");
+  }
+};
 
 
 
@@ -572,8 +604,10 @@ const Page = () => {
               Customer Phone
             </label>
             <input
-              type="text"
+              type="number"
               name="clientPhone"
+              min={10}
+              max={11}
               value={formData.clientPhone}
               onChange={(e) => setFormData({ ...formData, clientPhone: e.target.value })}
               className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -734,9 +768,11 @@ const Page = () => {
 
             <button
               onClick={handleSale}
+              disabled={isSubmitting}
               className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition duration-150"
             >
-              Create Invoice
+
+              {isSubmitting ? "Creating..." : "Create Invoice"}
             </button>
           </div>
         </div>
@@ -770,24 +806,26 @@ const Page = () => {
             </label>
             <input
               type="text"
-              name="client"
+              name="clientAddress"
               value={isselectedInvoice.clientAddress}
               onChange={(e) => setSelectedInvoice({ ...isselectedInvoice, clientAddress: e.target.value })}
               className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
-            <label className=" font-semibold mb-1 text-sm text-gray-700">
-              Customer Phone
-            </label>
+            <label className="font-semibold mb-1 text-sm text-gray-700">Customer Phone</label>
             <input
               type="text"
-              name="client"
+              name="clientPhone"
               value={isselectedInvoice.clientPhone}
-              onChange={(e) => setSelectedInvoice({ ...isselectedInvoice, clientPhone: e.target.value })}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={handlePhoneChange}
+              maxLength={10}
+              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${error ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-blue-500"
+                }`}
             />
+            {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
           </div>
+
 
           <div>
             <label className="font-semibold mb-1 text-sm text-gray-700">
@@ -957,9 +995,10 @@ const Page = () => {
 
             <button
               onClick={handleSaleEdit}
+              disabled={isSubmitting}
               className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition duration-150"
             >
-              Invoice Update
+              {isSubmitting ? "updating..." : "Invoice Update"}
             </button>
           </div>
         </div>

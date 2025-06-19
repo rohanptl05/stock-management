@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react'
 import ProductHistoryList from '@/components/ProductHistoryList'
 import Modal from '@/components/Modal'
 import Image from 'next/image'
+import { toast } from 'sonner'
 
 const Page = () => {
   const { data: session } = useSession({
@@ -56,7 +57,8 @@ const Page = () => {
     console.log("Updated Quantity:", selectedProductQue);
     const res = await updateProductHistory(selectedProductQue)
     if (res.status === 200) {
-      alert("update data")
+      // alert("update data")
+      toast.success("Update Data")
       setIsEditModalOpen(false)
       fetchData();
     }

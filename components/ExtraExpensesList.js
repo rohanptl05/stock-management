@@ -1,22 +1,45 @@
 "use client"
 import React from 'react'
-import { DeleteExinvoices } from '@/app/api/actions/extraexpenseactions'
+import { DeleteExinvoices } from '@/app/api/actions/extraexpenseactions';
+import { toast } from 'sonner';
 
 const ExtraExpensesList = ({ exinvoice, index, updateExInvoice, getData }) => {
 
 
 
   const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this invoice?")) {
-      const response = await DeleteExinvoices(exinvoice._id);
-      if (response.success) {
-        alert("Invoice deleted successfully!");
+
+  toast.warning("Are you sure you want to delete this record?", {
+      action: {
+        label: "Yes, Delete",
+        onClick: async () => {
+           try {
+      const res = await DeleteExinvoices(exinvoice._id);
+      if (res.status === 200) {
+      
+        toast.success(" successfully deleted.")
+        
         getData();
-        // getData();
       } else {
-        alert("Failed to delete invoice.");
+      
+        toast.error(res.message || "Failed to delete record.")
       }
+    } catch (error) {
+      console.error("Delete failed:", error);
+      
+      toast.error("Something went wrong while deleting.")
     }
+        },
+      },
+      cancel: {
+        label: "Cancel",
+        onClick: () => {
+          toast.info("Delete cancelled");
+        },
+      },
+    }
+    );
+
   };
   return (
     <>
