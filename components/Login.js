@@ -3,6 +3,7 @@ import React, { useEffect, useState, FormEvent } from "react";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const Login = () => {
   const router = useRouter();
@@ -24,7 +25,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const email = credentials.email;
+    const email = credentials.email.toLowerCase().trim();
     const password = credentials.password;
 
     if (!isValidEmail(email)) {
@@ -43,8 +44,8 @@ const Login = () => {
       email,
       password,
     });
-    setLoading(false); 
-console.log("retun",res)
+    setLoading(false);
+    console.log("retun", res)
     if (res?.error) {
       setError("Invalid email or password");
     } else {
@@ -53,15 +54,26 @@ console.log("retun",res)
     }
   };
 
-  if (sessionStatus === "loading") {
-    return <h1>Loading...</h1>;
-  }
+ if (sessionStatus === "loading") {
+  return (
+    <div className="flex items-center justify-center min-h-screen w-screen">
+      <Image
+        width={200}
+        height={200}
+        src="/assets/infinite-spinner.svg"
+        alt="Loading..."
+        className="w-24 h-24"
+      />
+    </div>
+  );
+}
+
 
   return (
     sessionStatus !== "authenticated" && (
       <div className="flex min-h-screen flex-col items-center justify-center p-24">
-      <div className="bg-gradient-to-r from-blue-200 to-red-300 p-8 rounded shadow-md w-96">
-                 
+        <div className="bg-gradient-to-r from-blue-200 to-red-300 p-8 rounded shadow-md w-96">
+
           <h1 className="text-4xl text-center font-semibold mb-8">Login</h1>
           <form onSubmit={handleSubmit}>
             <input

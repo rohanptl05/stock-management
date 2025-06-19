@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Newusers } from "@/app/api/actions/useractions";
+import Image from "next/image";
 
 const Register = () => {
   const [error, setError] = useState("");
@@ -26,7 +27,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const name =e.target[0].value.trim()
-    const email = e.target[1].value.trim();
+    const email = e.target[1].value.toLowerCase().trim();;
     const password = e.target[2].value.trim();
 
     if (!isValidEmail(email)) {
@@ -60,7 +61,17 @@ const Register = () => {
   };
 
   if (sessionStatus === "loading") {
-    return <h1>Loading...</h1>;
+     return (
+        <div className="flex items-center justify-center min-h-screen w-screen">
+          <Image
+            width={200}
+            height={200}
+            src="/assets/infinite-spinner.svg"
+            alt="Loading..."
+            className="w-24 h-24"
+          />
+        </div>
+      );
   }
 
   return (
