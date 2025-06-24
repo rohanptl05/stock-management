@@ -14,7 +14,7 @@ const Page = () => {
   const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
-      router.push('/login');
+      router.push('/');
     },
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -108,6 +108,7 @@ const Page = () => {
         const response = await ADDExpense(formData);
         if (!response) {
           toast.error("Failed to add expense.");
+           setIsSubmitting(false);
           return;
         }
         if (response.success) {
@@ -138,17 +139,19 @@ const Page = () => {
       const response = await EditExpense(selectExinvoice._id, selectExinvoice);
       if (!response) {
         toast.error("Failed to edit expense.");
+         setIsSubmitting(false);
         return;
       }
       if (response.success) {
         toast.success("Expense edited successfully.");
         getData();
       }
-      // setSelectExinvoice({ amount: "", date: "", type: "", description: "" });
+     
       seteditModalOpen(false);
     } catch (err) {
       console.error(err);
       toast.error("Something went wrong.");
+       setIsSubmitting(false);
     } finally {
       setIsLoading(false);
        setIsSubmitting(false);
@@ -305,8 +308,7 @@ const Page = () => {
 
           </div>
           <div className='flex justify-between items-center m-1'>
-            {/* <h1 className='text-xl font-bold'>Total Amount: ₹0</h1> */}
-
+           
             <button type="button" onClick={() => { setModalOpen(true) }} className="text-gray-900 m-1 bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-xs sm:text-sm sm:px-5 px-2.5 sm:py-2.5 py-1.5 text-center me-2 mb-2">+ ADD EXPENECES</button>
             <button type="button"
               onClick={generatePDF}
@@ -315,7 +317,7 @@ const Page = () => {
           </div>
         </div>
 
-        {/* <div className="mt-4 bg-amber-100 p-4 rounded-lg shadow-lg"> */}
+       
         <div className="flex flex-col gap-2 mt-2 bg-amber-100 p-2 sm:flex-row sm:flex-wrap sm:justify-between sm:items-start text-xs sm:text-sm">
           {/* Search */}
           <div className=" sm:w-auto flex  sm:flex-row items-center gap-2">
@@ -565,7 +567,7 @@ const Page = () => {
               <label className="block text-gray-700">Amount (₹)</label>
               <input
                 type="number"
-                // value={amount}
+               
                 name='amount'
                 onChange={handleChange}
                 required
@@ -618,11 +620,11 @@ const Page = () => {
               ></textarea>
             </div>
 
-            {/* Buttons */}
+            
             <div className="flex justify-between">
               <button
                 type="reset"
-                // onClick={() => { setAmount(""); setDescription(""); setSuggestion(""); }}
+                
                 className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg transition"
               >
                 Reset
@@ -648,7 +650,7 @@ const Page = () => {
       {/* pdf contains */}
 
       <div ref={reportRef} className="bg-white min-w-[794px] min-h-[1123px] w-[994px] mx-auto p-6 text-center hidden">
-        {/* pdg contains */}
+      
         {Exinvoices && Exinvoices.length > 0 ? (
           <div className="w-full overflow-x-auto mt-2 shadow-md rounded-lg">
             <h1 className='bg-blue font-extrabold text-2xl m-4'>Extra-Expenses-Report</h1>

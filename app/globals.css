@@ -179,3 +179,25 @@ body {
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
+
+
+/* Inside globals.css */
+.custom-toast-position {
+  top: 1rem !important;
+  right: 1rem !important;
+  left: auto !important;
+  margin: 0 !important;
+  transform: none !important;
+}
+
+@media (max-width: 640px) {
+  .custom-toast-position {
+    width: auto !important;
+    max-width: 90% !important;
+    font-size: 0.975rem !important;
+    padding: 0.5rem 0.75rem !important;
+    right: 2rem !important;
+    left: auto !important;
+    margin: 0 !important;
+  }
+}

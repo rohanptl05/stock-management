@@ -1,12 +1,12 @@
 'use client';
 import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation'; // ✅ Correct for App Router
+import { useRouter } from 'next/navigation'; 
 import { invoiceDelete } from '@/app/api/actions/invoiceactions';
 import { toast } from 'sonner';
 
-const InvoiceList = ({ invoice, setSelectedInvoice, setIsEditModalOpen, fetchData, openEditModal }) => {
-  const router = useRouter(); // ✅ useRouter from 'next/navigation'
+const InvoiceList = ({ invoice, setSelectedInvoice, setIsEditModalOpen, fetchData, openEditModal,setNavigating }) => {
+  const router = useRouter(); 
 
   const handleDeleted = async () => {
 
@@ -40,41 +40,21 @@ const InvoiceList = ({ invoice, setSelectedInvoice, setIsEditModalOpen, fetchDat
     }
     );
 
-
-
-
-
-
-
-
-
-
-    // const confirmDelete = window.confirm("Are you sure you want to delete this invoice record?");
-    // if (!confirmDelete) return;
-
-    // try {
-    //   const res = await invoiceDelete(invoice._id);
-    //   if (res.status === 200) {
-    //     toast.success(res.message);
-    //     fetchData();
-    //   } else {
-    //     toast.error(res.message || "Failed to delete record.");
-    //   }
-    // } catch (error) {
-    //   console.error("Delete failed:", error);
-    //   toast.error("Something went wrong while deleting.");
-    // }
   };
 
   const handleView = () => {
-    router.push(`salesproduct/${invoice._id}`); // ✅ programmatic navigation
+    setNavigating(true)
+     setTimeout(() => {
+      router.push(`salesproduct/${invoice._id}`);
+    }, 300);
+    
   };
 
   return (
     <tr key={invoice._id}>
       <td className="border-b sm:px-4 sm:py-2 px-2 py-1 hidden sm:table-cell whitespace-nowrap font-bold">{invoice.invoiceNumber}</td>
       <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap text-center">
-  {/* Full client name on desktop */}
+  
   <span className="hidden sm:inline">
     {
   invoice.client
@@ -86,7 +66,7 @@ const InvoiceList = ({ invoice, setSelectedInvoice, setIsEditModalOpen, fetchDat
 
   </span>
 
-  {/* Truncated name (max 7 chars) on mobile */}
+ 
   <span className="inline sm:hidden">
     {
   invoice.client.length > 7
@@ -120,10 +100,9 @@ const InvoiceList = ({ invoice, setSelectedInvoice, setIsEditModalOpen, fetchDat
         </button>
         <button
           onClick={() => {
-            // setSelectedInvoice(invoice);
-            // setIsEditModalOpen(true);
+           
             openEditModal(invoice);
-            // setSelectedOrinalInvoice(invoice);
+           
           }}
           className="bg-green-500 text-white px-2 py-1 rounded mx-2"
         >

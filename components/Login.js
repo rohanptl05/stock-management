@@ -8,7 +8,7 @@ import Image from "next/image";
 const Login = () => {
   const router = useRouter();
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false); // Define the loading state
+  const [loading, setLoading] = useState(false); 
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const { data: session, status: sessionStatus } = useSession();
 
@@ -38,7 +38,7 @@ const Login = () => {
       return;
     }
 
-    setLoading(true); // Set loading to true
+    setLoading(true); 
     const res = await signIn("credentials", {
       redirect: false,
       email,
@@ -101,9 +101,9 @@ const Login = () => {
             <button
               type="submit"
               className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-              disabled={loading} // Disable button when loading
+              disabled={loading} 
             >
-              {loading ? "Signing In..." : "Sign In"}  {/* Show loading text */}
+              {loading ? "Signing In..." : "Sign In"}  
             </button>
             {error && <p className="text-red-600 text-[16px] mb-2">{error}</p>}
           </form>

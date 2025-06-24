@@ -99,7 +99,7 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                                         <td className="border-l p-1">₹{(item.item_price * item.item_quantity).toFixed(2)}</td>
                                     </tr>
                                 ))}
-                                {/* Add blank rows to fill space */}
+                               
                                 {Array.from({ length: Math.max(10 - (invoice?.items?.length || 0), 0) }).map((_, i) => (
                                     <tr key={`empty-${i}`}>
                                         <td className="border-l p-1">&nbsp;</td>
@@ -112,7 +112,7 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    {/* First cell spans columns No., Description, Qty., and Unit Rate */}
+                                 
                                     <td
                                         colSpan={4}
                                         style={{
@@ -120,18 +120,18 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                                             padding: '6px',
                                             textAlign: 'right',
                                             fontWeight: 'bold',
-                                            backgroundColor: '#f3f3f3', // optional, to distinguish the total row
+                                            backgroundColor: '#f3f3f3', 
                                         }}
                                     >
                                         TOTAL:
                                     </td>
 
-                                    {/* Fifth cell under “Amount Rs.” holds the total value */}
+                                    
                                     <td
                                         style={{
                                             border: '1px solid #000',
                                             padding: '6px',
-                                            textAlign: 'center', // or 'right' if you prefer
+                                            textAlign: 'center', 
                                             fontWeight: 'bold',
                                             backgroundColor: '#f3f3f3',
                                         }}
@@ -169,14 +169,14 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
 
 
             <div ref={reportRef}
-                // style={{ display: 'none' }}
+               
                 className={`bg-white min-w-[794px] min-h-[1123px] w-[994px] p-8 text-black mx-auto  rounded shadow-lg hidden  `}
             >
                 <div
 
                     style={{
-                        width: '794px',         // Fixed A4 width (96 dpi)
-                        height: '1123px',       // Fixed A4 height
+                        width: '794px',         
+                        height: '1123px',       
                         margin: '0 auto',
                         border: '1px solid #b91c1c',
                         fontFamily: 'Cambria, serif',
@@ -189,7 +189,7 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                         position: 'relative',
                         marginTop: '20px',
                         padding: '0',
-                        overflow: 'hidden',     // Prevent any overflow
+                        overflow: 'hidden',     
                     }}
                 >
                     {/* Header */}
@@ -233,9 +233,9 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                                 padding: '10px',
                                 display: 'flex',
                                 justifyContent: 'space-between',
-                                alignItems: 'stretch', // ensure both children stretch to same height
-                                borderTop: '1px solid #000', // optional horizontal top border if needed
-                                borderBottom: '1px solid #000', // optional horizontal bottom border if needed
+                                alignItems: 'stretch', 
+                                borderTop: '1px solid #000', 
+                                borderBottom: '1px solid #000', 
                             }}
                         >
                             {/* Client Info */}
@@ -326,7 +326,7 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    {/* First cell spans columns No., Description, Qty., and Unit Rate */}
+                                   
                                     <td
                                         colSpan={4}
                                         style={{
@@ -334,18 +334,18 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                                             padding: '6px',
                                             textAlign: 'right',
                                             fontWeight: 'bold',
-                                            backgroundColor: '#f3f3f3', // optional, to distinguish the total row
+                                            backgroundColor: '#f3f3f3', 
                                         }}
                                     >
                                         TOTAL:
                                     </td>
 
-                                    {/* Fifth cell under “Amount Rs.” holds the total value */}
+                                   
                                     <td
                                         style={{
                                             border: '1px solid #000',
                                             padding: '6px',
-                                            textAlign: 'center', // or 'right' if you prefer
+                                            textAlign: 'center', 
                                             fontWeight: 'bold',
                                             backgroundColor: '#f3f3f3',
                                         }}

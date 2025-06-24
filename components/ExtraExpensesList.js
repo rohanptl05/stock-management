@@ -44,7 +44,7 @@ const ExtraExpensesList = ({ exinvoice, index, updateExInvoice, getData }) => {
   return (
     <>
       <tr className=" hover:bg-gray-50 transition duration-300 border-b text-center">
-        {/* Invoice Number */}
+     
         <td className="px-3 py-2 text-xs sm:text-sm font-medium text-gray-900">
           {index + 1}
         </td>

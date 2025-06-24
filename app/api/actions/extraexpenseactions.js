@@ -98,15 +98,14 @@ export const ADDExpense = async (data) => {
         }
     
         try {
-            // ✅ Ensure status is updated correctly
-    
+          
             await ExtraExpense.findOneAndUpdate(
                 { _id: id },
                 { $set: data },
                 { new: true, runValidators: true }
             );
     
-            // ✅ Delete old payment history if grandTotal changes
+           
           
     
             return { success: true, message: "ExInvoice updated successfully" };

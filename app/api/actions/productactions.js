@@ -48,7 +48,7 @@ export const createProduct = async (data) => {
     productQuantity: ndata.productQuantity,
   });
 
-  // 2. Aggregate balances only from active records
+  
   const aggregates = await ProductHistory.aggregate([
     {
       $match: {
@@ -67,7 +67,7 @@ export const createProduct = async (data) => {
   const { totalproduct = 0 } = aggregates[0] || {};
   const finalproduct = totalproduct;
 
-  // 3. Update the operator's balance
+  
   await Product.findByIdAndUpdate(
     newProductHistory.product,
     { productQuantity: totalproduct, productQuantityremaining: finalproduct },
@@ -190,13 +190,13 @@ export const RestoreProduct = async (id) => {
 
 export const recalculateProductQuantities = async () => {
   try {
-    // Only get active products
+    
     const allProducts = await Product.find({ recordStatus: "active" });
 
     for (const product of allProducts) {
-      // Find total quantity sold for this product in active invoices
+    
       const sold = await Invoice.aggregate([
-        { $match: { recordStatus: "active" } }, // Filter active invoices
+        { $match: { recordStatus: "active" } }, 
         { $unwind: "$items" },
         { $match: { "items.productId": product._id } },
         {

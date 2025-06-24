@@ -6,21 +6,23 @@ import { fetchProducts } from '@/app/api/actions/productactions'
 import { useSession } from 'next-auth/react'
 import DeActiveinvoices from '@/components/DeActiveinvoices'
 import Image from 'next/image'
-
+import {DeActiveRechargeHistory} from "@/app/api/actions/rechargeHistoryactions"
 import DeActiveProduct from '@/components/DeActiveProduct'
 import DeActiveExtraExpence from '@/components/DeActiveExtraExpence'
+import DeActiveRechargeHi from '@/components/DeActiveRechargeHi'
 
 const ITEMS_PER_PAGE = 6
 
 const RecycleBinPage = () => {
     const [invoices, setInvoices] = useState([])
     const [product, setProduct] = useState([])
+    const [rechargeHistory,setRechargeHistory]= useState([])
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null)
     const { data: session, status: sessionStatus } = useSession({
   required: true,
   onUnauthenticated() {
-    router.push('/login');
+    router.push('/');
   },
 });
     const [ExtraExpense, setExtraExpense] = useState([])
@@ -29,6 +31,7 @@ const RecycleBinPage = () => {
     const [invoicePage, setInvoicePage] = React.useState(1)
     const [productPage, setProductPage] = React.useState(1)
     const [ExtraexpPage, setExtraexpPage] = React.useState(1)
+    const [rechargePage, setRechargePage] = React.useState(1)
 
     const fetchInvoicess = async () => {
         setIsLoading(true)
@@ -61,6 +64,12 @@ const RecycleBinPage = () => {
                 setProduct(Array.isArray(prod) ? prod : [])
             }
 
+             const rechargeHi = await DeActiveRechargeHistory(session?.user?.id)
+             if (rechargeHi) {
+                console.log("rechargeHi",rechargeHi)
+                setRechargeHistory(Array.isArray(rechargeHi) ? rechargeHi : [])
+                }
+
         } catch (error) {
             setError("Failed to fetch invoices")
         } finally {
@@ -83,6 +92,7 @@ const RecycleBinPage = () => {
     const totalInvoicePages = Math.ceil(invoices.length / ITEMS_PER_PAGE)
     const totalProductPages = Math.ceil(product.length / ITEMS_PER_PAGE)
     const totalExtraExpPages = Math.ceil(ExtraExpense.length / ITEMS_PER_PAGE)
+    const totalRechargePages = Math.ceil(rechargeHistory.length / ITEMS_PER_PAGE)
 
 
     if (sessionStatus === "loading") {
@@ -149,7 +159,7 @@ const RecycleBinPage = () => {
                         >
                             Prev
                         </button>
-                        <span className="text-white">{invoicePage} / {totalInvoicePages || 1}</span>
+                        <span className="text-gray-900">{invoicePage} / {totalInvoicePages || 1}</span>
                         <button
                             onClick={() => setInvoicePage(p => Math.min(p + 1, totalInvoicePages))}
                             disabled={invoicePage === totalInvoicePages || invoices.length === 0}
@@ -171,7 +181,7 @@ const RecycleBinPage = () => {
                         <table className=" w-full text-[10px] sm:text-sm text-center ">
                             <thead className="bg-yellow-200 uppercase text-[11px] sm:text-xs">
                                 <tr>
-                                    <th className="px-2 py-2 sm:px-4 sm:py-3">Invoice No.#</th>
+                                    <th className="px-2 py-2 sm:px-4 sm:py-3">Product Id.#</th>
                                     <th className="px-2 py-2 sm:px-4 sm:py-3">Product Name</th>
                                     <th className="px-2 py-2 sm:px-4 sm:py-3">Quenty</th>
                                     <th className="px-2 py-2 sm:px-4 sm:py-3">Actions</th>
@@ -191,7 +201,7 @@ const RecycleBinPage = () => {
                                         </td>
                                     </tr>
                                 ) : product.length > 0 ? (paginate(product, productPage).map((product, index) => (
-                                    // <DeActiveProductlist key={product._id || index} />
+                                    
                                     <DeActiveProduct key={product._id || index} product={product} fetchData={fetchInvoicess} />
                                 ))) : (
                                     <tr>
@@ -292,6 +302,73 @@ const RecycleBinPage = () => {
                         <button
                             onClick={() => setExtraexpPage(p => Math.min(p + 1, totalExtraExpPages))}
                             disabled={ExtraexpPage === totalExtraExpPages || ExtraExpense.length === 0}
+                            className="px-3 py-1 bg-purple-500 text-white rounded disabled:opacity-50"
+                        >
+                            Next
+                        </button>
+                    </div>
+
+                </div>
+
+
+
+
+                {/* 4rd Recharge */}
+                <div className="shadow-lg rounded-lg overflow-hidden">
+                    <div className="bg-sky-500 text-white px-3 py-2 sm:px-4 sm:py-3">
+                        <h2 className="text-base sm:text-lg font-semibold">Recharge Amount</h2>
+                    </div>
+                    <div className="overflow-x-auto h-[62vh]">
+                        <table className="w-full text-sm text-center text-gray-800">
+                            <thead className="bg-sky-300  uppercase text-[11px] sm:text-xs">
+                                <tr>
+                                    <th className="px-2 py-2 sm:px-4 sm:py-3" >Name</th>
+                                    <th className="px-2 py-2 sm:px-4 sm:py-3">Add</th>
+                                    <th className="px-2 py-2 sm:px-4 sm:py-3">Use</th>
+                                    <th className="px-2 py-2 sm:px-4 sm:py-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-yellow-200">
+                                {isLoading ? (
+                                    <tr>
+                                        <td colSpan="18" className="px-4 py-4 text-center">
+                                            <Image
+                                                width={2000}
+                                                height={2000}
+                                                src="/assets/infinite-spinner.svg"
+                                                alt="Loading..."
+                                                className="w-6 h-6 mx-auto"
+                                            />
+                                        </td>
+                                    </tr>
+                                ) : rechargeHistory.length > 0 ? paginate(rechargeHistory, rechargePage).map((recgargeHi, index) => (
+
+                                    <DeActiveRechargeHi key={recgargeHi._id || index} index={index} recgargeHi={recgargeHi} fetchData={fetchInvoicess} />
+
+                                )) : (
+                                    <tr>
+                                        <td colSpan="4" className="py-4 text-center text-sm text-gray-700">
+                                            No Extra-expence amount found
+                                        </td>
+                                    </tr>
+                                )}
+
+                            </tbody>
+                        </table>
+                    </div>
+                    {/* Pagination Controls */}
+                    <div className="flex justify-center items-center p-4 gap-2">
+                        <button
+                            onClick={() => setRechargePage(p => Math.max(p - 1, 1))}
+                            disabled={rechargePage === 1 || rechargeHistory.length === 0}
+                            className="px-3 py-1 bg-purple-500 text-white rounded disabled:opacity-50"
+                        >
+                            Prev
+                        </button>
+                        <span className="text-gray-900">{rechargePage} / {totalRechargePages || 1}</span>
+                        <button
+                            onClick={() => setRechargePage(p => Math.min(p + 1, totalRechargePages))}
+                            disabled={rechargePage === totalRechargePages || rechargeHistory.length === 0}
                             className="px-3 py-1 bg-purple-500 text-white rounded disabled:opacity-50"
                         >
                             Next

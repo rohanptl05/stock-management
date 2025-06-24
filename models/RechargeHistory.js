@@ -30,7 +30,7 @@ rechargeHistorySchema.index({ deactivatedAt: 1 }, { expireAfterSeconds: 7776000 
 rechargeHistorySchema.index({ user: 1 });
 rechargeHistorySchema.index({ operatorId: 1 });
 rechargeHistorySchema.index({ recordStatus: 1 });
-// rechargeHistorySchema.index({ date: -1 });
+
 
 
 const RechargeHistory = mongoose?.models?.RechargeHistory || mongoose.model("RechargeHistory", rechargeHistorySchema);

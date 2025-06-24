@@ -13,7 +13,7 @@ export default function ProfilePage() {
   const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
-      router.push('/login');
+      router.push('/');
     },
   });
   const router = useRouter();
@@ -55,7 +55,7 @@ export default function ProfilePage() {
 
     const res = await updateProfile(form, session?.user?.email);
     if (res.success) {
-      // alert("Image updated successfully");
+      
       loadData();
     }
   };
@@ -201,7 +201,7 @@ const ModalActions = ({ onClose }) => (
 
 
             <div className="relative">
-              {/* Image */}
+              
               <Image
                 width={2000}
                 height={2000}
@@ -210,8 +210,8 @@ const ModalActions = ({ onClose }) => (
                 onClick={() => open()}
                 title="Click to change Profile"
                 onError={(e) => {
-                  e.target.onerror = null; // Prevent infinite loop
-                  e.target.src = "/assets/user.jpg"; // Fallback image
+                  e.target.onerror = null; 
+                  e.target.src = "/assets/user.jpg"; 
                 }}
 
                 className="w-32 h-32 object-cover cursor-pointer rounded-full border-2 border-gray-300"

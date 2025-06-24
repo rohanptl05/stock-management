@@ -30,7 +30,13 @@ export default function RootLayout({ children }) {
             <div className="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_800px_at_100%_200px,#d5c5ff,transparent)]"></div>
           </div>
           {children}
-          <Toaster  position="top-right" richColors  expand={false}/>
+           <Toaster
+            position="top-right"
+            toastOptions={{ className: "custom-toast-position" }}
+            richColors
+            expand={false}
+          />
+
           {/* Cloudinary Upload Widget */}
           <Script
             src="https://widget.cloudinary.com/v2.0/global/all.js"

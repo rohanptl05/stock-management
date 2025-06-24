@@ -15,7 +15,6 @@ export const fetchRechargeHistory = async (Id, status) => {
     const safeRecharges = rechrge.map(rechrge => rechrge.toObject({ flattenObjectIds: true })
     );
 
-// console.log(safeRecharges, "safeRecharges");
     return safeRecharges;
 };
 
@@ -35,8 +34,7 @@ export const createRechargeHistory = async (data) => {
 
   await rechargeHistory.save();
 
-    // Update the operator's balance
-    // 2. Aggregate balances only from active records
+   
   const aggregates = await RechargeHistory.aggregate([
     {
       $match: {
@@ -56,7 +54,7 @@ export const createRechargeHistory = async (data) => {
   const { totalAddBalance = 0, totalUseBalance = 0 } = aggregates[0] || {};
   const finalBalance = totalAddBalance - totalUseBalance;
 
-  // 3. Update the operator's balance
+  
   await Recharge.findByIdAndUpdate(
     rechargeHistory.operatorId,
     { totalBalance: totalAddBalance, remainingBalance: finalBalance },
@@ -83,8 +81,6 @@ export const editRechargeHistory = async (id, data) => {
 
 
 
-     // Update the operator's balance
-    // 2. Aggregate balances only from active records
   const aggregates = await RechargeHistory.aggregate([
     {
       $match: {
@@ -104,7 +100,7 @@ export const editRechargeHistory = async (id, data) => {
   const { totalAddBalance = 0, totalUseBalance = 0 } = aggregates[0] || {};
   const finalBalance = totalAddBalance - totalUseBalance;
 
-  // 3. Update the operator's balance
+ 
   await Recharge.findByIdAndUpdate(
     rechargeHistory.operatorId,
     { totalBalance: totalAddBalance, remainingBalance: finalBalance },
@@ -126,8 +122,7 @@ export const deleteRechargeHistory = async (id) => {
     }
 
 
-     // Update the operator's balance
-    // 2. Aggregate balances only from active records
+    
   const aggregates = await RechargeHistory.aggregate([
     {
       $match: {
@@ -147,7 +142,7 @@ export const deleteRechargeHistory = async (id) => {
   const { totalAddBalance = 0, totalUseBalance = 0 } = aggregates[0] || {};
   const finalBalance = totalAddBalance - totalUseBalance;
 
-  // 3. Update the operator's balance
+ 
   await Recharge.findByIdAndUpdate(
     rechargeHistory.operatorId,
     { totalBalance: totalAddBalance, remainingBalance: finalBalance },
@@ -156,3 +151,102 @@ export const deleteRechargeHistory = async (id) => {
 
     return { status: 200, message: "Recharge history deleted successfully." };
 }
+
+
+
+export const DeActiveRechargeHistory = async (id) => {
+  await connectDb();
+  try {
+    const rechargeHistories = await RechargeHistory.find({
+      user: id,
+      recordStatus: "deactivated"
+    }).lean();
+
+    if (!rechargeHistories.length) return [];
+
+    const rechargeIds = rechargeHistories.map(r => r.operatorId);
+
+    const recharges = await Recharge.find({
+      _id: { $in: rechargeIds }
+    }).select("operatorName").lean();
+
+    const rechargeMap = {};
+    for (let r of recharges) {
+      rechargeMap[r._id.toString()] = r.operatorName || null;
+    }
+
+    
+    const safeRecharges = rechargeHistories.map(history => ({
+      _id: history._id?.toString(),
+      user: history.user?.toString(),
+      operatorId: history.operatorId?.toString(),
+      addBalance: history.addBalance,
+      useBalance: history.useBalance,
+      
+      operatorName: rechargeMap[history.operatorId?.toString()] || "Unknown",
+    }));
+
+    return safeRecharges;
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return { status: 500, message: "Error fetching deactivated recharge history." };
+  }
+};
+
+
+export const RestoreRecharge = async (id) => {
+  await connectDb();
+  try {
+    const rechargeHistory = await RechargeHistory.findOne({ _id: id });
+    if (!rechargeHistory)
+      return { status: 404, message: "Recharge history not found." };
+
+    
+    rechargeHistory.recordStatus = "active";
+    rechargeHistory.deactivatedAt = null;
+    await rechargeHistory.save();
+
+    
+    await Recharge.updateOne(
+      { _id: rechargeHistory.operatorId },
+      {
+        $set: {
+          recordStatus: "active",
+          deactivatedAt: null,
+        },
+      }
+    );
+
+     const aggregates = await RechargeHistory.aggregate([
+    {
+      $match: {
+        operatorId: rechargeHistory.operatorId,
+        recordStatus: "active",
+      },
+    },
+    {
+      $group: {
+        _id: "$operatorId",
+        totalAddBalance: { $sum: "$addBalance" },
+        totalUseBalance: { $sum: "$useBalance" },
+      },
+    },
+  ]);
+
+  const { totalAddBalance = 0, totalUseBalance = 0 } = aggregates[0] || {};
+  const finalBalance = totalAddBalance - totalUseBalance;
+
+  
+  await Recharge.findByIdAndUpdate(
+    rechargeHistory.operatorId,
+    { totalBalance: totalAddBalance, remainingBalance: finalBalance },
+    { new: true }
+  );
+
+    
+    return {success: true,massege:"Succesfully Restore" };
+  } catch (error) {
+    console.error("Restore error:", error);
+    return { status: 500, message: "Error restoring recharge history." };
+  }
+};

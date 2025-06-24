@@ -81,7 +81,7 @@ export const UpdateInvoice = async (data) => {
   await connectDB();
 
   try {
-    // Step 1: Update the invoice
+   
     const updatedInvoice = await Invoice.findByIdAndUpdate(
       data._id,
       { ...data },
@@ -91,31 +91,7 @@ export const UpdateInvoice = async (data) => {
     if (!updatedInvoice) {
       return { status: 404, message: 'Invoice not found' };
     }
-
-
-
-    // After UpdatedInvoice 
-    // const soldQuantities = await Invoice.aggregate([
-    //   { $unwind: "$items" },
-    //   {
-    //     $group: {
-    //       _id: "$items.productId",
-    //       totalSold: { $sum: "$items.item_quantity" },
-    //     },
-    //   },
-    // ]);
-
-    // for (const sold of soldQuantities) {
-    //   const product = await Product.findById(sold._id);
-    //   if (!product) continue;
-
-    //   const remainingQty = product.productQuantity - sold.totalSold;
-
-    //   await Product.updateOne(
-    //     { _id: sold._id },
-    //     { $set: { productQuantityremaining: remainingQty } }
-    //   );
-    // }
+   
     await recalculateProductQuantities();
 
     return {
@@ -143,40 +119,19 @@ export const invoiceDelete = async (id) => {
           deactivatedAt: new Date()
         }
       },
-      { new: true } // Return the updated document
+      { new: true } 
     );
 
     if (!DeleteInvoice) {
       return { status: 404, message: 'Invoice not found' };
     }
-    // After newInvoice is created
-    // const soldQuantities = await Invoice.aggregate([
-    //   { $unwind: "$items" },
-    //   {
-    //     $group: {
-    //       _id: "$items.productId",
-    //       totalSold: { $sum: "$items.item_quantity" },
-    //     },
-    //   },
-    // ]);
-
-    // for (const sold of soldQuantities) {
-    //   const product = await Product.findById(sold._id);
-    //   if (!product) continue;
-
-    //   const remainingQty = product.productQuantity - sold.totalSold;
-
-    //   await Product.updateOne(
-    //     { _id: sold._id },
-    //     { $set: { productQuantityremaining: remainingQty } }
-    //   );
-    // }
+  
     await recalculateProductQuantities();
     return {
       status: 200,
       message: 'Invoice Delete successfully and product remaining quantities updated successfully.',
     };
-    // return { status: 200, message: 'Invoice Delete successfully' };
+    
   } catch (error) {
     console.error('Update error:', error);
     return { status: 500, message: 'Internal Server Error' };
@@ -193,10 +148,6 @@ export const InvoiceDetails = async (id) => {
     if (!invoice || invoice.length === 0) {
       return {};
     }
-    // const safeinvoice = invoice.map(invoice => invoice.toObject({ flattenObjectIds: true })
-    // );
-
-    // return safeinvoice;
     return invoice.toObject({ flattenObjectIds: true });
   } catch (error) {
     console.error('Failed to fetch invoice', error);
@@ -209,7 +160,7 @@ export const RestoreInvoice = async (id) => {
   await connectDB();
 
   try {
-    // Step 1: Restore the invoice
+   
     const restoredInvoice = await Invoice.findOneAndUpdate(
       { _id: id },
       {
@@ -225,13 +176,13 @@ export const RestoreInvoice = async (id) => {
       return { error: "Invoice not found" };
     }
 
-    // Step 2: Get active products and invoices
+   
     const [activeProducts, activeInvoices] = await Promise.all([
       Product.find({ recordStatus: "active" }),
       Invoice.find({ recordStatus: "active" }),
     ]);
 
-    // Step 3: Recalculate product usage
+    
     for (const product of activeProducts) {
       const productId = product._id.toString();
       let totalUsed = 0;
@@ -265,13 +216,13 @@ export const RestoreInvoice = async (id) => {
 
 export const recalculateProductQuantities = async () => {
   try {
-    // Only get active products
+   
     const allProducts = await Product.find({ recordStatus: "active" });
 
     for (const product of allProducts) {
-      // Find total quantity sold for this product in active invoices
+     
       const sold = await Invoice.aggregate([
-        { $match: { recordStatus: "active" } }, // Filter active invoices
+        { $match: { recordStatus: "active" } }, 
         { $unwind: "$items" },
         { $match: { "items.productId": product._id } },
         {

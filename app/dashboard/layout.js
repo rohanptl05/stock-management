@@ -13,29 +13,29 @@ import { useTransition } from 'react';
 
 
 export default function RootLayout({ children }) {
-  const [isOpen, setIsOpen] = useState(false); 
-  const [user, setUser] = useState([])  
-   const [isPending, startTransition] = useTransition();
+  const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState([])
+  const [isPending, startTransition] = useTransition();
   const { data: session, status: sessionStatus } = useSession({
-  required: true,
-  onUnauthenticated() {
-    router.push('/login');
-  },
-});
- 
+    required: true,
+    onUnauthenticated() {
+      router.push('/');
+    },
+  });
+
   const pathname = usePathname();
   const [loading, setLoading] = useState(false);
-  
+
 
   const router = useRouter();
-    const navigateTo = (href) => {
+  const navigateTo = (href) => {
     setLoading(true);
     startTransition(() => {
       router.push(href);
     });
   };
 
-useEffect(() => {
+  useEffect(() => {
     const handleStart = () => setLoading(true);
     const handleComplete = () => setLoading(false);
 
@@ -59,17 +59,17 @@ useEffect(() => {
           let userData = await fetchuser(session.user.email);
           if (userData) {
             setUser(userData);
-            // sessionStorage.setItem("id", userData._id);
+
           }
         }
       };
 
       getData();
     }
-  }, [session, router]); // clean and no ESLint warning
+  }, [session, router]);
 
 
-  // Close sidebar on mobile when a link is clicked
+
   const handleLinkClick = () => {
     setIsOpen(false);
   };
@@ -105,19 +105,8 @@ useEffect(() => {
             {/* Sidebar Links */}
             <div className="side-bar-links flex flex-col flex-grow p-3">
               <ul className="flex flex-col space-y-2 flex-grow text-black ">
-                {/* <li className="w-full">
-                  <Link prefetch={true}
-                    className={`block px-4 py-2 rounded-2xl hover:bg-cyan-500 ${pathname === "/dashboard" ? "bg-cyan-500 text-white" : ""
-                      }`}
-                    href="/dashboard"
-                    onClick={handleLinkClick}
-                  >
-                    <i className="fa-solid fa-house mx-2"></i>
-                    <span>Home</span>
-                  </Link>
 
-                </li> */}
-                   <li className="w-full">
+                <li className="w-full">
                   <button
                     onClick={() => navigateTo("/dashboard")}
                     className={`w-full text-left px-4 py-2 rounded-2xl hover:bg-slate-500 ${pathname === "/dashboard" ? "bg-slate-500 text-white" : ""
@@ -127,13 +116,8 @@ useEffect(() => {
                     <span>Home</span>
                   </button>
                 </li>
-                {/* <li className="w-full">
-                  <Link prefetch={true} className={`block px-4 py-2 rounded-2xl hover:bg-cyan-500 ${pathname === "/dashboard/addproduct" ? "bg-cyan-500 text-white" : ""
-                    }`} href="/dashboard/addproduct" onClick={handleLinkClick}>
-                   <i className="fa-solid fa-bag-shopping mx-2"></i> <span>Add Product</span>
-                  </Link>
-                </li> */}
-                   <li className="w-full">
+
+                <li className="w-full">
                   <button
                     onClick={() => navigateTo("/dashboard/addproduct")}
                     className={`w-full text-left px-4 py-2 rounded-2xl hover:bg-slate-500 ${pathname === "/dashboard/addproduct" ? "bg-slate-500 text-white" : ""
@@ -144,30 +128,20 @@ useEffect(() => {
                 </li>
 
 
-                {/* <li className="w-full">
-                  <Link prefetch={true} className={`block px-4 py-2 rounded-2xl hover:bg-cyan-500 ${pathname === "/dashboard/salesproduct" ? "bg-cyan-500 text-white" : ""
-                    }`} href="/dashboard/salesproduct" onClick={handleLinkClick}>
-                   <i className="fa-solid fa-cart-shopping mx-2"></i> <span>Sales Product</span>
-                  </Link>
-                </li> */}
-                  <li className="w-full">
+
+                <li className="w-full">
                   <button
                     onClick={() => navigateTo("/dashboard/salesproduct")}
                     className={`w-full text-left px-4 py-2 rounded-2xl hover:bg-slate-500 ${pathname === "/dashboard/salesproduct" ? "bg-slate-500 text-white" : ""
                       }`}
                   >
-                   <i className="fa-solid fa-cart-shopping mx-2"></i> <span>Sales Product</span>
+                    <i className="fa-solid fa-cart-shopping mx-2"></i> <span>Sales Product</span>
                   </button>
                 </li>
 
 
-                {/* <li className="w-full">
-                  <Link prefetch={true} className={`block px-4 py-2 rounded-2xl hover:bg-cyan-500 ${pathname === "/dashboard/recharge" ? "bg-cyan-500 text-white" : ""
-                    }`} href="/dashboard/recharge" onClick={handleLinkClick}>
-                   <i className="fa-solid fa-cart-shopping mx-2"></i> <span>Recharge Balance</span>
-                  </Link>
-                </li> */}
-                  <li className="w-full">
+
+                <li className="w-full">
                   <button
                     onClick={() => navigateTo("/dashboard/recharge")}
                     className={`w-full text-left px-4 py-2 rounded-2xl hover:bg-slate-500 ${pathname === "/dashboard/recharge" ? "bg-slate-500 text-white" : ""
@@ -177,50 +151,34 @@ useEffect(() => {
                   </button>
                 </li>
 
-{/* 
+
                 <li className="w-full">
-                  <Link prefetch={true} className={`block px-4 py-2 rounded-2xl hover:bg-cyan-500 ${pathname === "/dashboard/report" ? "bg-cyan-500 text-white" : ""
-                    }`} href="/dashboard/report" onClick={handleLinkClick}>
-                    <i className="fa-solid fa-file-pdf mx-2"></i> <span>Report</span>
-                  </Link>
-                </li> */}
-                  <li className="w-full">
                   <button
                     onClick={() => navigateTo("/dashboard/report")}
                     className={`w-full text-left px-4 py-2 rounded-2xl hover:bg-slate-500 ${pathname === "/dashboard/report" ? "bg-slate-500 text-white" : ""
                       }`}
                   >
-                      <i className="fa-solid fa-file-pdf mx-2"></i> <span>Report</span>
+                    <i className="fa-solid fa-file-pdf mx-2"></i> <span>Report</span>
                   </button>
                 </li>
 
 
 
-                {/* <li className="w-full">
-                  <Link prefetch={true} className={`block px-4 py-2 rounded-2xl hover:bg-cyan-500 ${pathname === "/dashboard/extra-expenses" ? "bg-cyan-500 text-white" : ""
-                    }`} href="/dashboard/extra-expenses" onClick={handleLinkClick}>
-                    <i className="fa-solid fa-wallet mx-2"></i>  <span>Extra Expenses</span>
-                  </Link>
-                </li> */}
-                  <li className="w-full">
+
+                <li className="w-full">
                   <button
                     onClick={() => navigateTo("/dashboard/extra-expenses")}
                     className={`w-full text-left px-4 py-2 rounded-2xl hover:bg-slate-500 ${pathname === "/dashboard/extra-expenses" ? "bg-slate-500 text-white" : ""
                       }`}
                   >
-                     <i className="fa-solid fa-wallet mx-2"></i>  <span>Extra Expenses</span>
+                    <i className="fa-solid fa-wallet mx-2"></i>  <span>Extra Expenses</span>
                   </button>
                 </li>
 
 
 
-                {/* <li className="w-full">
-                  <Link prefetch={true} className={`block px-4 py-2 rounded-2xl hover:bg-cyan-500 ${pathname === "/dashboard/profile" ? "bg-cyan-500 text-white" : ""
-                    }`} href="/dashboard/profile" onClick={handleLinkClick}>
-                    <i className="fa-solid fa-user mx-2"></i> <span>Profile</span>
-                  </Link>
-                </li> */}
-                  <li className="w-full">
+
+                <li className="w-full">
                   <button
                     onClick={() => navigateTo("/dashboard/profile")}
                     className={`w-full text-left px-4 py-2 rounded-2xl hover:bg-slate-500 ${pathname === "/dashboard/profile" ? "bg-slate-500 text-white" : ""
@@ -230,13 +188,8 @@ useEffect(() => {
                   </button>
                 </li>
 
-                {/* <li className="w-full">
-                  <Link prefetch={true} className={`block px-4 py-2 rounded-2xl hover:bg-cyan-500 ${pathname === "/dashboard/recyclebin" ? "bg-cyan-500 text-white" : ""
-                    }`} href="/dashboard/recyclebin" onClick={handleLinkClick}>
-                    <i className="fa-solid fa-recycle mx-2"></i> <span>Recycle Bin</span>
-                  </Link>
-                </li> */}
-                  <li className="w-full">
+
+                <li className="w-full">
                   <button
                     onClick={() => navigateTo("/dashboard/recyclebin")}
                     className={`w-full text-left px-4 py-2 rounded-2xl hover:bg-slate-500 ${pathname === "/dashboard/recyclebin" ? "bg-slate-500 text-white" : ""
@@ -266,7 +219,7 @@ useEffect(() => {
           </div>
 
           {/* Main Content */}
-       <div className="main-content w-screen h-screen md:w-[80%] p-4 overflow-auto">
+          <div className="main-content w-screen h-screen md:w-[80%] p-4 overflow-auto">
             {isPending ? (
               <div className="w-full h-full flex justify-center items-center">
                 <Image

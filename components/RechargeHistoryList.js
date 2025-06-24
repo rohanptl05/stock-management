@@ -4,7 +4,7 @@ import {deleteRechargeHistory} from "@/app/api/actions/rechargeHistoryactions"
 import { toast } from 'sonner';
 
 const RechargeHistoryList = ({ rechargehistory, index,setSelectedRechargeHistory,setIsEditHistoryModalOpen,fetchData }) => {
-  // console.log(rechargehistory, "RechargehistoryData")
+  
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this recharge history?")) {
       try {
@@ -12,7 +12,7 @@ const RechargeHistoryList = ({ rechargehistory, index,setSelectedRechargeHistory
         if (response.status === 200) {
           toast.success(response.message);
           fetchData();
-          // Optionally, you can trigger a refresh of the list or update the state here
+         
         } else {
           toast.error("Failed to delete recharge history.");
         }
@@ -42,7 +42,7 @@ const RechargeHistoryList = ({ rechargehistory, index,setSelectedRechargeHistory
 
 
       <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap ">
-        {/* Add any action buttons here, e.g., Edit, Delete */}
+        
         <button
           onClick={() => {setSelectedRechargeHistory(rechargehistory) ; setIsEditHistoryModalOpen(true)}}
           className="bg-green-500 text-white sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap rounded hover:bg-green-600 mr-2"

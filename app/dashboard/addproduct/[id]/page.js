@@ -12,14 +12,14 @@ const Page = () => {
   const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
-      router.push('/login');
+      router.push('/');
     },
   });
   const params = useParams()
   const searchParams = useSearchParams()
   const router = useRouter()
 
-  const id = params.id                   // e.g. "6428f3a9f1c9b2e3a0a1d123"
+  const id = params.id
   const name = searchParams.get('name')
   const [isLoading, setIsLoading] = useState(false);
   const [historyData, setHistoryData] = useState([])
@@ -64,7 +64,7 @@ const Page = () => {
     }
   };
 
-  // ───── Pagination logic ─────
+
   const itemsPerPage = 10;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -78,9 +78,9 @@ const Page = () => {
       <div className='w-full  '>
         <div className='w-full m-2 text-center'>
           <h1 className='bg-amber-300 p-2 rounded-2xl shadow-2xl shadow-amber-300 whitespace-normal sm:whitespace-nowrap'>
-             {name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()} - Activity History
+            {name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()} - Activity History
           </h1>
- 
+
         </div>
 
         <div className=' sm:min-h-[70vh] h-[60vh] '>
@@ -108,13 +108,13 @@ const Page = () => {
                 </tr>
               ) : paginatedhistoryData.length > 0 ? (
                 paginatedhistoryData.map((product, index) => {
-                  // Compute a continuous serial number:
+
                   const serial = indexOfFirstItem + index + 1;
 
                   return (
                     <ProductHistoryList
                       key={product._id}
-                      index={serial}                     // now this is 1,2,3,4... instead of 0,1,0,1
+                      index={serial}
                       product={product}
                       setSelectedProductQue={setSelectedProductQue}
                       setIsEditModalOpen={setIsEditModalOpen}
@@ -165,6 +165,8 @@ const Page = () => {
           </button>
         </div>
       </div>
+
+
 
       {/* EDIT PRODUCT QUANTITY Modal */}
       <Modal

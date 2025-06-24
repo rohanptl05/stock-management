@@ -44,10 +44,10 @@ const ExtraExpenseSchema = new Schema(
 );
 
 ExtraExpenseSchema.index({ deactivatedAt: 1 }, { expireAfterSeconds: 7776000 });
-ExtraExpenseSchema.index({ user: 1 });               // Quickly find user's expenses
-ExtraExpenseSchema.index({ recordStatus: 1 });       // Quickly filter active expenses
-ExtraExpenseSchema.index({ date: -1 });              // Quickly sort by newest first
-ExtraExpenseSchema.index({ expensetype: 1 });        // Quickly filter by type (e.g., "Fuel", "Rent")
+ExtraExpenseSchema.index({ user: 1 });               
+ExtraExpenseSchema.index({ recordStatus: 1 });      
+ExtraExpenseSchema.index({ date: -1 });              
+ExtraExpenseSchema.index({ expensetype: 1 });       
 
 
 const ExtraExpense = mongoose.models.ExtraExpense || mongoose.model("ExtraExpense", ExtraExpenseSchema);

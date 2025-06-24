@@ -13,7 +13,7 @@ const Page = () => {
   const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
-      router.push('/login');
+      router.push('/');
     },
   });
   const reportRef = useRef(null);

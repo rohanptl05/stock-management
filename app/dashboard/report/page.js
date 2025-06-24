@@ -13,7 +13,7 @@ const Page = () => {
   const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
-      router.push('/login');
+      router.push('/');
     },
   });
   const router = useRouter();
@@ -21,7 +21,6 @@ const Page = () => {
   const [invoices, setInvoices] = useState([]);
   const [originalInvoices, setOriginalInvoices] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("all");
-  // const [dueAmountSort, setDueAmountSort] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalAmountSort, setTotalAmountSort] = useState("");
   const [fromDate, setFromDate] = useState("");
@@ -50,7 +49,7 @@ const Page = () => {
 
     if (type === "status") setSelectedStatus(value);
     if (type === "totalAmount") setTotalAmountSort(value);
-    // if (type === "dueAmount") setDueAmountSort(value);
+  
     if (type === "from") setFromDate(value);
     if (type === "to") setToDate(value);
     if (type === "search") setSearchTerm(value);
@@ -86,13 +85,6 @@ const Page = () => {
       filteredInvoices.sort((a, b) => b.grandTotal - a.grandTotal);
     }
 
-    // Sorting by Due Amount
-    // if (dueAmountSort === "Low") {
-    //   filteredInvoices.sort((a, b) => a.balance_due_amount - b.balance_due_amount);
-    // } else if (dueAmountSort === "High") {
-    //   filteredInvoices.sort((a, b) => b.balance_due_amount - a.balance_due_amount);
-    // }
-
     // 🔍 Search Filter
     if (searchTerm.trim() !== "") {
       const lowerSearch = searchTerm.toLowerCase();
@@ -108,7 +100,7 @@ const Page = () => {
 
 
 
-  const itemsPerPage = 10; // Set the number of items per page
+  const itemsPerPage = 10; 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
@@ -132,7 +124,7 @@ const Page = () => {
     const input = reportRef.current;
 
     try {
-      // Make visible and reset position
+     
       input.style.display = 'block';
       input.style.position = 'static';
       await new Promise((resolve) => setTimeout(resolve, 100));
@@ -148,8 +140,8 @@ const Page = () => {
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');
 
-      const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
-      const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
+      const pdfWidth = pdf.internal.pageSize.getWidth(); 
+      const pdfHeight = pdf.internal.pageSize.getHeight(); 
 
       const imgProps = {
         width: canvas.width,
@@ -215,20 +207,6 @@ const Page = () => {
               />
             </div>
 
-            {/* Status */}
-            {/* <div className="flex items-center gap-1 min-w-[120px] text-xs sm:text-sm">
-              <label htmlFor="status" className="text-gray-700 whitespace-nowrap text-xs sm:text-sm">Status:</label>
-              <select
-                id="status"
-                className="border rounded  px-1 items-center sm:px-2 py-1 h-7 w-full max-w-[100px] text-xs sm:text-sm text-center"
-                onChange={(e) => handleFilterChange(e, "status")}
-              >
-                <option className="text-xs sm:text-sm " value="all">All</option>
-                <option className="text-xs sm:text-sm  " value="PAID">Paid</option>
-                <option className="text-xs sm:text-sm  " value="PENDING">Pending</option>
-              </select>
-            </div> */}
-
             {/* Total Amount */}
             <div className="flex items-center gap-1 min-w-[150px] text-xs sm:text-sm">
               <label htmlFor="amount" className="text-gray-700 whitespace-nowrap text-xs sm:text-sm">Total:</label>
@@ -282,7 +260,6 @@ const Page = () => {
                   <th className="px-4 py-2  border-b text-xs sm:text-sm">Invoice No. #</th>
                   <th className="px-4 py-2  border-b text-xs sm:text-sm">Client Name</th>
                   <th className="px-4 py-2  border-b text-xs sm:text-sm">Date</th>
-                  {/* <th className="px-4 py-2 border-b  text-xs sm:text-sm">Status</th> */}
                   <th className="px-4 py-2  border-b text-xs sm:text-sm">Total Amout</th>
 
                 </tr>
@@ -367,10 +344,7 @@ const Page = () => {
                 <span className="font-medium">Search:</span>
                 <span>{searchTerm || "—"}</span>
               </div>
-              {/* <div className="flex items-center space-x-1">
-                <span className="font-medium">Status:</span>
-                <span>{selectedStatus || "—"}</span>
-              </div> */}
+             
               <div className="flex items-center space-x-1">
                 <span className="font-medium">Total:</span>
                 <span>
@@ -399,7 +373,7 @@ const Page = () => {
                       <th className="px-2 py-2 whitespace-nowrap border-r border-black">Invoice No. #</th>
                       <th className="px-2 py-2 whitespace-nowrap border-r border-black">Client Name</th>
                       <th className="px-2 py-2 whitespace-nowrap border-r border-black">Date</th>
-                      {/* <th className="px-2 py-2 whitespace-nowrap border-r border-black">Status</th> */}
+                     
                       <th className="px-2 py-2 whitespace-nowrap">Total Amount</th>
                     </tr>
                   </thead>
@@ -426,9 +400,7 @@ const Page = () => {
                             day: "2-digit",
                           })}
                         </td>
-                        {/* <td className="px-2 py-2 whitespace-nowrap border-r border-black">
-                          <span className="text-xs font-semibold">{invoice?.status}</span>
-                        </td> */}
+                       
                         <td className="px-2 py-2 whitespace-nowrap">
                           {invoice?.grandTotal}
                         </td>

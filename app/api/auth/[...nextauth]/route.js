@@ -61,7 +61,7 @@ export const authOptions = {
       const existingUser = await User.findOne({ email: user.email });
 
       if (!existingUser) {
-        // Create user if doesn't exist from GitHub
+       
         const newUser = await User.create({
           name: user.name || "GitHub User",
           email: user.email,
@@ -69,10 +69,10 @@ export const authOptions = {
           address: "N/A",
           phone: "N/A",
           company: "N/A",
-          password: "N/A", // Not used for GitHub
+          password: "N/A", 
         });
 
-        user.id = newUser._id.toString(); // set MongoDB ID
+        user.id = newUser._id.toString(); 
       } else {
         user.id = existingUser._id.toString();
       }
@@ -92,7 +92,7 @@ export const authOptions = {
       if (session?.user) {
         session.user.id = token.id;
 
-        // Optional: update session with DB data
+        
         await connectDB();
         const dbUser = await User.findOne({ email: session.user.email });
         if (dbUser) {

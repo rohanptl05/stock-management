@@ -6,16 +6,20 @@ import { fetchProducts } from '@/app/api/actions/productactions';
 import { fetchRecharge } from '@/app/api/actions/rechargeactions';
 import { fetchInvoices } from "@/app/api/actions/invoiceactions"
 import Link from 'next/link';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 const Page = () => {
+  const router = useRouter()
   const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
-      router.push('/login');
+      router.push('/');
     },
   });
+  const [navigating, setNavigating] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [productQueueCount, setProductQueueCount] = useState(0);
-
   const [rechargeBalance, setRechargeBalance] = useState(0);
   const [totalOrders, setTotalOrders] = useState(0);
   const [product, setProduct] = useState([])
@@ -36,7 +40,7 @@ const Page = () => {
     } else {
       setTotalOrders(0)
     }
-    // console.log("object",response)
+    
     if (productResponse.length > 0) {
       setProductQueueCount(productResponse.length);
       const lowestProduct = productResponse.filter((p) => p.productQuantityremaining < 5)
@@ -47,7 +51,7 @@ const Page = () => {
     }
     if (rechargerResponce.length > 0) {
       setRecharge(rechargerResponce)
-      // console.log("object", rechargerResponce)
+    
     } else {
       setRecharge([]);
     }
@@ -68,11 +72,19 @@ const Page = () => {
 
           <div className="bg-white p-4 rounded-xl shadow-lg flex items-center gap-4">
             <FaBoxOpen className="text-blue-600 text-3xl" />
-            <div>
-              <Link href={`/dashboard/addproduct`} className='hover:bg-amber-600'>
-                <h2 className="text-lg font-semibold"> Total Product </h2>
-                <p className="text-gray-600">{productQueueCount} items</p>
-              </Link>
+            <div
+              onClick={() => {
+                setNavigating(true);
+                setTimeout(() => {
+                  router.push(`/dashboard/addproduct`);
+                }, 300); 
+              }}
+              className="cursor-pointer  justify-center"
+            >
+              
+              <h2 className="text-lg font-semibold"> Total Product </h2>
+              <p className="text-gray-600">{productQueueCount} items</p>
+            
             </div>
           </div>
 
@@ -82,11 +94,19 @@ const Page = () => {
           {/* Total Orders */}
           <div className="bg-white p-4 rounded-xl shadow-lg flex items-center gap-4">
             <FaShoppingCart className="text-purple-600 text-3xl" />
-            <div>
-              <Link href={`/dashboard/salesproduct`} className='hover:bg-amber-600'>
-                <h2 className="text-lg font-semibold">Total Invoice</h2>
-                <p className="text-gray-600">{totalOrders}</p>
-              </Link>
+            <div
+              onClick={() => {
+                setNavigating(true);
+                setTimeout(() => {
+                  router.push(`/dashboard/salesproduct`);
+                }, 300); 
+              }}
+              className="cursor-pointer  justify-center"
+            >
+             
+              <h2 className="text-lg font-semibold">Total Invoice</h2>
+              <p className="text-gray-600">{totalOrders}</p>
+             
             </div>
           </div>
         </div>
@@ -100,33 +120,41 @@ const Page = () => {
 
               <div key={i} className="bg-white p-4 rounded-xl shadow-lg flex items-center gap-4">
                 <FaWallet className="text-green-600 text-3xl" />
-                <div>
-                  <Link href={`dashboard/recharge/${item._id}?name=${encodeURIComponent(item.operatorName)}`}>
-                    <h2 className="text-lg font-semibold">
-                      {item.operatorName.charAt(0).toUpperCase() + item.operatorName.slice(1).toLowerCase()}
-                    </h2>
+                <div
+                  onClick={() => {
+                    setNavigating(true);
+                    setTimeout(() => {
+                      router.push(`dashboard/recharge/${item._id}?name=${encodeURIComponent(item.operatorName)}`);
+                    }, 300); 
+                  }}
+                  className="cursor-pointer"
+                >
+               
+                  <h2 className="text-lg font-semibold text-center">
+                    {item.operatorName.charAt(0).toUpperCase() + item.operatorName.slice(1).toLowerCase()}
+                  </h2>
 
-                    <table className="w-full text-sm text-left text-gray-600">
-                      <tbody>
-                        <tr className="">
-                          <th className="py-2 pr-4 font-medium text-gray-700">Balance :</th>
-                          <td className="py-2">₹ {(item?.remainingBalance ?? 0).toFixed(2)}</td>
-                        </tr>
-                        <tr>
-                          <th className="py-2 pr-4 font-medium text-gray-700">Used Balance :</th>
-                          <td className="py-2">
-                            ₹ {(item?.totalBalance && item?.remainingBalance
-                              ? item.totalBalance - item.remainingBalance
-                              : 0
-                            ).toFixed(2)}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                  <table className="w-full text-sm text-left text-gray-600">
+                    <tbody>
+                      <tr className="">
+                        <th className="py-2 pr-4 font-medium text-gray-700">Balance :</th>
+                        <td className="py-2">₹ {(item?.remainingBalance ?? 0).toFixed(2)}</td>
+                      </tr>
+                      <tr>
+                        <th className="py-2 pr-4 font-medium text-gray-700">Used Balance :</th>
+                        <td className="py-2">
+                          ₹ {(item?.totalBalance && item?.remainingBalance
+                            ? item.totalBalance - item.remainingBalance
+                            : 0
+                          ).toFixed(2)}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
 
 
 
-                  </Link>
+                  {/* </Link> */}
                 </div>
               </div>
             ))
@@ -162,6 +190,18 @@ const Page = () => {
           </ul>
         </div>
       </div>
+
+      {navigating && (
+        <div className="fixed inset-0  bg-opacity-60 flex items-center justify-center z-50">
+          <Image
+            src="/assets/6-dots-rotate.svg"
+            width={1000}
+            height={1000}
+            alt="Loading..."
+            className="w-10 h-10 animate-bounce"
+          />
+        </div>
+      )}
     </>
   )
 }

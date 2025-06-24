@@ -25,8 +25,6 @@ export const updateProfile = async (data, oldemail) => {
 
     let ndata = { ...data };
 
-
-    // If the email is being updated, ensure the new email is not already in use
     if (oldemail !== ndata.email) {
         let userExists = await User.findOne({ email: ndata.email });
 
@@ -34,13 +32,12 @@ export const updateProfile = async (data, oldemail) => {
             return { error: "This email is already in use" };
         }
 
-        // Update user email
+       
         await User.findOneAndUpdate({ email: oldemail }, { email: ndata.email, ...ndata });
 
-        // Update the Payments table where this email is used
-        // await Payment.updateMany({ to_user: oldemail }, { to_user: ndata.email });
+      
     } else {
-        // Update the user details without changing the email
+      
         await User.findOneAndUpdate({ email: ndata.email }, ndata);
     }
 
@@ -60,7 +57,7 @@ export const Newusers = async (name, email, password) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Here you should actually save new user in the database, you're missing this step!
+   
     const newUser = new User({
         name,
         email,
@@ -75,11 +72,11 @@ export const Newusers = async (name, email, password) => {
 export const deleteCompanyLogo = async (id) => {
     await connectDb();
 
-    // Find the user by ID and update the logo field to null
+    
     const updatedUser = await User.findByIdAndUpdate(
         id,
         {$set:{
-            companylogo: null } // Set the companylogo field to null
+            companylogo: null } 
         }
     );
 

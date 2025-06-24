@@ -1,19 +1,19 @@
 "use client";
 
 import Modal from '@/components/Modal';
-import { use, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { createProduct, fetchProducts, updateProduct } from '@/app/api/actions/productactions';
 import ProductList from '@/components/ProductList';
 import { AddProductHistory } from '@/app/api/actions/productHistoryactions';
 import Image from 'next/image';
-import { Toaster, toast } from 'sonner'
+import { toast } from 'sonner'
 
 const Page = () => {
   const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
-      router.push('/login');
+      router.push('/');
     },
   });
   const [isAddModalOpen, setIsAddModal] = useState(false);
@@ -38,6 +38,8 @@ const Page = () => {
   const [newQuantity, setNewQuantity] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [navigating, setNavigating] = useState(false);
+
 
 
   useEffect(() => {
@@ -50,7 +52,7 @@ const Page = () => {
     const response = await fetchProducts(session?.user?.id, 'active');
     if (response.error) {
       console.log('Error fetching products:', response.error);
-      // alert('Error fetching products: ' + response.error);
+
       toast.error('Error fetching products: ' + response.error)
       setIsLoading(false);
       return;
@@ -89,13 +91,14 @@ const Page = () => {
 
     if (response.error) {
       console.log('Error creating product:', response.error);
-      // alert('Error creating product: ' + response.error);
+
       toast.error('Error creating product: ' + response.error)
+      setIsSubmitting(false);
       return;
     }
 
     if (response.status === 200) {
-      // alert(response.message);
+
       toast.success(response.message)
       setFormData({
         user: session?.user?.id,
@@ -125,39 +128,40 @@ const Page = () => {
       const response = await updateProduct(selectedProduct);
 
       if (response.error) {
-        // alert(`Error updating product: ${response.error}`);
+
         toast.error(`Error updating product: ${response.error}`)
+        setIsSubmitting(false);
         return;
       }
 
       if (response.status === 200) {
-        // alert(response.message);
+
         toast.success(response.message)
         setSelectedProduct(null);
         setIsEditModalOpen(false);
-        fetchData(); // Refresh the product list
+        fetchData();
       } else {
-        // alert("Unexpected response from server.");
+
         toast.error("Unexpected response from server.")
       }
-       
+
     } catch (error) {
       console.error("Unexpected error during product update:", error);
-      // alert("Something went wrong while updating the product.");
+
       toast.error("Something went wrong while updating the product.")
     }
-     setIsSubmitting(false);
+    setIsSubmitting(false);
   };
 
   const AddQuehandleSubmit = async (e) => {
     e.preventDefault();
- if (isSubmitting) return; 
+    if (isSubmitting) return;
 
-  setIsSubmitting(true);
+    setIsSubmitting(true);
     const updatedQuantity = parseFloat(selectedProduct?.productQuantity || 0) + parseFloat(newQuantity || 0);
 
     if (updatedQuantity < 0) {
-      // alert("Quantity cannot be negative");
+
       toast.warning("Quantity cannot be negative")
       return;
     }
@@ -179,7 +183,7 @@ const Page = () => {
       const historyData = await AddProductHistory(updateHistory)
 
       if (res.error) {
-        // alert('Error updating product: ' + res.error);
+
         toast.error('Error updating product: ' + res.error)
         return;
       }
@@ -188,17 +192,17 @@ const Page = () => {
       if (res.status === 200) {
         setIsQuantityOpen(false);
         fetchData();
-        
-        // alert(res.message);
+
+
         toast.success(res.message)
         setSelectedProduct(null);
         setNewQuantity(0);
 
-        
+
       }
     } catch (error) {
       console.error(error);
-      // alert("Unexpected error updating product");
+
       toast.error("Unexpected error updating product");
     }
     setIsSubmitting(false);
@@ -207,7 +211,7 @@ const Page = () => {
   const handleSearch = async (e) => {
     const searchTerm = e.target.value.trim();
 
-    console.log("Search Text:", searchTerm);
+
     if (!searchTerm) {
       await fetchData();
       return;
@@ -256,7 +260,7 @@ const Page = () => {
           <button className="bg-blue-500 text-white sm:px-4 sm:py-2 px-2 py-1 rounded" onClick={() => setIsAddModal(true)}><i className="fa-solid fa-cart-plus mx-1"></i>Add Product</button>
         </div>
 
-        {/* filter */}
+
         <div className="flex flex-col items-center justify-center w-full sm:text-sm text-xs">
           <div className="flex   w-full p-4">
             <label htmlFor="search" className=' border-gray-300 rounded-md p-2 sm:text-sm text-xs'>Search :</label>
@@ -305,6 +309,7 @@ const Page = () => {
                     setViewopen={setViewopen}
                     setIsQuantityOpen={setIsQuantityOpen}
                     fetchData={fetchData}
+                    setNavigating={setNavigating}
                   />
                 ))
               ) : (
@@ -438,10 +443,7 @@ const Page = () => {
               <label htmlFor="productName" className="block text-sm font-medium text-gray-700">Product Name</label>
               <input type="text" id="productName" value={selectedProduct?.productName} onChange={EdithandleChange} className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
             </div>
-            {/* <div className="mb-4">
-              <label htmlFor="productQuantity" className="block text-sm font-medium text-gray-700">Product Quantity</label>
-              <input type="number" id="productQuantity" value={selectedProduct?.productQuantity} onChange={EdithandleChange} className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
-            </div> */}
+
             <div className="mb-4">
               <label htmlFor="productPrice" className="block text-sm font-medium text-gray-700">Product Price</label>
               <input type="number" id="productPrice" value={selectedProduct?.productPrice} onChange={EdithandleChange} className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
@@ -536,7 +538,7 @@ const Page = () => {
               <input type="number" id="newproductQuantity" onChange={handleQuantityChange} className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
             </div>
 
-            <button type="submit"  disabled={isSubmitting} className="bg-green-500 text-white px-4 py-2 rounded float-end">{isSubmitting ? "Adding..." : "Add Product Que."}</button>
+            <button type="submit" disabled={isSubmitting} className="bg-green-500 text-white px-4 py-2 rounded float-end">{isSubmitting ? "Adding..." : "Add Product Que."}</button>
           </form>
         </div>
         <button
@@ -547,7 +549,17 @@ const Page = () => {
         </button>
 
       </Modal>
-
+      {navigating && (
+        <div className="fixed inset-0  bg-opacity-60 flex items-center justify-center z-50">
+          <Image
+            src="/assets/6-dots-rotate.svg"
+            width={1000}
+            height={1000}
+            alt="Loading..."
+            className="w-10 h-10 animate-bounce"
+          />
+        </div>
+      )}
 
     </>
   )

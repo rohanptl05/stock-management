@@ -66,8 +66,8 @@ const UserSchema = new mongoose.Schema({
 
 UserSchema.index({ deactivatedAt: 1 }, { expireAfterSeconds: 7776000 });
 
-UserSchema.index({ role: 1 }); // Filtering admins, users
-UserSchema.index({ accountStatus: 1 }); // Fast active/deactivated check
+UserSchema.index({ role: 1 }); 
+UserSchema.index({ accountStatus: 1 }); 
 
 const User = mongoose.models.User || mongoose.model("User", UserSchema);
 

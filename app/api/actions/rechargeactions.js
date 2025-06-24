@@ -30,7 +30,7 @@ export const createRecharge = async (data) => {
     await connectDb();
     let ndata = { ...data };
 
-    // Check for existing operator
+  
     let existingRecharge = await Recharge.findOne({
       operatorName: ndata.operatorName,
       user: ndata.user,
@@ -40,16 +40,16 @@ export const createRecharge = async (data) => {
       return { status: 400, message: "Operator Name already exists for this user" };
     }
 
-    // Create new Recharge
+    
     let res = await Recharge.create(ndata);
 
-    // Create RechargeHistory
+    
     const rechargeHistory = new RechargeHistory({
-      user: res.user,                      // Correct way to access user ID
+      user: res.user,                      
       operatorId: res._id,
       addBalance: ndata.totalBalance,
       useBalance: 0,
-      description: ndata.description || "", // Safely use description
+      description: ndata.description || "", 
     });
 
     await rechargeHistory.save();
@@ -67,7 +67,7 @@ export const updateRecharge = async (id, data) => {
     await connectDb();
     let ndata = { ...data };
 
-    // await existingRecharge.save();
+   
     let existingRecharge = await Recharge.findOneAndUpdate(
       { _id: id },
       {
@@ -89,12 +89,12 @@ export const deleteRecharge = async (id) => {
   try {
     await connectDb();
 
-    // Find the recharge by ID
+ 
     let recharge = await Recharge.findById(id);
 if (!recharge) {
       return { status: 404, message: "Recharge not found" };
     }
-    // Deactivate the recharge
+   
     recharge.recordStatus = "deactivated";
     recharge.deactivatedAt = new Date();
     await recharge.save();

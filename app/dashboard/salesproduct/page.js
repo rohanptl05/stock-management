@@ -13,7 +13,7 @@ const Page = () => {
   const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
-      router.push('/login');
+      router.push('/');
     },
   });
   const [products, setProducts] = useState([])
@@ -39,6 +39,7 @@ const Page = () => {
   const [originalItemQuantities, setOriginalItemQuantities] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 const [error, setError] = useState("");
+ const [navigating, setNavigating] = useState(false);
 
 
 
@@ -65,7 +66,7 @@ const [error, setError] = useState("");
     setOriginalInvoice(ress)
     setInvoice(ress)
     setIsLoading(false)
-    // setProducts(res)
+   
   }
 
   const handleClientChange = (e) => {
@@ -198,7 +199,7 @@ const [error, setError] = useState("");
         item_price: 0
       }]
     })
-    setWarnings((prev) => [...prev, '']); // ✅ Add blank warning
+    setWarnings((prev) => [...prev, '']); 
   }
 
   const EditaddItem = () => {
@@ -228,7 +229,7 @@ const [error, setError] = useState("");
 
     }));
 
-    // Also remove the corresponding warning if it exists
+    
     setWarnings((prev) => {
       const newWarnings = [...prev];
       newWarnings.splice(index, 1);
@@ -379,7 +380,7 @@ const [error, setError] = useState("");
     }
 
 
-    // console.log("send",isselectedInvoice)
+   
     const res = await UpdateInvoice(isselectedInvoice);
 
     if (res.status === 200) {
@@ -391,7 +392,7 @@ const [error, setError] = useState("");
       toast.error(res.message);
     }
 
-    // console.log("edit sale:", isselectedInvoice)
+   
     setIsSubmitting(false)
   }
 
@@ -400,13 +401,13 @@ const [error, setError] = useState("");
   const handlePhoneChange = (e) => {
   const value = e.target.value;
 
-  // Allow only digits
+  
   if (!/^\d*$/.test(value)) return;
 
-  // Update state
+ 
   setSelectedInvoice({ ...isselectedInvoice, clientPhone: value });
 
-  // Validate length
+  
   if (value.length !== 10) {
     setError("Phone number must be exactly 10 digits");
   } else {
@@ -435,7 +436,7 @@ const [error, setError] = useState("");
   const handleSearch = async (e) => {
     const searchTerm = e.target.value.trim();
 
-    // console.log("Search Text:", searchTerm);
+   
     if (!searchTerm) {
       await fetchData();
       return;
@@ -495,7 +496,7 @@ const [error, setError] = useState("");
               <th className="sm:px-4 sm:py-2 px-2 py-1 hidden sm:table-cell">Invoice Number</th>
               <th className="sm:px-4 sm:py-2 px-2 py-1">Customer Name</th>
               <th className="sm:px-4 sm:py-2 px-2 py-1 ">Date</th>
-              {/* <th className="sm:px-4 sm:py-2 px-2 py-1">Product Quantity</th> */}
+             
               <th className="sm:px-4 sm:py-2 px-2 py-1 hidden sm:table-cell">Total Amonut</th>
               <th className="sm:px-4 sm:py-2 px-2 py-1">Actions</th>
             </tr>
@@ -520,6 +521,7 @@ const [error, setError] = useState("");
                   invoice={invoice}
                   openEditModal={openEditModal}
                   fetchData={fetchData}
+                  setNavigating={setNavigating}
                 />
               ))
             ) : (
@@ -648,7 +650,7 @@ const [error, setError] = useState("");
                         >
                           <option value="">-- Select --</option>
                           {getFilteredOptions(index)
-                            .sort((a, b) => a.productName.localeCompare(b.productName)) // Sort ascending A-Z
+                            .sort((a, b) => a.productName.localeCompare(b.productName)) 
                             .map((product) => (
                               <option key={product._id} value={product._id}>
                                 {product.productName.toUpperCase()}
@@ -687,11 +689,11 @@ const [error, setError] = useState("");
                             if (enteredQty > availableQty) {
                               newWarnings[index] = `Only ${availableQty} available`;
                             } else {
-                              newWarnings[index] = ''; // ✅ Clear the warning if it's valid
+                              newWarnings[index] = ''; 
                             }
 
-                            setWarnings(newWarnings); // ✅ Always update warnings array
-                            // console.log((Warnings))
+                            setWarnings(newWarnings); 
+                            
                             handleItemChange(index, 'item_quantity', enteredQty);
                           }}
                           className="w-full border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -1003,6 +1005,18 @@ const [error, setError] = useState("");
           </div>
         </div>
       </Modal>
+
+      {navigating && (
+  <div className="fixed inset-0  bg-opacity-60 flex items-center justify-center z-50">
+    <Image
+      src="/assets/6-dots-rotate.svg"
+      width={100}
+      height={100}
+      alt="Loading"
+      className="w-10 h-10 animate-bounce"
+    />
+  </div>
+)}
 
 
     </div>

@@ -8,7 +8,7 @@ import Invoice from "@/models/Invoice";
 
 export const fetchProductsHistory = async (product, status) => {
   await connectDb();
-  // console.log("server", product, status)
+  
   const products = await ProductHistory.find({ product: product, recordStatus: status }).sort({ date: -1 });
 
   if (!products || products.length === 0) {
@@ -26,7 +26,7 @@ export const AddProductHistory = async (data) => {
 
   let ndata = { ...data };
 
-  // Step 1: Create a new product history record
+  
   const newProductHistory = await ProductHistory.create({
     product: ndata._id,
     user: ndata.user,
@@ -52,7 +52,7 @@ export const AddProductHistory = async (data) => {
   const { totalproduct = 0 } = aggregates[0] || {};
   const finalproduct = totalproduct;
 
-  // 3. Update the operator's balance
+ 
   await Product.findByIdAndUpdate(
     newProductHistory.product,
     { productQuantity: totalproduct , productQuantityremaining: finalproduct},
@@ -80,7 +80,7 @@ export const updateProductHistory = async (data) => {
           date: data.date,
         }
       },
-      { new: true } // Return the updated document
+      { new: true } 
     );
     if (!newProductHistory) {
       return {
@@ -108,7 +108,7 @@ export const updateProductHistory = async (data) => {
     const { totalproduct = 0 } = aggregates[0] || {};
     const finalproduct = totalproduct;
 
-    // 3. Update the operator's balance
+    
     await Product.findByIdAndUpdate(
       newProductHistory.product,
       { productQuantity: totalproduct, productQuantityremaining: finalproduct },
@@ -140,7 +140,7 @@ export const productHistoryDelete = async (id) => {
           deactivatedAt: new Date()
         }
       },
-      { new: true } // Return the updated document
+      { new: true } 
     );
 
 
@@ -163,7 +163,7 @@ export const productHistoryDelete = async (id) => {
     const { totalproduct = 0 } = aggregates[0] || {};
     const finalproduct = totalproduct;
 
-    // 3. Update the operator's balance
+    
     await Product.findByIdAndUpdate(
       newProductHistory.product,
       { productQuantity: totalproduct , productQuantityremaining: finalproduct},
@@ -194,13 +194,13 @@ export const productHistoryDelete = async (id) => {
 
 export const recalculateProductQuantities = async () => {
   try {
-    // Only get active products
+    
     const allProducts = await Product.find({ recordStatus: "active" });
 
     for (const product of allProducts) {
-      // Find total quantity sold for this product in active invoices
+      
       const sold = await Invoice.aggregate([
-        { $match: { recordStatus: "active" } }, // Filter active invoices
+        { $match: { recordStatus: "active" } }, 
         { $unwind: "$items" },
         { $match: { "items.productId": product._id } },
         {
