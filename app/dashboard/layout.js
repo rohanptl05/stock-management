@@ -2,7 +2,7 @@
 import React from "react";
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { useSession, signIn, signOut } from "next-auth/react"
-import { useState, useEffect } from "react";
+import { useState, useEffect , useRef } from "react";
 import { useRouter } from 'next/navigation'
 import { fetchuser } from "@/app/api/actions/useractions";
 import Link from "next/link";
@@ -34,6 +34,29 @@ export default function RootLayout({ children }) {
       router.push(href);
     });
   };
+ const sidebarRef = useRef(null);
+
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    // Only run on mobile and when sidebar is open
+    if (
+      isOpen &&
+      sidebarRef.current &&
+      !sidebarRef.current.contains(event.target)
+    ) {
+      setIsOpen(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [isOpen]);
+
+
+
 
   useEffect(() => {
     const handleStart = () => setLoading(true);
@@ -87,6 +110,7 @@ export default function RootLayout({ children }) {
 
           {/* Sidebar */}
           <div
+          ref={sidebarRef}
             className={` md:w-[20%] md:h-screen flex flex-col fixed md:static top-0 left-0 h-full z-50 bg-cyan-100 transition-transform duration-300 ${isOpen ? "translate-x-0 w-[55%] sm:w-[60%]" : "-translate-x-full"
               } md:translate-x-0 md:flex`}
           >

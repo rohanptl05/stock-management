@@ -24,13 +24,14 @@ const Page = () => {
   const [totalOrders, setTotalOrders] = useState(0);
   const [product, setProduct] = useState([])
   const [recharge, setRecharge] = useState([])
+  
   useEffect(() => {
 
     fetchData();
   }, [session?.user?.id]);
 
   const fetchData = async () => {
-
+setIsLoading(true)
     const productResponse = await fetchProducts(session?.user?.id, "active");
     const rechargerResponce = await fetchRecharge(session?.user?.id, "active");
     const invoiceResponse = await fetchInvoices(session?.user?.id, "active");
@@ -56,7 +57,7 @@ const Page = () => {
       setRecharge([]);
     }
 
-
+setIsLoading(false)
 
   }
 
@@ -81,9 +82,22 @@ const Page = () => {
               }}
               className="cursor-pointer  justify-center"
             >
-              
-              <h2 className="text-lg font-semibold"> Total Product </h2>
+              {isLoading ? (
+                <Image
+                      width={2000}
+                      height={2000}
+                      src="/assets/infinite-spinner.svg"
+                      alt="Loading..."
+                      className="w-6 h-6 mx-auto"
+                    />
+              ):(
+                <div>
+                  <h2 className="text-lg font-semibold"> Total Product </h2>
               <p className="text-gray-600">{productQueueCount} items</p>
+                </div>
+              )}
+              
+            
             
             </div>
           </div>
@@ -103,18 +117,39 @@ const Page = () => {
               }}
               className="cursor-pointer  justify-center"
             >
-             
-              <h2 className="text-lg font-semibold">Total Invoice</h2>
+               {isLoading ? (
+                <Image
+                      width={2000}
+                      height={2000}
+                      src="/assets/infinite-spinner.svg"
+                      alt="Loading..."
+                      className="w-6 h-6 mx-auto"
+                    />
+              ):(
+                <div>
+                  <h2 className="text-lg font-semibold">Total Invoice</h2>
               <p className="text-gray-600">{totalOrders}</p>
+                </div>
+              )}
+             
              
             </div>
           </div>
         </div>
 
-        {/* //rechage */}
-        <h2 className="text-center p-3 rounded-3xl">Recharge Balance</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-3">
+ {/* //rechage */}
+        <h2 className="text-center p-3 rounded-3xl">Recharge Balance</h2>
+          {isLoading ? (
+          <Image
+                width={2000}
+                height={2000}
+                src="/assets/infinite-spinner.svg"
+                alt="Loading..."
+                className="w-6 h-6 mx-auto"
+              />
+        ):(
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-3">
           {recharge.length > 0 ? (
             recharge.map((item, i) => (
 
@@ -129,7 +164,6 @@ const Page = () => {
                   }}
                   className="cursor-pointer"
                 >
-               
                   <h2 className="text-lg font-semibold text-center">
                     {item.operatorName.charAt(0).toUpperCase() + item.operatorName.slice(1).toLowerCase()}
                   </h2>
@@ -168,6 +202,10 @@ const Page = () => {
             </div>
           )}
         </div>
+        )}
+       
+
+        
 
 
 
@@ -177,7 +215,17 @@ const Page = () => {
             Alert Product Remaining Que.
           </h3>
           <ul className="list-disc pl-6 text-sm text-gray-600">
-            {product.length > 0 ?
+             {isLoading ? (
+                <Image
+                      width={2000}
+                      height={2000}
+                      src="/assets/infinite-spinner.svg"
+                      alt="Loading..."
+                      className="w-6 h-6 mx-auto"
+                    />
+              ):(
+                <div>
+                   {product.length > 0 ?
               product.map((item, i) =>
                 <li key={i} className="mb-2 ">
                   {item.productName.charAt(0).toUpperCase() + item.productName.slice(1).toLowerCase()} - Remaining: {item.productQuantityremaining}
@@ -185,7 +233,10 @@ const Page = () => {
               ) : (
                 <li>No products with low stock.</li>
               )}
-            <li></li>
+            
+                </div>
+              )}
+          
 
           </ul>
         </div>
