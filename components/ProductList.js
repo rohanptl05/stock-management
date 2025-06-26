@@ -45,7 +45,7 @@ const ProductList = ({ product, setSelectedProduct, setIsEditModalOpen, setViewo
 
   return (
     <tr key={product._id}>
-      <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap font-bold uppercase cursor-pointer"
+      <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap font-bold capitalize cursor-pointer"
         onClick={() => {
           setNavigating(true);
           setTimeout(() => {

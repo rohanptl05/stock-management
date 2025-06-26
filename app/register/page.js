@@ -27,7 +27,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const name =e.target[0].value.trim()
-    const email = e.target[1].value.toLowerCase().trim();;
+    const email = e.target[1].value.trim().toLowerCase();
     const password = e.target[2].value.trim();
 
     if (!isValidEmail(email)) {

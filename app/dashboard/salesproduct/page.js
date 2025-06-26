@@ -30,6 +30,8 @@ const Page = () => {
     items: [{ item_name: '', item_price: 0, productId: '', item_quantity: 1, total: 0 }],
     grandTotal: 0,
     received_amount: 0,
+    customerID: "",
+    warranty: "",
     balance_due_amount: 0,
     imageURL: '',
   })
@@ -38,8 +40,8 @@ const Page = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [originalItemQuantities, setOriginalItemQuantities] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-const [error, setError] = useState("");
- const [navigating, setNavigating] = useState(false);
+  const [error, setError] = useState("");
+  const [navigating, setNavigating] = useState(false);
 
 
 
@@ -66,7 +68,7 @@ const [error, setError] = useState("");
     setOriginalInvoice(ress)
     setInvoice(ress)
     setIsLoading(false)
-   
+
   }
 
   const handleClientChange = (e) => {
@@ -199,7 +201,7 @@ const [error, setError] = useState("");
         item_price: 0
       }]
     })
-    setWarnings((prev) => [...prev, '']); 
+    setWarnings((prev) => [...prev, '']);
   }
 
   const EditaddItem = () => {
@@ -229,7 +231,7 @@ const [error, setError] = useState("");
 
     }));
 
-    
+
     setWarnings((prev) => {
       const newWarnings = [...prev];
       newWarnings.splice(index, 1);
@@ -251,10 +253,10 @@ const [error, setError] = useState("");
     return products.filter((product) => !selectedIds.includes(product._id));
   };
 
-  
+
   const handleSale = async (e) => {
     e.preventDefault();
-    
+
     setIsSubmitting(true)
     if (warnings.some(w => w)) {
       toast.warning('Please fix all quantity warnings before submitting')
@@ -307,6 +309,8 @@ const [error, setError] = useState("");
       clientPhone: formData.clientPhone,
       clientAddress: formData.clientAddress,
       grandTotal,
+      customerID: formData.customerID,
+      warranty: formData.warranty,
       items: preparedItems,
       received_amount: 0,
       userId: session?.user?.id
@@ -324,19 +328,21 @@ const [error, setError] = useState("");
           items: [{ productId: '', item_quantity: 1, total: 0, item_name: '', item_price: 0 }],
           grandTotal: 0,
           received_amount: 0,
+          customerID: "",
+          warranty: "",
           balance_due_amount: 0,
           imageURL: ''
         })
-       
+
         setIsAddModal(false)
       }
     } catch (err) {
       console.error(err)
       toast.error(err?.response?.data?.message || 'Something went wrong')
     }
-    finally{
+    finally {
       setIsSubmitting(false)
-       fetchData()
+      fetchData()
     }
   }
 
@@ -380,7 +386,7 @@ const [error, setError] = useState("");
     }
 
 
-   
+
     const res = await UpdateInvoice(isselectedInvoice);
 
     if (res.status === 200) {
@@ -392,28 +398,28 @@ const [error, setError] = useState("");
       toast.error(res.message);
     }
 
-   
+
     setIsSubmitting(false)
   }
 
 
 
   const handlePhoneChange = (e) => {
-  const value = e.target.value;
+    const value = e.target.value;
 
-  
-  if (!/^\d*$/.test(value)) return;
 
- 
-  setSelectedInvoice({ ...isselectedInvoice, clientPhone: value });
+    if (!/^\d*$/.test(value)) return;
 
-  
-  if (value.length !== 10) {
-    setError("Phone number must be exactly 10 digits");
-  } else {
-    setError("");
-  }
-};
+
+    setSelectedInvoice({ ...isselectedInvoice, clientPhone: value });
+
+
+    if (value.length !== 10) {
+      setError("Phone number must be exactly 10 digits");
+    } else {
+      setError("");
+    }
+  };
 
 
 
@@ -436,7 +442,7 @@ const [error, setError] = useState("");
   const handleSearch = async (e) => {
     const searchTerm = e.target.value.trim();
 
-   
+
     if (!searchTerm) {
       await fetchData();
       return;
@@ -496,7 +502,7 @@ const [error, setError] = useState("");
               <th className="sm:px-4 sm:py-2 px-2 py-1 hidden sm:table-cell">Invoice Number</th>
               <th className="sm:px-4 sm:py-2 px-2 py-1">Customer Name</th>
               <th className="sm:px-4 sm:py-2 px-2 py-1 ">Date</th>
-             
+
               <th className="sm:px-4 sm:py-2 px-2 py-1 hidden sm:table-cell">Total Amonut</th>
               <th className="sm:px-4 sm:py-2 px-2 py-1">Actions</th>
             </tr>
@@ -617,6 +623,11 @@ const [error, setError] = useState("");
           </div>
 
 
+
+
+
+
+
           {/* Product Table */}
           <div className="overflow-x-auto px-1 py-1 ">
             <table className="w-full border border-collapse rounded-lg overflow-hidden">
@@ -642,7 +653,7 @@ const [error, setError] = useState("");
                       {/* Product Selector */}
                       <td className="border p-2">
                         <select
-                          className="w-full border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          className="w-full border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400 capitalize"
                           value={item.productId}
                           onChange={(e) =>
                             handleItemChange(index, 'productId', e.target.value)
@@ -650,10 +661,10 @@ const [error, setError] = useState("");
                         >
                           <option value="">-- Select --</option>
                           {getFilteredOptions(index)
-                            .sort((a, b) => a.productName.localeCompare(b.productName)) 
+                            .sort((a, b) => a.productName.localeCompare(b.productName))
                             .map((product) => (
                               <option key={product._id} value={product._id}>
-                                {product.productName.toUpperCase()}
+                                {product.productName}
                               </option>
                             ))}
                         </select>
@@ -689,11 +700,11 @@ const [error, setError] = useState("");
                             if (enteredQty > availableQty) {
                               newWarnings[index] = `Only ${availableQty} available`;
                             } else {
-                              newWarnings[index] = ''; 
+                              newWarnings[index] = '';
                             }
 
-                            setWarnings(newWarnings); 
-                            
+                            setWarnings(newWarnings);
+
                             handleItemChange(index, 'item_quantity', enteredQty);
                           }}
                           className="w-full border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -758,6 +769,40 @@ const [error, setError] = useState("");
           >
             + Add Product Row
           </button>
+
+          <div>
+            <label className=" font-semibold mb-1 text-sm text-gray-700">
+              Customer ID
+            </label>
+            <input
+              type="text"
+              name="customerID"
+
+              value={formData.customerID}
+              onChange={(e) => setFormData({ ...formData, customerID: e.target.value })}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="font-semibold mb-1 text-sm text-gray-700">
+              PRODUCT WARRANTY:
+            </label>
+            <select
+              name="warranty"
+              value={formData.warranty}
+              onChange={(e) => setFormData({ ...formData, warranty: e.target.value })}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Select Warranty</option>
+              <option value="3 months">3 Months</option>
+              <option value="6 months">6 Months</option>
+              <option value="1 year">1 Year</option>
+              <option value="2 years">2 Years</option>
+              <option value="3 years">3 Years</option>
+              <option value="5 years">5 Years</option>
+              <option value="Lifetime">Lifetime Warranty</option>
+            </select>
+          </div>
 
           {/* Action Buttons */}
           <div className="flex justify-between items-center mt-6">
@@ -884,7 +929,7 @@ const [error, setError] = useState("");
                       {/* Product Selector */}
                       <td className="border p-2">
                         <select
-                          className="w-full border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          className="w-full border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400 capitalize"
                           value={item.productId}
                           onChange={(e) =>
                             handleItemEditChange(index, 'productId', e.target.value)
@@ -986,6 +1031,41 @@ const [error, setError] = useState("");
             + Add Product Row
           </button>
 
+
+            <div>
+            <label className=" font-semibold mb-1 text-sm text-gray-700">
+              Customer ID
+            </label>
+            <input
+              type="text"
+              name="customerID"
+
+              value={isselectedInvoice.customerID}
+              onChange={(e) => setSelectedInvoice({ ...isselectedInvoice, customerID: e.target.value })}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="font-semibold mb-1 text-sm text-gray-700">
+              PRODUCT WARRANTY:
+            </label>
+            <select
+              name="warranty"
+              value={isselectedInvoice.warranty}
+              onChange={(e) => setSelectedInvoice({ ...isselectedInvoice, warranty: e.target.value })}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Select Warranty</option>
+              <option value="3 months">3 Months</option>
+              <option value="6 months">6 Months</option>
+              <option value="1 year">1 Year</option>
+              <option value="2 years">2 Years</option>
+              <option value="3 years">3 Years</option>
+              <option value="5 years">5 Years</option>
+              <option value="Lifetime">Lifetime Warranty</option>
+            </select>
+          </div>
+
           {/* Action Buttons */}
           <div className="flex justify-between items-center mt-6">
             <button
@@ -1007,16 +1087,16 @@ const [error, setError] = useState("");
       </Modal>
 
       {navigating && (
-  <div className="fixed inset-0  bg-opacity-60 flex items-center justify-center z-50">
-    <Image
-      src="/assets/6-dots-rotate.svg"
-      width={100}
-      height={100}
-      alt="Loading"
-      className="w-10 h-10 animate-bounce"
-    />
-  </div>
-)}
+        <div className="fixed inset-0  bg-opacity-60 flex items-center justify-center z-50">
+          <Image
+            src="/assets/6-dots-rotate.svg"
+            width={100}
+            height={100}
+            alt="Loading"
+            className="w-10 h-10 animate-bounce"
+          />
+        </div>
+      )}
 
 
     </div>

@@ -146,11 +146,11 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
 
                     {/* Footer */}
                     <div className="flex justify-between mt-2 text-xs p-4">
-                        <p className="font-bold">I.D.: _________________________</p>
+                        <p className="font-bold">I.D.:{(invoice?.customerID || '_________________________')} </p>
 
                     </div>
                     <div className="flex justify-between mt-2 text-xs p-4">
-                        <p className="font-bold">WARRANTY: ____________________</p>
+                        <p className="font-bold">WARRANTY: {(invoice?.warranty || '_________________________')}</p>
                     </div>
                     <div className="flex justify-between items-end mt-4 text-xs p-4">
                         <p className="italic">Received Signature…</p>
@@ -369,14 +369,14 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
 
                         }}
                     >
-                        <p>I.D.: _________________________</p>
+                        <p>I.D.: {(invoice?.customerID || '_________________________')}</p>
 
                     </div>
 
                     {/* Warranty */}
                     <div style={{ marginTop: '10px', padding: '12px', }}>
                         <p>
-                            <strong>WARRANTY:</strong> _______________________________________
+                            <strong>WARRANTY:</strong> {(invoice?.warranty || '_________________________')}
                         </p>
                     </div>
 

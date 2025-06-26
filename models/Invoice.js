@@ -19,6 +19,8 @@ const invoiceSchema = new Schema({
     client: { type: String, required: true },
     clientPhone:{type: String},
     clientAddress:{type: String},
+    customerID:{type: String},
+    warranty:{type: String},
     status: {
         type: String,
         default: "PENDING",
