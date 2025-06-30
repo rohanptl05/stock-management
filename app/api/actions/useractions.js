@@ -3,6 +3,7 @@
 import connectDb from "@/db/connectDb"
 import User from "@/models/User"
 import bcrypt from "bcryptjs";
+import nodemailer from "nodemailer";
 
 
 
@@ -90,6 +91,7 @@ export const deleteCompanyLogo = async (id) => {
 
 
 export const changeUserPassword = async (email, oldPassword, newPassword) => {
+    await connectDb();
     try {
       const user = await User.findOne({ email });
       if (!user) return { success: false, message: "User not found" };
@@ -113,3 +115,83 @@ export const deleteProfile = async (id)=>{
     
 
 }
+
+
+
+
+
+
+export const ResetPasswordOTP = async (email) => {
+    try {
+        await connectDb();
+
+        const user = await User.findOne({ email });
+        if (!user) return { success: false, message: "User not found" };
+
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiry = new Date(Date.now() + 5 * 60 * 1000);
+
+        user.otp = otp;
+        user.otpExpiry = expiry;
+        await user.save();
+
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.GMAIL_USER,
+                pass: process.env.GMAIL_PASS,
+            },
+        });
+
+        const htmlTemplate = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.5; padding: 20px;">
+        <h2 style="color: #4CAF50;">Hello ${user.name},</h2>
+        <p>You have requested to reset your password.</p>
+        <p><strong>Your OTP is:</strong> <span style="font-size: 20px; color: #000;">${otp}</span></p>
+        <p>This OTP is valid for 5 minutes. Do not share it with anyone.</p>
+        <br />
+        <p style="font-size: 14px; color: #777;">If you didn’t request this, please ignore this email.</p>
+        <hr />
+        <p style="font-size: 12px; color: #999;">&copy; ${new Date().getFullYear()} Your App. All rights reserved.</p>
+      </div>
+    `;
+
+        await transporter.sendMail({
+            from: `"Invoice-app" <${process.env.GMAIL_USER}>`,
+            to: user.email,
+            subject: "Password Reset OTP", // ✅ Now fixed
+            html: htmlTemplate,
+        });
+
+        return { success: true, message: "OTP sent successfully" };
+    } catch (error) {
+        console.error("Error in ResetPasswordOTP:", error);
+        return { success: false, message: "Something went wrong" };
+    }
+};
+
+
+export const verifyOtpAndResetPassword = async (email, otp, newPassword) => {
+    await connectDb();
+
+    const user = await User.findOne({ email });
+    if (!user || !user.otp || !user.otpExpiry) {
+        return { status: 400, message: "Invalid request." };
+    }
+
+    if (user.otp !== otp) {
+        return { status: 400, message: "Incorrect OTP." };
+    }
+
+    if (user.otpExpiry < new Date()) {
+        return { status: 400, message: "OTP expired." };
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+    user.password = hashed;
+    user.otp = null;
+    user.otpExpiry = null;
+    await user.save();
+
+    return { status: 200, message: "Password reset successful." };
+};

@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 
 const Page = () => {
   const router = useRouter()
-  const { data: session } = useSession({
+  const { data: session,status } = useSession({
     required: true,
     onUnauthenticated() {
       router.push('/');
@@ -59,6 +59,21 @@ setIsLoading(true)
 
 setIsLoading(false)
 
+  }
+
+  
+   if (status === "loading") {
+    return (
+      <div className="flex items-center justify-center min-h-screen w-screen">
+        <Image
+          width={200}
+          height={200}
+          src="/assets/infinite-spinner.svg"
+          alt="Loading..."
+          className="w-24 h-24"
+        />
+      </div>
+    );
   }
 
   return (

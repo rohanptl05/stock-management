@@ -55,7 +55,10 @@ const UserSchema = new mongoose.Schema({
   deactivatedAt:
   {
     type: Date, default: null
-  }
+  },
+   otp: { type: String },
+
+  otpExpiry: { type: Date },
 
 }, {
   timestamps: true,
