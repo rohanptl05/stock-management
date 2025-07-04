@@ -28,12 +28,30 @@ export default function RootLayout({ children }) {
 
 
   const router = useRouter();
-  const navigateTo = (href) => {
-    setLoading(true);
-    startTransition(() => {
-      router.push(href);
-    });
-  };
+  // const navigateTo = (href) => {
+  //   setLoading(true);
+  //   startTransition(() => {
+  //     router.push(href);
+  //   });
+  // };
+
+const navigateTo = (href) => {
+  setLoading(true);
+
+  const timeout = setTimeout(() => {
+    setLoading(false);
+  }, 3000); // fallback
+
+  startTransition(() => {
+    router.push(href);
+    clearTimeout(timeout);
+    setLoading(false);
+  });
+};
+
+
+
+
  const sidebarRef = useRef(null);
 
 useEffect(() => {
@@ -119,9 +137,10 @@ useEffect(() => {
               <Image
                 src={session?.user?.image || user.image || "/assets/user.jpg"}
                 alt="user"
-                width={45}
-                height={45}
-                className="rounded-full"
+                width={128}
+              height={128}
+              priority
+              className="w-[50px] h-[50px] rounded-full"
               />
               <b className="text-black text-sm md:text-lg text-center mt-1">{session.user.name} </b>
             </div>

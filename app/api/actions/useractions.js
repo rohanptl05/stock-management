@@ -21,31 +21,21 @@ export const fetchuser = async (email) => {
 
 
 
-export const updateProfile = async (data, oldemail) => {
+
+export async function updateProfile(data, email) {
+  try {
     await connectDb();
-
-    let ndata = { ...data };
-
-    if (oldemail !== ndata.email) {
-        let userExists = await User.findOne({ email: ndata.email });
-
-        if (userExists) {
-            return { error: "This email is already in use" };
-        }
-
-       
-        await User.findOneAndUpdate({ email: oldemail }, { email: ndata.email, ...ndata });
-
-      
-    } else {
-      
-        await User.findOneAndUpdate({ email: ndata.email }, ndata);
-    }
-
-    return { success: "Profile updated successfully" };
-
-
+    const user = await User.findOneAndUpdate(
+      { email },
+      { $set: data },
+      { new: true }
+    );
+    return {  success: "Profile updated successfully" };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
 }
+
 
 export const Newusers = async (name, email, password) => {
     await connectDb();
