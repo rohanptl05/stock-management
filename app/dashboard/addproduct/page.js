@@ -21,6 +21,7 @@ const Page = () => {
     user: session?.user?.id,
     productName: '',
     productQuantity: '',
+    productModel:'',
     productQuantityremaining: 0,
     productPrice: '',
     productCategory: '',
@@ -104,6 +105,7 @@ const Page = () => {
         user: session?.user?.id,
         productName: '',
         productQuantity: '',
+        productModel:'',
         productQuantityremaining: 0,
         productPrice: '',
         productCategory: '',
@@ -280,8 +282,9 @@ const Page = () => {
               <tr>
                 <th className="sm:px-4 sm:py-2 px-2 py-1">Product Name</th>
                 <th className="sm:px-4 sm:py-2 px-2 py-1 hidden sm:table-cell">Product ID</th>
-                <th className="sm:px-4 sm:py-2 px-2 py-1">Quantity</th>
-                <th className="sm:px-4 sm:py-2 px-2 py-1">Remaining</th>
+                <th className="sm:px-4 sm:py-2 px-2 py-1">Total Que.</th>
+                <th className="sm:px-4 sm:py-2 px-2 py-1">Remaining Que.</th>
+                <th className="sm:px-4 sm:py-2 px-2 py-1">Total Sale</th>
                 <th className="sm:px-4 sm:py-2 px-2 py-1 hidden sm:table-cell">Price</th>
                 <th className="sm:px-4 sm:py-2 px-2 py-1">Actions</th>
               </tr>
@@ -386,6 +389,10 @@ const Page = () => {
               <label htmlFor="productPrice" className="block text-sm font-medium text-gray-700">Product Price</label>
               <input type="number" id="productPrice" value={formData.productPrice} required onChange={handleChange} className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
             </div>
+            <div className="mb-4">
+              <label htmlFor="productModel" className="block text-sm font-medium text-gray-700">Product Model No. </label>
+              <input type="number" id="productModel" value={formData.productModel}  onChange={handleChange} className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+            </div>
 
             <div className="mb-4">
               <label htmlFor="productCategory" className="block text-sm font-medium text-gray-700">Product Category</label>
@@ -448,6 +455,10 @@ const Page = () => {
               <label htmlFor="productPrice" className="block text-sm font-medium text-gray-700">Product Price</label>
               <input type="number" id="productPrice" value={selectedProduct?.productPrice} onChange={EdithandleChange} className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
             </div>
+            <div className="mb-4">
+              <label htmlFor="productModel" className="block text-sm font-medium text-gray-700">Product Model No.</label>
+              <input type="text" id="productModel" value={selectedProduct?.productModel} onChange={EdithandleChange} className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+            </div>
 
             <div className="mb-4">
               <label htmlFor="productCategory" className="block text-sm font-medium text-gray-700">Product Category</label>
@@ -497,9 +508,9 @@ const Page = () => {
         <div className="p-4 space-y-4">
           {[
             { label: 'Product Name', value: selectedProduct?.productName },
-            { label: 'Product Quantity', value: selectedProduct?.productQuantity },
             { label: 'Product Price', value: selectedProduct?.productPrice },
             { label: 'Product Category', value: selectedProduct?.productCategory },
+            { label: 'Product Model No.', value: selectedProduct?.productModel },
             { label: 'Product Brand', value: selectedProduct?.productBrand },
             { label: 'Date', value: new Date(selectedProduct?.date).toLocaleDateString() },
             { label: 'Product Description', value: selectedProduct?.productDescription },

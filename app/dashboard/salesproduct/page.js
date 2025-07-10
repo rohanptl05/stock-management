@@ -27,13 +27,14 @@ const Page = () => {
     client: '',
     clientPhone: "",
     clientAddress: "",
-    items: [{ item_name: '', item_price: 0, productId: '', item_quantity: 1, total: 0 }],
+    items: [{ item_name: '', item_price: 0, productId: '', item_quantity: 1, total: 0, item_brand: '', item_catagory: '', item_model: '', item_serial: '' }],
     grandTotal: 0,
     received_amount: 0,
     customerID: "",
-    warranty: "",
     balance_due_amount: 0,
     imageURL: '',
+    warranty: '',
+    note: ''
   })
   const [currentPage, setCurrentPage] = useState(1);
   const [isselectedInvoice, setSelectedInvoice] = useState([])
@@ -97,38 +98,53 @@ const Page = () => {
     }));
   }, [isselectedInvoice?.items, products]);
 
-
   const handleItemChange = (index, field, value) => {
-    const updatedItems = [...formData.items]
+    const updatedItems = [...formData.items];
 
     if (field === 'productId') {
-      const selectedProduct = products.find(p => p._id === value)
+      const selectedProduct = products.find(p => p._id === value);
       if (selectedProduct) {
         updatedItems[index] = {
           ...updatedItems[index],
           productId: value,
           item_name: selectedProduct.productName,
           item_price: selectedProduct.productPrice,
-          total: selectedProduct.productPrice * updatedItems[index].item_quantity
-        }
+          total: selectedProduct.productPrice * updatedItems[index].item_quantity,
+          item_brand: selectedProduct.productBrand || '',
+          item_catagory: selectedProduct.productCategory || '',
+          item_model: selectedProduct.productModel || '',
+
+
+
+        };
       }
     } else if (field === 'item_quantity') {
-      updatedItems[index][field] = value === '' ? '' : parseInt(value)
-      const product = products.find(p => p._id === updatedItems[index].productId)
+      updatedItems[index][field] = value === '' ? '' : parseInt(value);
+      const product = products.find(p => p._id === updatedItems[index].productId);
       if (product) {
-        updatedItems[index].total = product.productPrice * updatedItems[index].item_quantity
-        updatedItems[index].item_price = product.productPrice
-        updatedItems[index].item_name = product.productName
+        updatedItems[index].total = product.productPrice * updatedItems[index].item_quantity;
+        updatedItems[index].item_price = product.productPrice;
+        updatedItems[index].item_name = product.productName;
+        updatedItems[index].item_model = product.productModel || '';
+        updatedItems[index].item_serial = product.productImei || '';
+        updatedItems[index].item_brand = product.productBrand || '';
+        updatedItems[index].item_catagory = product.productCategory || '';
+
+
       }
+    } else {
+
+      updatedItems[index][field] = value;
     }
 
-    setFormData({ ...formData, items: updatedItems })
+    setFormData({ ...formData, items: updatedItems });
 
-    const isValid = updatedItems.every(item => !isNaN(parseInt(item.item_quantity)))
+    const isValid = updatedItems.every(item => !isNaN(parseInt(item.item_quantity)));
     if (isValid) {
-      validateQuantities(updatedItems)
+      validateQuantities(updatedItems);
     }
-  }
+  };
+
   const handleItemEditChange = (index, field, value) => {
     setSelectedInvoice(prevInvoice => {
       const updatedItems = [...prevInvoice.items];
@@ -198,7 +214,11 @@ const Page = () => {
         item_quantity: 1,
         total: 0,
         item_name: '',
-        item_price: 0
+        item_price: 0,
+        item_model: '',
+        item_serial: '',
+        item_brand: '',
+        item_catagory: '',
       }]
     })
     setWarnings((prev) => [...prev, '']);
@@ -207,7 +227,7 @@ const Page = () => {
   const EditaddItem = () => {
     setSelectedInvoice((prev) => ({
       ...prev,
-      items: [...prev.items, { productId: '', item_quantity: 1, item_name: "", item_price: 0 }],
+      items: [...prev.items, { productId: '', item_quantity: 1, item_name: "", item_price: 0, total: 0, item_model: '', item_serial: '', item_brand: '', item_catagory: '' }],
     }));
     setWarnings((prev) => [...prev, '']);
   };
@@ -257,7 +277,7 @@ const Page = () => {
   const handleSale = async (e) => {
     e.preventDefault();
 
-    setIsSubmitting(true)
+    // setIsSubmitting(true)
     if (warnings.some(w => w)) {
       toast.warning('Please fix all quantity warnings before submitting')
       return
@@ -298,7 +318,12 @@ const Page = () => {
         item_price: item.item_price,
         productId: item.productId,
         item_quantity: item.item_quantity,
-        total: item.total
+        total: item.total,
+        item_model: item.item_model,
+        item_serial: item.item_serial,
+        item_brand: item.item_brand,
+        item_catagory: item.item_catagory,
+
       }
     })
 
@@ -310,12 +335,13 @@ const Page = () => {
       clientAddress: formData.clientAddress,
       grandTotal,
       customerID: formData.customerID,
-      warranty: formData.warranty,
       items: preparedItems,
       received_amount: 0,
-      userId: session?.user?.id
+      userId: session?.user?.id,
+      warranty: formData.warranty,
+      note: formData.note
     }
-
+    console.log("objectjhghkg:", saleData)
     try {
       const res = await ADDinvoice(saleData)
       if (res) {
@@ -325,13 +351,14 @@ const Page = () => {
           clientPhone: '',
           clientAddress: '',
           user: session?.user?.id,
-          items: [{ productId: '', item_quantity: 1, total: 0, item_name: '', item_price: 0 }],
+          items: [{ productId: '', item_quantity: 1, total: 0, item_name: '', item_price: 0, item_model: '', item_serial: '', item_brand: '', item_catagory: '' }],
           grandTotal: 0,
           received_amount: 0,
           customerID: "",
-          warranty: "",
           balance_due_amount: 0,
-          imageURL: ''
+          imageURL: '',
+          warranty: '',
+          note: ''
         })
 
         setIsAddModal(false)
@@ -579,219 +606,193 @@ const Page = () => {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModal(false)}
         title="ADD INVOICE"
-        className="max-h-[80vh] sm:max-h-[75vh] overflow-y-auto "
+        className="max-h-[85vh] overflow-y-auto"
       >
-        <div className="space-y-6 px-2 py-2 ">
-          {/* Customer Name */}
-          <div>
-            <label className=" font-semibold mb-1 text-sm text-gray-700">
-              Customer Name
-            </label>
-            <input
-              type="text"
-              name="client"
-              value={formData.client}
-              onChange={handleClientChange}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className=" font-semibold mb-1 text-sm text-gray-700">
-              Customer Address
-            </label>
-            <input
-              type="text"
-              name="clientAddress"
-              value={formData.clientAddress}
-              onChange={(e) => setFormData({ ...formData, clientAddress: e.target.value })}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className=" font-semibold mb-1 text-sm text-gray-700">
-              Customer Phone
-            </label>
-            <input
-              type="number"
-              name="clientPhone"
-              min={10}
-              max={11}
-              value={formData.clientPhone}
-              onChange={(e) => setFormData({ ...formData, clientPhone: e.target.value })}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+        <div className="space-y-6 px-4 py-4">
+          {/* Section: Customer Details */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-blue-700 border-b pb-1">Customer Details</h2>
+
+            <div className=" grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="py-1">
+                <label className="block text-sm font-medium text-gray-700">Customer Name</label>
+                <input
+                  type="text"
+                  name="client"
+                  value={formData.client}
+                  onChange={handleClientChange}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              </div>
+              <div className="py-1">
+                <label className="block text-sm font-medium text-gray-700">Phone</label>
+                <input
+                  type="number"
+                  name="clientPhone"
+                  value={formData.clientPhone}
+                  onChange={(e) => setFormData({ ...formData, clientPhone: e.target.value })}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              </div>
+              <div className="py-1">
+                <label className="block text-sm font-medium text-gray-700">Address</label>
+                <input
+                  type="text"
+                  name="clientAddress"
+                  value={formData.clientAddress}
+                  onChange={(e) => setFormData({ ...formData, clientAddress: e.target.value })}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              </div>
+              <div className="py-1">
+
+                <label className="block text-sm font-medium text-gray-700">Customer ID</label>
+                <input
+                  type="text"
+                  name="customerID"
+                  value={formData.customerID}
+                  onChange={(e) => setFormData({ ...formData, customerID: e.target.value })}
+                  className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                />
 
 
-
-
-
-
-
-          {/* Product Table */}
-          <div className="overflow-x-auto px-1 py-1 ">
-            <table className="w-full border border-collapse rounded-lg overflow-hidden">
-              <thead className="bg-blue-100 text-gray-700 text-sm">
-                <tr>
-                  <th className="border p-2 text-left">Product</th>
-                  <th className="border p-2 text-center">Available</th>
-                  <th className="border p-2 text-center">Price</th>
-                  <th className="border p-2 text-center">Quantity</th>
-                  <th className="border p-2 text-center">Total</th>
-                  <th className="border p-2 text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {formData.items.map((item, index) => {
-                  const product = products.find(p => p._id === item.productId);
-                  const itemTotal = product
-                    ? product.productPrice * item.item_quantity
-                    : 0;
-
-                  return (
-                    <tr key={index} className="bg-white text-sm">
-                      {/* Product Selector */}
-                      <td className="border p-2">
-                        <select
-                          className="w-full border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400 capitalize"
-                          value={item.productId}
-                          onChange={(e) =>
-                            handleItemChange(index, 'productId', e.target.value)
-                          }
-                        >
-                          <option value="">-- Select --</option>
-                          {getFilteredOptions(index)
-                            .sort((a, b) => a.productName.localeCompare(b.productName))
-                            .map((product) => (
-                              <option key={product._id} value={product._id}>
-                                {product.productName}
-                              </option>
-                            ))}
-                        </select>
-                      </td>
-
-
-                      {/* Available Quantity */}
-                      <td className="border p-2 text-center">
-                        {product
-                          ? product.productQuantityremaining
-                          : '--'}
-                      </td>
-
-                      {/* Price */}
-                      <td className="border p-2 text-center">
-                        {product ? `₹${product.productPrice}` : '--'}
-                      </td>
-
-
-                      {/* Quantity Input */}
-                      <td className="border p-2">
-                        <input
-                          type="number"
-                          min={1}
-                          max={product ? product.productQuantityremaining : 0}
-                          value={item?.item_quantity || 0}
-                          onChange={(e) => {
-                            const enteredQty = parseInt(e.target.value);
-                            const availableQty = product ? product.productQuantityremaining : 0;
-
-                            const newWarnings = [...warnings];
-
-                            if (enteredQty > availableQty) {
-                              newWarnings[index] = `Only ${availableQty} available`;
-                            } else {
-                              newWarnings[index] = '';
-                            }
-
-                            setWarnings(newWarnings);
-
-                            handleItemChange(index, 'item_quantity', enteredQty);
-                          }}
-                          className="w-full border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        />
-
-                        {/* ✅ Properly display the warning */}
-                        {warnings[index] && (
-                          <p className="text-red-600 text-xs mt-1">
-                            {warnings[index]}
-                          </p>
-                        )}
-                      </td>
-
-
-
-                      {/* Total */}
-                      <td className="border p-2 text-center font-medium">
-                        ₹{itemTotal.toFixed(2)}
-                      </td>
-
-                      {/* Remove Button */}
-                      <td className="border p-2 text-center">
-                        {formData.items.length > 1 && (
-                          <button
-                            onClick={() => removeItem(index)}
-                            className="text-red-500 hover:underline text-sm"
-                          >
-                            Remove
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-
-                {/* Grand Total Row */}
-                <tr className="bg-gray-100 font-semibold text-sm">
-                  <td colSpan="4" className="border p-2 text-right">
-                    Grand Total
-                  </td>
-                  <td className="border p-2 text-center" colSpan="2">
-                    ₹
-                    {formData.items
-                      .reduce((acc, item) => {
-                        const product = products.find(p => p._id === item.productId);
-                        return (
-                          acc +
-                          (product ? product.productPrice * item.item_quantity : 0)
-                        );
-                      }, 0)
-                      .toFixed(2)}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+              </div>
+            </div>
           </div>
 
-          {/* Add Row Button */}
-          <button
-            onClick={addItem}
-            className="bg-gray-200 text-gray-800 sm:px-4 sm:py-2 px-2 py-1 rounded shadow hover:bg-gray-300 transition duration-150"
-          >
-            + Add Product Row
-          </button>
+          {/* Section: Product Items */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-blue-700 border-b pb-1">Product Items</h2>
 
-          <div>
-            <label className=" font-semibold mb-1 text-sm text-gray-700">
-              Customer ID
-            </label>
-            <input
-              type="text"
-              name="customerID"
+            {formData.items.map((item, index) => {
+              const product = products.find((p) => p._id === item.productId);
+              const availableQty = product ? product.productQuantityremaining : 0;
+              const itemTotal = product ? product.productPrice * item.item_quantity : 0;
 
-              value={formData.customerID}
-              onChange={(e) => setFormData({ ...formData, customerID: e.target.value })}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+              return (
+                <div
+                  key={index}
+                  className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm space-y-4"
+                >
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-medium text-blue-600">Product #{index + 1}</h3>
+                    {formData.items.length > 1 && (
+                      <button
+                        onClick={() => removeItem(index)}
+                        className="text-red-500 text-sm hover:underline"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Row 1: Product selector, Price, Available */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Product</label>
+                      <select
+                        value={item.productId}
+                        onChange={(e) => handleItemChange(index, 'productId', e.target.value)}
+                        className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">-- Select Product --</option>
+                        {getFilteredOptions(index)
+                          .sort((a, b) => a.productName.localeCompare(b.productName))
+                          .map((product) => (
+                            <option key={product._id} value={product._id}>
+                              {product.productName}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Price</label>
+                      <div className="bg-gray-100 px-3 py-2 rounded border">{`₹${product?.productPrice ?? '--'}`}</div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Available</label>
+                      <div className="bg-gray-100 px-3 py-2 rounded border text-center">{availableQty}</div>
+                    </div>
+                  </div>
+
+                  {/* Row 2: Quantity, Total */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Quantity</label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={availableQty}
+                        value={item.item_quantity || ''}
+                        onChange={(e) => {
+                          const qty = parseInt(e.target.value);
+                          const newWarnings = [...warnings];
+                          newWarnings[index] =
+                            qty > availableQty ? `Only ${availableQty} available` : '';
+                          setWarnings(newWarnings);
+                          handleItemChange(index, 'item_quantity', qty);
+                        }}
+                        className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                      />
+                      {warnings[index] && (
+                        <p className="text-xs text-red-500 mt-1">{warnings[index]}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Total</label>
+                      <div className="bg-gray-100 px-3 py-2 rounded border">{`₹${itemTotal.toFixed(2)}`}</div>
+                    </div>
+                  </div>
+
+                  {/* Row 3: Serial No & Model */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Serial No./IMEI No.</label>
+                      <input
+                        type="number"
+                        value={item.item_serial || ''}
+                        onChange={(e) => handleItemChange(index, 'item_serial', e.target.value)}
+                        className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Model No</label>
+                      <input
+                        type="text"
+                        value={item.item_model || ''}
+                        onChange={(e) => handleItemChange(index, 'item_model', e.target.value)}
+                        className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Add Product Row Button */}
+            <button
+              onClick={addItem}
+              className="text-sm bg-gray-200 px-3 py-2 rounded hover:bg-gray-300 shadow"
+            >
+              + Add Product Row
+            </button>
           </div>
+
+          {/* Section: Extra Details */}
+          {/* <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-blue-700 border-b pb-1">Invoice Info</h2>
+
+
+          </div> */}
           <div>
-            <label className="font-semibold mb-1 text-sm text-gray-700">
-              PRODUCT WARRANTY:
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Warranty</label>
             <select
               name="warranty"
-              value={formData.warranty}
+              value={formData.warranty || ""}
+
               onChange={(e) => setFormData({ ...formData, warranty: e.target.value })}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select Warranty</option>
               <option value="3 months">3 Months</option>
@@ -800,30 +801,44 @@ const Page = () => {
               <option value="2 years">2 Years</option>
               <option value="3 years">3 Years</option>
               <option value="5 years">5 Years</option>
-              <option value="Lifetime">Lifetime Warranty</option>
+              <option value="Lifetime">Lifetime</option>
             </select>
           </div>
+          <div className="mt-3">
+            <label htmlFor="note" className="block text-sm font-semibold text-gray-700 mb-1">
+              Notes:
+            </label>
+            <textarea
+              name="note"
+              id="note"
+              rows={4}
+              placeholder="Describe..."
+              value={formData.note || ''}
+              onChange={(e) => setFormData({ ...formData, note: e.target.value })}
+              className="w-full p-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+            ></textarea>
+          </div>
 
-          {/* Action Buttons */}
-          <div className="flex justify-between items-center mt-6">
+
+          {/* Footer Buttons */}
+          <div className="flex justify-end gap-4 pt-6">
             <button
               onClick={() => setIsAddModal(false)}
-              className="bg-red-500 text-white sm:px-4 sm:py-2 px-2 py-1 rounded hover:bg-red-600 transition duration-150"
+              className="bg-red-500 text-white px-5 py-2 rounded hover:bg-red-600"
             >
-              Close
+              Cancel
             </button>
-
             <button
               onClick={handleSale}
               disabled={isSubmitting}
-              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition duration-150"
+              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
             >
-
-              {isSubmitting ? "Creating..." : "Create Invoice"}
+              {isSubmitting ? 'Creating...' : 'Create Invoice'}
             </button>
           </div>
         </div>
       </Modal>
+
 
 
       {/* edit modale */}
@@ -831,229 +846,254 @@ const Page = () => {
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         title="Edit INVOICE"
-        className="max-h-[80vh] sm:max-h-[75vh] overflow-y-auto "
+        className="max-h-[85vh] overflow-y-auto"
       >
-        <div className="space-y-6 px-2 py-2 ">
-          {/* Customer Name */}
-          <div>
-            <label className=" font-semibold mb-1 text-sm text-gray-700">
-              Customer Name
-            </label>
-            <input
-              type="text"
-              name="client"
-              value={isselectedInvoice.client}
-              onChange={handleClientChange}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+        <div className="space-y-6 px-4 py-4">
+          {/* Section: Customer Details */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-blue-700 border-b pb-1">Customer Details</h2>
+
+            <div className=" sm:grid-cols-2 gap-4">
+              <div className="py-1">
+                <label className="block text-sm font-medium text-gray-700">Customer Name</label>
+                <input
+                  type="text"
+                  name="client"
+                  value={isselectedInvoice.client}
+                  onChange={handleClientChange}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              </div>
+              <div className="py-1">
+                <label className="block text-sm font-medium text-gray-700">Phone</label>
+                <input
+                  type="number"
+                  name="clientPhone"
+                  value={isselectedInvoice.clientPhone}
+                  onChange={handlePhoneChange}
+                  maxLength={10}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              </div>
+              <div className="py-1">
+                <label className="block text-sm font-medium text-gray-700">Address</label>
+                <input
+                  type="text"
+                  name="clientAddress"
+                  value={isselectedInvoice.clientAddress}
+                  onChange={(e) => setSelectedInvoice({ ...isselectedInvoice, clientAddress: e.target.value })}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              </div>
+              <div className="py-1" >
+
+                <label className="block text-sm font-medium text-gray-700">Customer ID</label>
+                <input
+                  type="text"
+                  name="customerID"
+
+                  value={isselectedInvoice.customerID}
+                  onChange={(e) => setSelectedInvoice({ ...isselectedInvoice, customerID: e.target.value })}
+                  className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                />
+
+
+              </div>
+              <div>
+                <label className="font-semibold mb-1 text-sm text-gray-700">
+                  Issue Date
+                </label>
+                <input
+                  type="date"
+                  name="date"
+                  id="date"
+                  value={
+                    isselectedInvoice.date
+                      ? new Date(isselectedInvoice.date).toISOString().slice(0, 10)
+                      : ''
+                  }
+                  onChange={(e) =>
+                    setSelectedInvoice((prev) => ({
+                      ...prev,
+                      date: e.target.value,
+                    }))
+                  }
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+
+              </div>
+            </div>
           </div>
-          <div>
-            <label className=" font-semibold mb-1 text-sm text-gray-700">
-              Customer Address
-            </label>
-            <input
-              type="text"
-              name="clientAddress"
-              value={isselectedInvoice.clientAddress}
-              onChange={(e) => setSelectedInvoice({ ...isselectedInvoice, clientAddress: e.target.value })}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="font-semibold mb-1 text-sm text-gray-700">Customer Phone</label>
-            <input
-              type="text"
-              name="clientPhone"
-              value={isselectedInvoice.clientPhone}
-              onChange={handlePhoneChange}
-              maxLength={10}
-              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${error ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-blue-500"
-                }`}
-            />
-            {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
-          </div>
 
+          {/* Section: Product Items */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-blue-700 border-b pb-1">Product Items</h2>
 
-          <div>
-            <label className="font-semibold mb-1 text-sm text-gray-700">
-              Issue Date
-            </label>
-            <input
-              type="date"
-              name="date"
-              id="date"
-              value={
-                isselectedInvoice.date
-                  ? new Date(isselectedInvoice.date).toISOString().slice(0, 10)
-                  : ''
-              }
-              onChange={(e) =>
-                setSelectedInvoice((prev) => ({
-                  ...prev,
-                  date: e.target.value,
-                }))
-              }
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            {isselectedInvoice?.items?.map((item, index) => {
+              const product = products.find(p => p._id === item.productId);
+              const originalQty = originalItemQuantities[index] || 0;
+              const availableQty = product
+                ? product.productQuantityremaining + originalQty
+                : 0;
+              const itemTotal = product ? product.productPrice * item.item_quantity : 0;
 
-          </div>
+              return (
+                <div
+                  key={index}
+                  className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm space-y-4"
+                >
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-medium text-blue-600">Product #{index + 1}</h3>
+                    {formData.items.length > 1 && (
+                      <button
+                        onClick={() => EditremoveItem(index)}
+                        className="text-red-500 text-sm hover:underline"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
 
+                  {/* Row 1: Product selector, Price, Available */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Product</label>
+                      <select
+                        value={item.productId}
+                        onChange={(e) => handleItemEditChange(index, 'productId', e.target.value)}
+                        className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">-- Select Product --</option>
+                        {getFilteredEditOptions(index).map((product) => (
+                          <option key={product._id} value={product._id}>
+                            {product.productName}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Price</label>
+                      <div className="bg-gray-100 px-3 py-2 rounded border">{`₹${product?.productPrice ?? '--'}`}</div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Available</label>
+                      <div className="bg-gray-100 px-3 py-2 rounded border text-center"> {availableQty}</div>
+                    </div>
+                  </div>
 
-          {/* Product Table */}
-          <div className="overflow-x-auto px-1 py-1 ">
-            <table className="w-full border border-collapse rounded-lg overflow-hidden">
-              <thead className="bg-blue-100 text-gray-700 text-sm">
-                <tr>
-                  <th className="border p-2 text-left">Product</th>
-                  <th className="border p-2 text-center">Available</th>
-                  <th className="border p-2 text-center">Price</th>
-                  <th className="border p-2 text-center">Quantity</th>
-                  <th className="border p-2 text-center">Total</th>
-                  <th className="border p-2 text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {isselectedInvoice?.items?.map((item, index) => {
+                  {/* Row 2: Quantity, Total */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Quantity</label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={
+                          availableQty
+                        }
+                        value={item.item_quantity || ''}
+                        onChange={(e) => {
+                          const enteredQty = parseInt(e.target.value || '0');
 
-
-                  const product = products.find(p => p._id === item.productId);
-                  const originalQty = originalItemQuantities[index] || 0;
-                  const availableQty = product
-                    ? product.productQuantityremaining + originalQty
-                    : 0;
-                  const itemTotal = product ? product.productPrice * item.item_quantity : 0;
-
-
-                  return (
-                    <tr key={index} className="bg-white text-sm">
-                      {/* Product Selector */}
-                      <td className="border p-2">
-                        <select
-                          className="w-full border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400 capitalize"
-                          value={item.productId}
-                          onChange={(e) =>
-                            handleItemEditChange(index, 'productId', e.target.value)
+                          if (enteredQty > availableQty) {
+                            setWarnings((prev) => {
+                              const newWarnings = [...prev];
+                              newWarnings[index] = `Only ${availableQty} available`;
+                              return newWarnings;
+                            });
+                          } else {
+                            setWarnings((prev) => {
+                              const newWarnings = [...prev];
+                              newWarnings[index] = '';
+                              return newWarnings;
+                            });
                           }
-                        >
-                          <option value="">-- Select --</option>
-                          {getFilteredEditOptions(index).map((product) => (
-                            <option key={product._id} value={product._id}>
-                              {product.productName}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
 
-                      {/* Available Quantity */}
-                      <td className="border p-2 text-center">
-                        {availableQty}
-                      </td>
+                          handleItemEditChange(index, 'item_quantity', enteredQty);
+                        }}
+                        className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                      />
+                      {warnings[index] && (
+                        <p className="text-xs text-red-500 mt-1">{warnings[index]}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Total</label>
+                      <div className="bg-gray-100 px-3 py-2 rounded border">{`₹${itemTotal.toFixed(2)}`}</div>
+                    </div>
+                  </div>
 
-                      {/* Price */}
-                      <td className="border p-2 text-center">
-                        {product ? `₹${product.productPrice}` : '--'}
-                      </td>
+                  {/* Row 3: Serial No & Model */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Serial No./IMEI No.</label>
+                      <input
+                        type="number"
+                        value={item.item_serial || ''}
+                        onChange={(e) => handleItemEditChange(index, 'item_serial', e.target.value)}
+                        className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Model No</label>
+                      <input
+                        type="text"
+                        value={item.item_model || ''}
+                        onChange={(e) => handleItemEditChange(index, 'item_model', e.target.value)}
+                        className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
 
-                      {/* Quantity Input */}
-                      <td className="border p-2">
-                        <input
-                          type="number"
-                          min={1}
-                          max={
-                            availableQty
-                          }
-                          value={item.item_quantity}
-                          onChange={(e) => {
-                            const enteredQty = parseInt(e.target.value || '0');
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Brand </label>
+                      <input
+                        type="text"
+                        value={item.item_brand || ''}
+                        onChange={(e) => handleItemEditChange(index, 'item_brand', e.target.value)}
+                        className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Catagory </label>
+                      <input
+                        type="text"
+                        value={item.item_catagory || ''}
+                        onChange={(e) => handleItemEditChange(index, 'item_catagory', e.target.value)}
+                        className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
 
-                            if (enteredQty > availableQty) {
-                              setWarnings((prev) => {
-                                const newWarnings = [...prev];
-                                newWarnings[index] = `Only ${availableQty} available`;
-                                return newWarnings;
-                              });
-                            } else {
-                              setWarnings((prev) => {
-                                const newWarnings = [...prev];
-                                newWarnings[index] = '';
-                                return newWarnings;
-                              });
-                            }
-
-                            handleItemEditChange(index, 'item_quantity', enteredQty);
-                          }}
-                          className="w-full border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        />
-                        {warnings[index] && (
-                          <p className="text-red-600 text-xs mt-1">
-                            {warnings[index]}
-                          </p>
-                        )}
-                      </td>
-
-                      {/* Total */}
-                      <td className="border p-2 text-center font-medium">
-                        ₹{itemTotal.toFixed(2)}
-                      </td>
-
-                      {/* Remove Button */}
-                      <td className="border p-2 text-center">
-                        {isselectedInvoice.items.length > 1 && (
-                          <button
-                            onClick={() => EditremoveItem(index)}
-                            className="text-red-500 hover:underline text-sm"
-                          >
-                            Remove
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-                <tr className="bg-gray-100 font-semibold text-sm">
-                  <td colSpan="4" className="border p-2 text-right">
-                    Grand Total
-                  </td>
-                  <td className="border p-2 text-center" colSpan="2">
-                    ₹{isselectedInvoice?.grandTotal || '0.00'}
-                  </td>
-                </tr>
-
-              </tbody>
-            </table>
+            {/* Add Product Row Button */}
+            <button
+              onClick={EditaddItem}
+              className="text-sm bg-gray-200 px-3 py-2 rounded hover:bg-gray-300 shadow"
+            >
+              + Add Product Row
+            </button>
           </div>
 
-          {/* Add Row Button */}
-          <button
-            onClick={EditaddItem}
-            className="bg-gray-200 text-gray-800 sm:px-4 sm:py-2 px-2 py-1 rounded shadow hover:bg-gray-300 transition duration-150"
-          >
-            + Add Product Row
-          </button>
+          {/* Section: Extra Details */}
+          {/* <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-blue-700 border-b pb-1">Invoice Info</h2>
 
 
-            <div>
-            <label className=" font-semibold mb-1 text-sm text-gray-700">
-              Customer ID
-            </label>
-            <input
-              type="text"
-              name="customerID"
+          </div> */}
 
-              value={isselectedInvoice.customerID}
-              onChange={(e) => setSelectedInvoice({ ...isselectedInvoice, customerID: e.target.value })}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
           <div>
-            <label className="font-semibold mb-1 text-sm text-gray-700">
-              PRODUCT WARRANTY:
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Warranty</label>
             <select
               name="warranty"
+
+
               value={isselectedInvoice.warranty}
               onChange={(e) => setSelectedInvoice({ ...isselectedInvoice, warranty: e.target.value })}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select Warranty</option>
               <option value="3 months">3 Months</option>
@@ -1062,29 +1102,48 @@ const Page = () => {
               <option value="2 years">2 Years</option>
               <option value="3 years">3 Years</option>
               <option value="5 years">5 Years</option>
-              <option value="Lifetime">Lifetime Warranty</option>
+              <option value="Lifetime">Lifetime</option>
             </select>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex justify-between items-center mt-6">
+          <div className="mt-3">
+            <label htmlFor="note" className="block text-sm font-semibold text-gray-700 mb-1">
+              Notes:
+            </label>
+            <textarea
+              name="note"
+              id="note"
+              rows={4}
+              placeholder="Describe..."
+              value={isselectedInvoice.note || ''}
+               onChange={(e) => setSelectedInvoice({ ...isselectedInvoice, note: e.target.value })}
+              className="w-full p-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+            ></textarea>
+          </div>
+
+
+          {/* Footer Buttons */}
+          <div className="flex justify-end gap-4 pt-6">
             <button
               onClick={() => setIsEditModalOpen(false)}
-              className="bg-red-500 text-white sm:px-4 sm:py-2 px-2 py-1 rounded hover:bg-red-600 transition duration-150"
+              className="bg-red-500 text-white px-5 py-2 rounded hover:bg-red-600"
             >
-              Close
+              Cancel
             </button>
-
             <button
               onClick={handleSaleEdit}
               disabled={isSubmitting}
-              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition duration-150"
+              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
             >
               {isSubmitting ? "updating..." : "Invoice Update"}
             </button>
           </div>
         </div>
       </Modal>
+
+
+
+
 
       {navigating && (
         <div className="fixed inset-0  bg-opacity-60 flex items-center justify-center z-50">

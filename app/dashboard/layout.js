@@ -241,6 +241,16 @@ useEffect(() => {
                     <i className="fa-solid fa-recycle mx-2"></i> <span>Recycle Bin</span>
                   </button>
                 </li>
+                  <li className="w-full">
+                  <button
+                    onClick={() => navigateTo("/dashboard/backup")}
+                    className={`w-full text-left px-4 py-2 rounded-2xl hover:bg-slate-500 ${pathname === "/dashboard/backup" ? "bg-slate-500 text-white" : ""
+                      }`}
+                  >
+                   <i className="fa-solid fa-bars-progress mx-2"></i>
+                    <span>Backup & Restor</span>
+                  </button>
+                </li>
 
               </ul>
 

@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { InvoiceDetails } from "@/app/api/actions/invoiceactions"
-import { fetchuser } from '@/app/api/actions/useractions';
+
 import { useSession } from 'next-auth/react';
 
 import jsPDF from "jspdf";
@@ -20,7 +20,7 @@ const Page = () => {
   const params = useParams();
   const id = params.invoiceid;
   const [invoice, setInvoice] = useState([])
-  const [user, setUser] = useState([])
+ 
   const [isLoading, setIsLoading] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const reportRef = useRef(null);
@@ -39,9 +39,7 @@ const Page = () => {
     setInvoice(res || {}); // Expecting a single invoice object
 
 
-    const ress = await fetchuser(session?.user?.email);
-    setUser(ress || {});
-
+    
     setIsLoading(false);
   };
 
@@ -183,7 +181,7 @@ const Page = () => {
         <InvoiceDetailsPage
           isLoading={isLoading}
           invoice={invoice}
-          user={user}
+          
           reportRef={reportRef}
         />
 

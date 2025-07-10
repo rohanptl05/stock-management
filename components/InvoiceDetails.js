@@ -3,7 +3,7 @@ import React from 'react'
 import Image from 'next/image';
 
 
-const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
+const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
     const cellHeader = {
         padding: '6px',
         borderTop: '1px solid #000',
@@ -18,7 +18,7 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
         padding: '6px',
         borderRight: '1px solid #000',
         textAlign: 'center',
-       
+
     };
 
 
@@ -49,19 +49,19 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                         <div className="flex justify-between  ">
                             <div className="space-y-1 p-2   text-left">
                                 <p>
-                                    <span className="font-bold">Name:</span>{' '}
+                                    <span className="font-bold">Name : </span>{' '}
                                     {(invoice.client ?? '_________________')
                                         .toLowerCase()
                                         .split(' ')
                                         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                                         .join(' ')}
                                 </p>
-                                <p><span className="font-bold">Add.:</span> {(invoice?.clientAddress || '_________________')
+                                <p><span className="font-bold">Address : </span> {(invoice?.clientAddress || '_________________')
                                     .toLowerCase()
                                     .split(' ')
                                     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                                     .join(' ')}</p>
-                                <p><span className="font-bold">Mo.:</span> {invoice?.clientPhone || '_________________'}</p>
+                                <p><span className="font-bold">Mobile No. : </span> {invoice?.clientPhone || '_________________'}</p>
                             </div>
                             <div className="text-right border-l px-2 ">
                                 <p><span className="font-bold">Bill No:</span> <span className="text-lg font-bold">{invoice?.invoiceNumber || '201'}</span></p>
@@ -86,20 +86,55 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                                 {invoice?.items?.map((item, index) => (
                                     <tr key={index}>
                                         <td className="border-l p-1">{index + 1}</td>
-                                        <td className="border-l p-1 text-left">
-                                            {item.item_name
-                                                .toLowerCase()
-                                                .split(' ')
-                                                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                                                .join(' ')}
+                                        <td className="border-l p-1 text-left px-2">
+                                            <div>
+                                                {item.item_name
+                                                    .toLowerCase()
+                                                    .split(' ')
+                                                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                                    .join(' ')}
+
+
+
+                                            </div >
+                                            <div>
+
+                                                {item?.item_model && (
+                                                    <div className="text-sm text-gray-600 px-2">Model No :{item.item_model}</div>
+                                                )}
+                                            </div>
+                                            <div>
+                                                {item?.item_brand && (
+                                                    <div className="text-sm  px-2"> Serial no./IMEI No. : {item.item_serial} </div>
+                                                )}
+
+                                            </div>
+                                            <div className='flex'>
+
+                                                {item?.item_brand && (
+                                                    <div className="text-sm text-gray-600 px-2">{item.item_brand}</div>
+                                                )}
+                                                {item?.item_catagory && (
+                                                    <div className="text-sm text-gray-600 px-2">{item.item_catagory}</div>
+                                                )}
+                                            </div>
+                                            <div>
+                                                {invoice?.note && (
+                                                    <div className="text-sm  px-2 text-gray-600"> (Notes : {invoice?.note}) </div>
+                                                )}
+
+                                            </div>
+
                                         </td>
+
 
                                         <td className="border-l p-1">{item.item_quantity}</td>
                                         <td className="border-l p-1">₹{item.item_price.toFixed(2)}</td>
                                         <td className="border-l p-1">₹{(item.item_price * item.item_quantity).toFixed(2)}</td>
                                     </tr>
+
                                 ))}
-                               
+
                                 {Array.from({ length: Math.max(10 - (invoice?.items?.length || 0), 0) }).map((_, i) => (
                                     <tr key={`empty-${i}`}>
                                         <td className="border-l p-1">&nbsp;</td>
@@ -112,26 +147,41 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                             </tbody>
                             <tfoot>
                                 <tr>
-                                 
+                                    {/* Warranty column - spans first 2 columns */}
+                                    <td colSpan={3}
+                                        style={{
+                                            border: '1px solid #000',
+                                            padding: '6px',
+                                            fontWeight: 'bold',
+                                            textAlign: 'left',
+                                            backgroundColor: '#f9f9f9',
+                                        }}
+                                    >
+                                        Warranty: {invoice?.warranty || 'N/A'}
+                                    </td>
+
+                                    {/* Empty filler cell for spacing */}
+
+
+                                    {/* TOTAL label cell */}
                                     <td
-                                        colSpan={4}
                                         style={{
                                             border: '1px solid #000',
                                             padding: '6px',
                                             textAlign: 'right',
                                             fontWeight: 'bold',
-                                            backgroundColor: '#f3f3f3', 
+                                            backgroundColor: '#f3f3f3',
                                         }}
                                     >
                                         TOTAL:
                                     </td>
 
-                                    
+                                    {/* TOTAL amount cell */}
                                     <td
                                         style={{
                                             border: '1px solid #000',
                                             padding: '6px',
-                                            textAlign: 'center', 
+                                            textAlign: 'center',
                                             fontWeight: 'bold',
                                             backgroundColor: '#f3f3f3',
                                         }}
@@ -141,20 +191,21 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                                 </tr>
                             </tfoot>
 
+
                         </table>
                     </div>
 
                     {/* Footer */}
                     <div className="flex justify-between mt-2 text-xs p-4">
-                        <p className="font-bold">I.D.:{(invoice?.customerID || '_________________________')} </p>
+                        <p className="font-bold"> Customer I.D.:{(invoice?.customerID || '_________________________')} </p>
 
                     </div>
-                    <div className="flex justify-between mt-2 text-xs p-4">
+                    {/* <div className="flex justify-between mt-2 text-xs p-4">
                         <p className="font-bold">WARRANTY: {(invoice?.warranty || '_________________________')}</p>
-                    </div>
+                    </div> */}
                     <div className="flex justify-between items-end mt-4 text-xs p-4">
                         <p className="italic">Received Signature…</p>
-                        <p className="font-bold">For, Sai Sales Service</p>
+                        <p className="font-bold"> <span className='font-extrabold text-xl'>For</span>, Sai Service</p>
                     </div>
                 </div>
 
@@ -169,14 +220,14 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
 
 
             <div ref={reportRef}
-               
-                className={`bg-white min-w-[794px] min-h-[1123px] w-[994px] p-8 text-black mx-auto  rounded shadow-lg hidden  `}
+
+                className={`bg-white min-w-[794px] min-h-[1000px] w-[994px] p-8 text-black mx-auto  rounded shadow-lg   hidden`}
             >
                 <div
 
                     style={{
-                        width: '794px',         
-                        height: '1123px',       
+                        width: '794px',
+                        height: '1000px',
                         margin: '0 auto',
                         border: '1px solid #b91c1c',
                         fontFamily: 'Cambria, serif',
@@ -189,7 +240,10 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                         position: 'relative',
                         marginTop: '20px',
                         padding: '0',
-                        overflow: 'hidden',     
+                        overflow: 'hidden',
+                        fontWeight: 'bold',
+                        textAlign: 'center'
+
                     }}
                 >
                     {/* Header */}
@@ -217,11 +271,13 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                             style={{
                                 textAlign: 'center',
                                 borderTop: '1px solid #000',
-                                borderBottom: '1px solid #000',
-                                padding: '5px 0',
+                                // borderBottom: '1px solid #000',
+                                padding: '1px 0',
                                 margin: '10px 0',
                                 fontWeight: 'bold',
                                 itemsAlign: 'center',
+                                justifyItems: 'center'
+
                             }}
                         >
                             A.T. Post. Pipalkhed, (Bus stop Pachhal) Shop No. 2, Ta. Vansda Dist. Navsari.
@@ -230,27 +286,27 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                         {/* Info Row */}
                         <div
                             style={{
-                                padding: '10px',
+                                padding: '0 10px ',
                                 display: 'flex',
                                 justifyContent: 'space-between',
-                                alignItems: 'stretch', 
-                                borderTop: '1px solid #000', 
-                                borderBottom: '1px solid #000', 
+                                alignItems: 'stretch',
+                                borderTop: '1px solid #000',
+                                borderBottom: '1px solid #000',
                             }}
                         >
                             {/* Client Info */}
-                            <div style={{ width: '60%', textAlign: 'left', paddingRight: '10px' }}>
-                                <p style={{ wordSpacing: '2px', letterSpacing: '0.5px' }}><strong>Name:</strong>   {(invoice.client ?? '_________________')
-                                        .toLowerCase()
-                                        .split(' ')
-                                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                                        .join(' ')}</p>
-                                <p><strong>Add.:</strong>{(invoice?.clientAddress || '_________________')
+                            <div style={{ width: '60%', textAlign: 'left', paddingRight: '10px', padding: '2px', fontSize: '13px' }}>
+                                <p style={{ wordSpacing: '2px', letterSpacing: '0.5px' }}><strong>Name : </strong>   {(invoice.client ?? '_________________')
                                     .toLowerCase()
                                     .split(' ')
                                     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                                     .join(' ')}</p>
-                                <p><strong>Mo.:</strong> {invoice?.clientPhone || '________________'}</p>
+                                <p><strong>Address : </strong>{(invoice?.clientAddress || '_________________')
+                                    .toLowerCase()
+                                    .split(' ')
+                                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                    .join(' ')}</p>
+                                <p><strong>Mobile : </strong> {invoice?.clientPhone || '________________'}</p>
                             </div>
 
                             {/* Invoice Info */}
@@ -296,16 +352,46 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                                     <th style={cellHeader}>Amount Rs.</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody style={{ fontSize: '14px' }}>
                                 {(invoice?.items || []).map((item, index) => (
                                     <tr key={index}>
                                         <td style={cellBody}>{index + 1}</td>
-                                        <td style={{ ...cellBody, textAlign: 'left' }}> {item.item_name
-                                                .toLowerCase()
-                                                .split(' ')
-                                                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                                                .join(' ')}</td>
-                                        
+                                        <td style={{ ...cellBody, textAlign: 'left' }}>
+                                            <div>
+                                                {item.item_name
+                                                    .toLowerCase()
+                                                    .split(' ')
+                                                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                                    .join(' ')}
+                                            </div>
+
+                                            {/* Model Number */}
+                                            {item?.item_model && (
+                                                <div style={{ color: 'gray', fontSize: '13px', paddingLeft: '8px' }}>
+                                                    Model No: {item.item_model}
+                                                </div>
+                                            )}
+
+                                            {/* Serial Number */}
+                                            {item?.item_serial && (
+                                                <div style={{ fontSize: '13px', paddingLeft: '8px' }}>
+                                                    Serial no./IMEI No.: {item.item_serial}
+                                                </div>
+                                            )}
+                                            {/* Brand & Category */}
+                                            <div style={{ display: 'flex', gap: '8px', color: 'gray', fontSize: '13px', paddingLeft: '8px' }}>
+                                                {item?.item_brand && <div>{item.item_brand}</div>}
+                                                {item?.item_catagory && <div>{item.item_catagory}</div>}
+                                            </div>
+
+                                            {invoice?.note && (
+                                                <div style={{ fontSize: '13px', paddingLeft: '8px', color: "gray" }}>
+                                                    (Notes : {invoice?.note})
+                                                </div>
+                                            )}
+                                        </td>
+
+
                                         <td style={cellBody}>{item.item_quantity}</td>
                                         <td style={cellBody}>₹{item.item_price.toFixed(2)}</td>
                                         <td style={cellBody}>
@@ -314,7 +400,7 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                                     </tr>
                                 ))}
                                 {/* Blank Rows */}
-                                {Array.from({ length: Math.max(10 - (invoice?.items?.length || 0), 0) }).map((_, i) => (
+                                {Array.from({ length: Math.max(12 - (invoice?.items?.length || 0), 0) }).map((_, i) => (
                                     <tr key={`blank-${i}`}>
                                         <td style={cellBody}>&nbsp;</td>
                                         <td style={cellBody}>&nbsp;</td>
@@ -326,26 +412,41 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                             </tbody>
                             <tfoot>
                                 <tr>
-                                   
+                                    {/* Warranty column - spans first 2 columns */}
+                                    <td colSpan={3}
+                                        style={{
+                                            border: '1px solid #000',
+                                            padding: '6px',
+                                            fontWeight: 'bold',
+                                            textAlign: 'left',
+                                            backgroundColor: '#f9f9f9',
+                                        }}
+                                    >
+                                        Warranty: {invoice?.warranty || 'N/A'}
+                                    </td>
+
+                                    {/* Empty filler cell for spacing */}
+
+
+                                    {/* TOTAL label cell */}
                                     <td
-                                        colSpan={4}
                                         style={{
                                             border: '1px solid #000',
                                             padding: '6px',
                                             textAlign: 'right',
                                             fontWeight: 'bold',
-                                            backgroundColor: '#f3f3f3', 
+                                            backgroundColor: '#f3f3f3',
                                         }}
                                     >
                                         TOTAL:
                                     </td>
 
-                                   
+                                    {/* TOTAL amount cell */}
                                     <td
                                         style={{
                                             border: '1px solid #000',
                                             padding: '6px',
-                                            textAlign: 'center', 
+                                            textAlign: 'center',
                                             fontWeight: 'bold',
                                             backgroundColor: '#f3f3f3',
                                         }}
@@ -369,16 +470,11 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
 
                         }}
                     >
-                        <p>I.D.: {(invoice?.customerID || '_________________________')}</p>
+                        <p>Customer I.D.: {(invoice?.customerID || '_________________________')}</p>
 
                     </div>
 
-                    {/* Warranty */}
-                    <div style={{ marginTop: '10px', padding: '12px', }}>
-                        <p>
-                            <strong>WARRANTY:</strong> {(invoice?.warranty || '_________________________')}
-                        </p>
-                    </div>
+
 
                     {/* Signature */}
                     <div
@@ -392,7 +488,7 @@ const InvoiceDetails = ({ isLoading, invoice, user, reportRef }) => {
                         }}
                     >
                         <p style={{ fontStyle: 'italic' }}>Received Signature…</p>
-                        <p style={{ fontWeight: 'bold' }}>For, Sai Sales Service</p>
+                        <p style={{ fontWeight: 'bold' }}>For, Sai Service</p>
                     </div>
                 </div>
 

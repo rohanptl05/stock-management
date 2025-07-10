@@ -219,7 +219,8 @@ const Page = () => {
               <tr>
                 <th className="sm:px-4 sm:py-2 px-2 py-1 border-b">Operator Name</th>
                 <th className="sm:px-4 sm:py-2 px-2 py-1 border-b sm:table-cell hidden">Total Balance</th>
-                <th className="sm:px-4 sm:py-2 px-2 py-1 border-b">Balance</th>
+                <th className="sm:px-4 sm:py-2 px-2 py-1 border-b sm:table-cell hidden">Use Balance</th>
+                <th className="sm:px-4 sm:py-2 px-2 py-1 border-b"> Remaing Balance</th>
 
                 <th className="sm:px-4 sm:py-2 px-2 py-1 border-b">Actions</th>
               </tr>
@@ -246,17 +247,21 @@ const Page = () => {
                         setNavigating(true);
                         setTimeout(() => {
                           router.push(`recharge/${recharge._id}?name=${encodeURIComponent(recharge.operatorName)}`);
-                        }, 300); 
+                        }, 300);
                       }}
                     >
-                     
+
                       <span className="hover:text-blue-500  hover:scale-110">
                         {recharge.operatorName.charAt(0).toUpperCase() + recharge.operatorName.slice(1)}
                       </span>
-                     
+
                     </td>
 
                     <td className="sm:px-4 sm:py-2 px-2 py-1 border-b sm:table-cell hidden">{recharge.totalBalance?.toFixed(2)}</td>
+                    <td className="sm:px-4 sm:py-2 px-2 py-1 border-b sm:table-cell hidden">   {(
+                      parseFloat(recharge.totalBalance || 0) -
+                      parseFloat(recharge.remainingBalance || 0)
+                    ).toFixed(2)}</td>
                     <td className="sm:px-4 sm:py-2 px-2 py-1 border-b">{recharge.remainingBalance?.toFixed(2)}</td>
                     <td className="sm:px-4 sm:py-2 px-2 py-1 border-b">
                       <button

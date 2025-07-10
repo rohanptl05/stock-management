@@ -64,6 +64,8 @@ const ProductList = ({ product, setSelectedProduct, setIsEditModalOpen, setViewo
       <td className={`border-b border-black sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap `}>
         {Number(product.productQuantityremaining)}
       </td>
+      <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap hidden sm:table-cell">{(parseInt(product.productQuantity) - parseInt(product.productQuantityremaining)).toLocaleString()}
+</td>
       <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap hidden sm:table-cell">{product.productPrice}</td>
 
       <td className="border-b sm:px-4 sm:py-2 px-2 py-1 whitespace-nowrap">

@@ -32,11 +32,12 @@ export const ADDinvoice = async (data) => {
       clientAddress: data.clientAddress || "",
       items: data.items,
       grandTotal: data.grandTotal,
-      warranty:data.warranty,
       customerID:data.customerID,
       received_amount: receivedAmount,
       balance_due_amount: Math.max(balanceDue, 0),
       imageURL: data.imageURL,
+      warranty:data.warranty,
+      note:data.note
     });
 
 

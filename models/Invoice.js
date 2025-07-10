@@ -4,11 +4,16 @@ const { Schema } = mongoose;
 
 
 const ItemSchema = new Schema({
-    productId:{ type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+    productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
     item_name: { type: String, required: true },
     item_price: { type: Number, required: true, min: 0 },
     item_quantity: { type: Number, required: true, min: 1 },
     total: { type: Number, required: true },
+    item_model: { type: String, default: "" },
+    item_serial: { type: String, default: "" },
+    item_brand: { type: String, default: "" },
+    item_catagory: { type: String, default: "" },
+
 }, { _id: false });
 
 
@@ -17,10 +22,9 @@ const invoiceSchema = new Schema({
     invoiceNumber: { type: Number },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     client: { type: String, required: true },
-    clientPhone:{type: String},
-    clientAddress:{type: String},
-    customerID:{type: String},
-    warranty:{type: String},
+    clientPhone: { type: String },
+    clientAddress: { type: String },
+    customerID: { type: String },
     status: {
         type: String,
         default: "PENDING",
@@ -30,9 +34,9 @@ const invoiceSchema = new Schema({
     grandTotal: { type: Number, required: true, min: 0 },
     received_amount: { type: Number, default: 0 },
     balance_due_amount: { type: Number, default: 0 },
+    warranty: { type: String, default: "" },
+    note:{ type: String, default: "" },
     date: { type: Date, default: Date.now },
-
-
     recordStatus: {
         type: String,
         enum: ["active", "deactivated"],
