@@ -201,3 +201,20 @@ body {
     margin: 0 !important;
   }
 }
+
+
+@media print {
+  .break-after-page {
+    page-break-after: always;
+  }
+}
+
+.print-page {
+  width: 794px; /* A4 width in px at 96dpi */
+  min-height: 1123px; /* A4 height */
+  margin: 20px auto;
+  padding: 20px;
+  background: white;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  display: block;
+}

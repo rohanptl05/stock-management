@@ -76,8 +76,8 @@ const Page = () => {
       const pdfHeightMm = pdf.internal.pageSize.getHeight(); 
 
     
-      const topMarginMm = 10;
-      const bottomMarginMm = 10;
+      const topMarginMm = 6;
+      const bottomMarginMm = 6;
      
       const usableHeightMm = pdfHeightMm - topMarginMm - bottomMarginMm;
 
@@ -143,7 +143,7 @@ const Page = () => {
 
       
       const timestamp = new Date().toLocaleString();
-      pdf.setFontSize(8);
+      pdf.setFontSize(6);
       const textWidth = pdf.getTextWidth(timestamp);
       pdf.text(
         timestamp,
@@ -168,7 +168,7 @@ const Page = () => {
 
   return (
     <>
-      <div className="container mx-auto px-4 mb-4">
+      <div className="container mx-auto ">
         <div className="flex justify-end">
 
           <button type="button"

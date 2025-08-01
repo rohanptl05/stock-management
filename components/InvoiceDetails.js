@@ -3,6 +3,7 @@ import React from 'react'
 import Image from 'next/image';
 
 
+
 const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
     const cellHeader = {
         padding: '6px',
@@ -15,11 +16,25 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
     };
 
     const cellBody = {
-        padding: '6px',
+        padding: '5px',
         borderRight: '1px solid #000',
+        borderLeft: '1px solid #000',
         textAlign: 'center',
+       
 
     };
+    const cellBody2 = {
+        padding: '5px',
+       
+       
+        borderRight: '1px solid #000',
+        borderLeft: '1px solid #000',
+        fontSize: '13px',
+       
+      
+
+    }
+
 
 
     return (
@@ -37,8 +52,9 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                 </div>
 
             ) : invoice ? (
+            
 
-                <div className="max-w-3xl mx-auto border border-red-700 text-[10px] sm:text-sm font-[Cambria] bg-white text-black py-4 rounded-lg min-h-[822px]"> {/* A4 height approx 1122px at 96dpi */}
+                <div className="max-w-4xl mx-auto border border-red-700 text-[10px] sm:text-sm font-[Cambria] bg-white text-black py-4 rounded-lg min-h-[822px]"> 
                     {/* Header */}
                     <div className="text-center border-b border-red-700 ">
                         <p className='text-right px-2'>Mo. 9979524096, 9023137786</p>
@@ -71,7 +87,7 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                     </div>
 
                     {/* Table */}
-                    <div className="mt-3 p-2">
+                    <div className="mt-1 p-1">
                         <table className="w-full border border-collapse text-center">
                             <thead>
                                 <tr className="bg-red-100 text-[11px]">
@@ -85,7 +101,7 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                             <tbody className="min-h-[300px]">
                                 {invoice?.items?.map((item, index) => (
                                     <tr key={index}>
-                                        <td className="border-l p-1">{index + 1}</td>
+                                        <td className="text-center justify-center p-1 flex">{index + 1}</td>
                                         <td className="border-l p-1 text-left px-2">
                                             <div>
                                                 {item.item_name
@@ -208,6 +224,7 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                         <p className="font-bold"> <span className='font-extrabold text-xl'>For</span>, Sai Service</p>
                     </div>
                 </div>
+                
 
 
             ) : (
@@ -221,13 +238,12 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
 
             <div ref={reportRef}
 
-                className={`bg-white min-w-[794px] min-h-[1000px] w-[994px] p-8 text-black mx-auto  rounded shadow-lg   hidden`}
+                className={`bg-white min-w-[794px] min-h-[920px] w-[994px] p-8 text-black mx-auto  rounded shadow-lg  hidden `}
             >
                 <div
 
                     style={{
-                        width: '794px',
-                        height: '1000px',
+                        width: '894px',
                         margin: '0 auto',
                         border: '1px solid #b91c1c',
                         fontFamily: 'Cambria, serif',
@@ -238,12 +254,11 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                         letterSpacing: '0.5px',
                         boxSizing: 'border-box',
                         position: 'relative',
-                        marginTop: '20px',
+                        marginTop: '5px',
                         padding: '0',
                         overflow: 'hidden',
                         fontWeight: 'bold',
-                        textAlign: 'center'
-
+                        
                     }}
                 >
                     {/* Header */}
@@ -355,7 +370,7 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                             <tbody style={{ fontSize: '14px' }}>
                                 {(invoice?.items || []).map((item, index) => (
                                     <tr key={index}>
-                                        <td style={cellBody}>{index + 1}</td>
+                                        <td style={cellBody2}>{index + 1}</td>
                                         <td style={{ ...cellBody, textAlign: 'left' }}>
                                             <div>
                                                 {item.item_name
@@ -400,7 +415,7 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                                     </tr>
                                 ))}
                                 {/* Blank Rows */}
-                                {Array.from({ length: Math.max(12 - (invoice?.items?.length || 0), 0) }).map((_, i) => (
+                                {Array.from({ length: Math.max(16 - (invoice?.items?.length || 0), 0) }).map((_, i) => (
                                     <tr key={`blank-${i}`}>
                                         <td style={cellBody}>&nbsp;</td>
                                         <td style={cellBody}>&nbsp;</td>
@@ -436,6 +451,9 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                                             textAlign: 'right',
                                             fontWeight: 'bold',
                                             backgroundColor: '#f3f3f3',
+                                            justifyContent:"center",
+                                             justifyItems: "center",
+                                             alignItems: "center",
                                         }}
                                     >
                                         TOTAL:
@@ -449,6 +467,9 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                                             textAlign: 'center',
                                             fontWeight: 'bold',
                                             backgroundColor: '#f3f3f3',
+                                             justifyContent:"center",
+                                             justifyItems: "center",
+                                             alignItems: "center",
                                         }}
                                     >
                                         ₹{invoice?.grandTotal?.toFixed(2) || '0.00'}
