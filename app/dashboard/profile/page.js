@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { fetchuser, updateProfile, changeUserPassword } from "@/app/api/actions/useractions";
 import { Camera } from "lucide-react";
 import InputField from "@/components/InputField";
+import { CldUploadWidget } from "next-cloudinary";
 import PasswordModal from "@/components/PasswordModal";
 import { toast } from "sonner";
 import Image from "next/image";
@@ -269,32 +270,31 @@ export default function ProfilePage() {
         ) : (
           <div className="space-y-2">
             <div className="flex justify-center mb-4">
-
-              <div className="relative cursor-pointer group"
-              //  onClick={() => open()}
+              <CldUploadWidget
+                uploadPreset="invoices"
+                onSuccess={({ event, info }) => {
+                  if (event === "success") {
+                    const url = info?.secure_url || info?.url;
+                    setImageUrl(url);
+                    setForm((prevForm) => ({ ...prevForm, image: url }));
+                  }
+                }}
               >
-                <div className="relative cursor-pointer group">
-                  <Image
-                    width={30}
-                    height={30}
-                    src={form.image || "/assets/user.jpg"}
-                    alt="Profile"
-                    // style={{ width: "auto", height: "auto" }}
-                    priority
-                     title="Changing profile image"
-                    className="w-32 h-32 object-cover rounded-full border-2 border-gray-300"
-                  />
-                  <input
-                    type="file"
-                    accept="image/*"
-                      title="Changing profile image"
-                    onChange={handleImageUpload}
-                    className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
-                  />
-                </div>
-
-              </div>
-
+                {({ open }) => (
+                  <div className="relative cursor-pointer group" onClick={() => open()}>
+                    <Image
+                      width={128}
+                      height={128}
+                      src={form.image || "/assets/user.jpg"}
+                      alt="Profile"
+                      className="w-32 h-32 object-cover rounded-full border-2 border-gray-300"
+                    />
+                    <div className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md group-hover:scale-110 transition">
+                      <Camera className="w-4 h-4 text-gray-600" />
+                    </div>
+                  </div>
+                )}
+              </CldUploadWidget>
             </div>
             <div><strong>Name:</strong> {form.name}</div>
             <div><strong>Email:</strong> {form.email}</div>

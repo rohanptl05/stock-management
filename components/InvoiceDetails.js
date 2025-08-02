@@ -20,18 +20,18 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
         borderRight: '1px solid #000',
         borderLeft: '1px solid #000',
         textAlign: 'center',
-       
+
 
     };
     const cellBody2 = {
         padding: '5px',
-       
-       
+
+
         borderRight: '1px solid #000',
         borderLeft: '1px solid #000',
         fontSize: '13px',
-       
-      
+
+
 
     }
 
@@ -52,9 +52,9 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                 </div>
 
             ) : invoice ? (
-            
 
-                <div className="max-w-4xl mx-auto border border-red-700 text-[10px] sm:text-sm font-[Cambria] bg-white text-black py-4 rounded-lg min-h-[822px]"> 
+
+                <div className="max-w-4xl mx-auto border border-red-700 text-[10px] sm:text-sm font-[Cambria] bg-white text-black py-4 rounded-lg min-h-[822px]">
                     {/* Header */}
                     <div className="text-center border-b border-red-700 ">
                         <p className='text-right px-2'>Mo. 9979524096, 9023137786</p>
@@ -63,7 +63,7 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                         <p className="text-[10px] text-red-700">(કુલાર, પંખા, ઈલેક્ટ્રોનિક્સ વસ્તુઓ મળશે.)</p>
                         <p className="mt-1 font-semibold border-t border-b w-full">A.T. Post. Pipalkhed, (Bus stop Pachhal) Shop No. 2, Ta. Vansda Dist. Navsari.</p>
                         <div className="flex justify-between  ">
-                            <div className="space-y-1 p-2   text-left">
+                            <div className="space-y-1 p-2   text-left w-[60%]">
                                 <p>
                                     <span className="font-bold">Name : </span>{' '}
                                     {(invoice.client ?? '_________________')
@@ -79,7 +79,7 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                                     .join(' ')}</p>
                                 <p><span className="font-bold">Mobile No. : </span> {invoice?.clientPhone || '_________________'}</p>
                             </div>
-                            <div className="text-right border-l px-2 ">
+                            <div className="text-right border-l px-2 w-[40%]">
                                 <p><span className="font-bold">Bill No:</span> <span className="text-lg font-bold">{invoice?.invoiceNumber || '201'}</span></p>
                                 <p><span className="font-bold">Date:</span> {invoice?.date ? new Date(invoice.date).toLocaleDateString("en-GB") : "- / - / 20"}</p>
                             </div>
@@ -224,7 +224,7 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                         <p className="font-bold"> <span className='font-extrabold text-xl'>For</span>, Sai Service</p>
                     </div>
                 </div>
-                
+
 
 
             ) : (
@@ -238,7 +238,7 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
 
             <div ref={reportRef}
 
-                className={`bg-white min-w-[794px] min-h-[920px] w-[994px] p-8 text-black mx-auto  rounded shadow-lg  hidden `}
+                className={`bg-white min-w-[794px] min-h-[920px] w-[994px] p-8 text-black mx-auto  rounded shadow-lg  `}
             >
                 <div
 
@@ -258,7 +258,7 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                         padding: '0',
                         overflow: 'hidden',
                         fontWeight: 'bold',
-                        
+
                     }}
                 >
                     {/* Header */}
@@ -302,15 +302,21 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                         <div
                             style={{
                                 padding: '0 10px ',
-                                display: 'flex',
+
                                 justifyContent: 'space-between',
                                 alignItems: 'stretch',
                                 borderTop: '1px solid #000',
                                 borderBottom: '1px solid #000',
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                minHeight: '50px',
+                           
+
+
                             }}
                         >
                             {/* Client Info */}
-                            <div style={{ width: '60%', textAlign: 'left', paddingRight: '10px', padding: '2px', fontSize: '13px' }}>
+                            <div style={{ width: '60%', textAlign: 'left', paddingRight: '10px', padding: '5px', fontSize: '13px' }}>
                                 <p style={{ wordSpacing: '2px', letterSpacing: '0.5px' }}><strong>Name : </strong>   {(invoice.client ?? '_________________')
                                     .toLowerCase()
                                     .split(' ')
@@ -331,6 +337,9 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                                     paddingLeft: '10px',
                                     borderLeft: '1px solid #000',
                                     textAlign: 'right',
+                                    paddingRight: '10px',
+                                    padding: '5px',
+                                    fontSize: '13px'
                                 }}
                             >
                                 <p>
@@ -349,7 +358,7 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                     </div>
 
                     {/* Table */}
-                    <div style={{ marginTop: '20px', padding: '0 10px' }}>
+                    <div style={{ marginTop: '3px', padding: '0 5px' }}>
                         <table
                             style={{
                                 width: '100%',
@@ -451,9 +460,9 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                                             textAlign: 'right',
                                             fontWeight: 'bold',
                                             backgroundColor: '#f3f3f3',
-                                            justifyContent:"center",
-                                             justifyItems: "center",
-                                             alignItems: "center",
+                                            justifyContent: "center",
+                                            justifyItems: "center",
+                                            alignItems: "center",
                                         }}
                                     >
                                         TOTAL:
@@ -467,9 +476,9 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                                             textAlign: 'center',
                                             fontWeight: 'bold',
                                             backgroundColor: '#f3f3f3',
-                                             justifyContent:"center",
-                                             justifyItems: "center",
-                                             alignItems: "center",
+                                            justifyContent: "center",
+                                            justifyItems: "center",
+                                            alignItems: "center",
                                         }}
                                     >
                                         ₹{invoice?.grandTotal?.toFixed(2) || '0.00'}

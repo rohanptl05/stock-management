@@ -1,27 +1,13 @@
-// next.config.js
-// const nextConfig = {
-//   images: {
-//     domains: ['avatars.githubusercontent.com'],
-//   },
-// }
-
-// module.exports = nextConfig
-
-
-// next.config.js
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-});
-
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'avatars.githubusercontent.com',
-      },
-    ],
+    domains: ['res.cloudinary.com', 'avatars.githubusercontent.com'],
+  },
+  webpack: (config, { isServer }) => {
+    // Disable Webpack caching
+    config.cache = false;
+    return config;
   },
 };
 
-module.exports = withBundleAnalyzer(nextConfig);
+module.exports = nextConfig;
