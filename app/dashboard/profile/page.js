@@ -2,13 +2,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { fetchuser, updateProfile, changeUserPassword } from "@/app/api/actions/useractions";
+import { fetchuser, updateProfile, deleteCompanyLogo, changeUserPassword } from "@/app/api/actions/useractions";
 import { Camera } from "lucide-react";
-import InputField from "@/components/InputField";
 import { CldUploadWidget } from "next-cloudinary";
-import PasswordModal from "@/components/PasswordModal";
 import { toast } from "sonner";
 import Image from "next/image";
+import InputField from "@/components/InputField";
+import PasswordModal from "@/components/PasswordModal";
 
 export default function ProfilePage() {
   const { data: session } = useSession({
@@ -42,65 +42,17 @@ export default function ProfilePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Add inside your component
-  // useEffect(() => {
-  //   if (imageUrl) {
-
-  //     console.log("Image URL set in form:", form.image);
-  //     }
-  // }, [imageUrl]);
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("image", file);
-
-    try {
-      const res = await fetch(`/api/upload/profile?userId=${session?.user?.id}&oldImage=${form.image}`, {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        // ✅ update form immediately
-        setForm((prev) => ({ ...prev, image: data.imageUrl }));
-        setImageUrl(data.imageUrl);
-      } else {
-        toast.error(data.message || "Upload failed");
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("Image upload error");
-    }
-  };
-
-
-  useEffect(() => {
-    const updateImagePath = async () => {
-      if (imageUrl && session?.user?.email) {
-        const res = await updateProfile(form, session.user.email);
-        if (res.success) {
-          toast.success("Profile image updated successfully");
-          loadData();
-        }
-      }
-    };
-
-    updateImagePath();
-  }, [imageUrl, session?.user?.email]);
-
 
 
   const loadData = useCallback(async () => {
     setIsLoading(true);
     try {
       const data = await fetchuser(session?.user?.email);
-
-      if (data) {
-        setForm(data);
+      if (data.success) {
+        setForm((prev) => ({
+          ...prev,
+          ...data.user,
+        }));
       }
     } catch (error) {
       console.error(error);
@@ -112,9 +64,22 @@ export default function ProfilePage() {
     if (session?.user?.email) loadData();
   }, [loadData, session?.user?.email]);
 
+  const imageURL = useCallback(async () => {
+    setIsSubmitting(true);
+    const res = await updateProfile(form, session?.user?.email);
+    if (res.success) {
+      toast.success("Image updated successfully");
+      loadData();
+    }
+    setIsSubmitting(false);
+  }, [form, session?.user?.email, loadData]);
 
-
-
+  useEffect(() => {
+    if (imageUrl) {
+      imageURL();
+      setImageUrl(null);
+    }
+  }, [imageUrl, imageURL]);
 
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
@@ -139,23 +104,20 @@ export default function ProfilePage() {
     }
   };
 
-  const InputField = ({ field, value, onChange, type = "text" }) => (
+  const InputField = ({ field, value, onChange }) => (
     <div>
-      <label htmlFor={field} className="block text-sm font-medium text-gray-600 capitalize">
-        {field}
-      </label>
+      <label htmlFor={field} className="block text-sm font-medium text-gray-600 capitalize">{field}</label>
       <input
         id={field}
         name={field}
         value={value}
         onChange={onChange}
         className="w-full border border-gray-300 rounded-lg px-4 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        type={type}
+        type="text"
         placeholder={`Enter ${field}`}
       />
     </div>
   );
-
 
   const ReadOnlyField = ({ label, value }) => (
     <div>
@@ -177,7 +139,7 @@ export default function ProfilePage() {
     </div>
   );
 
-  const ModalActions = ({ onClose, isSubmitting }) => (
+  const ModalActions = ({ onClose }) => (
     <div className="flex justify-end gap-3 pt-4">
       <button
         type="button"
@@ -239,6 +201,46 @@ export default function ProfilePage() {
     );
   }
 
+  function CompanyFormModalContent() {
+    const [localForm, setLocalForm] = useState({
+      company: form.company || "",
+      companyphone: form.companyphone || "",
+      companyaddress: form.companyaddress || "",
+    });
+
+    const handleLocalChange = (e) => {
+      const { name, value } = e.target;
+      setLocalForm((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleCompanySave = async (e) => {
+      e.preventDefault();
+      setIsSubmitting(true);
+      const updated = { ...form, ...localForm };
+      const res = await updateProfile(updated, session.user.email);
+      if (res.success) {
+        setForm(updated);
+        toast.success("Company updated successfully");
+        setCompanyModalOpen(false);
+        loadData();
+      }
+      setIsSubmitting(false);
+    };
+
+    return (
+      <form onSubmit={handleCompanySave} className="space-y-4">
+        {["company", "companyphone", "companyaddress"].map((field) => (
+          <InputField
+            key={field}
+            field={field}
+            value={localForm[field]}
+            onChange={handleLocalChange}
+          />
+        ))}
+        <ModalActions onClose={() => setCompanyModalOpen(false)} />
+      </form>
+    );
+  }
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-10 font-sans">
@@ -254,19 +256,7 @@ export default function ProfilePage() {
           </button>
         </div>
         {isLoading ? (
-          <div className="flex justify-center items-center h-20">
-            <Image
-              src="/assets/infinite-spinner.svg"
-              alt="Loading..."
-              width={125}
-              height={125}
-              priority
-             
-              className="w-[40px] h-[40px]"
-            />
-          </div>
-
-
+          <Image width={30} height={30} src="/assets/infinite-spinner.svg" alt="Loading..." />
         ) : (
           <div className="space-y-2">
             <div className="flex justify-center mb-4">
@@ -304,6 +294,7 @@ export default function ProfilePage() {
         )}
       </div>
 
+  
 
 
       {/* PASSWORD CHANGE */}
@@ -321,6 +312,7 @@ export default function ProfilePage() {
 
       {/* MODALS */}
       {userModalOpen && <Modal title="Edit User Info" onClose={() => setUserModalOpen(false)}><UserFormModalContent /></Modal>}
+      {companyModalOpen && <Modal title="Edit Company Info" onClose={() => setCompanyModalOpen(false)}><CompanyFormModalContent /></Modal>}
       {modalOpen && (
         <PasswordModal
           isSubmitting={isSubmitting}

@@ -6,7 +6,6 @@ import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 
 
-
 export const fetchuser = async (email) => {
     await connectDb();
 
@@ -15,7 +14,11 @@ export const fetchuser = async (email) => {
         return { error: "User not found" };
     }
 
-    return user.toObject({ flattenObjectIds: true });
+    return {
+        user: user.toObject({ flattenObjectIds: true }),
+        success: 200
+    };
+
 };
 
 

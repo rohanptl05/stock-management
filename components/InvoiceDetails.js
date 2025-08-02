@@ -238,7 +238,8 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
 
             <div ref={reportRef}
 
-                className={`bg-white min-w-[794px] min-h-[920px] w-[994px] p-8 text-black mx-auto  rounded shadow-lg  `}
+                className={`bg-white min-w-[794px] min-h-[920px] w-[994px] p-8 text-black mx-auto  rounded shadow-lg  hidden`}
+                style={{display: "none"}}
             >
                 <div
 
@@ -310,6 +311,7 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                                 display: 'flex',
                                 flexWrap: 'wrap',
                                 minHeight: '50px',
+                                paddingBottom:'2px',
                            
 
 
