@@ -72,8 +72,8 @@ const generatePDF = async () => {
     const pdfWidthMm = pdf.internal.pageSize.getWidth();
     const pdfHeightMm = pdf.internal.pageSize.getHeight();
 
-    const topMarginMm = 6;
-    const bottomMarginMm = 6;
+    const topMarginMm = 2;
+    const bottomMarginMm = 2;
     const usableHeightMm = pdfHeightMm - topMarginMm - bottomMarginMm;
     const pxToMm = (px) => px * 0.264583;
     const imgWidthMm = pxToMm(imgWidthPx);
@@ -120,14 +120,14 @@ const generatePDF = async () => {
     }
 
     // Add timestamp to LAST PAGE ONLY:
-    const timestamp = new Date().toLocaleString();
-    pdf.setFontSize(6);
-    const textWidth = pdf.getTextWidth(timestamp);
-    pdf.text(
-      timestamp,
-      pdfWidthMm - textWidth - 10,
-      pdfHeightMm - 10
-    );
+    // const timestamp = new Date().toLocaleString();
+    // pdf.setFontSize(6);
+    // const textWidth = pdf.getTextWidth(timestamp);
+    // pdf.text(
+    //   timestamp,
+    //   pdfWidthMm - textWidth - 10,
+    //   pdfHeightMm - 10
+    // );
 
     pdf.save('invoice-report.pdf');
   } catch (error) {

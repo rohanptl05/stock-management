@@ -276,10 +276,11 @@ const Page = () => {
 
   const handleSale = async (e) => {
     e.preventDefault();
-
-    // setIsSubmitting(true)
+if (isSubmitting) return;
+    setIsSubmitting(true)
     if (warnings.some(w => w)) {
       toast.warning('Please fix all quantity warnings before submitting')
+       setIsSubmitting(false)
       return
     }
 
@@ -289,17 +290,20 @@ const Page = () => {
       )
     ) {
       toast.warning('Please enter valid quantity for all items.')
+       setIsSubmitting(false)
       return
     }
 
 
     if (!formData.client.trim()) {
       toast.warning('Please enter customer name.')
+       setIsSubmitting(false)
       return
     }
 
     if (formData.items.some(item => !item.productId)) {
       toast.warning('Please select all products.')
+       setIsSubmitting(false)
       return
     }
 
@@ -309,6 +313,7 @@ const Page = () => {
       )
     ) {
       toast.warning('Please enter valid quantity for all items.')
+       setIsSubmitting(false)
       return
     }
 
@@ -380,6 +385,7 @@ const Page = () => {
 
     if (warnings.some(w => w)) {
       toast.warning('Fix quantity warnings before submitting.')
+       setIsSubmitting(false)
       return
     }
 
@@ -389,17 +395,20 @@ const Page = () => {
       )
     ) {
       toast.warning('Please enter valid quantity for all items.')
+      setIsSubmitting(false)
       return
     }
 
 
     if (!isselectedInvoice.client.trim()) {
       toast.warning('Please enter customer name.')
+       setIsSubmitting(false)
       return
     }
 
     if (isselectedInvoice.items.some(item => !item.productId)) {
       toast.warning('Please select all products.')
+       setIsSubmitting(false)
       return
     }
 
@@ -409,6 +418,7 @@ const Page = () => {
       )
     ) {
       toast.warning('Please enter valid quantity for all items.')
+       setIsSubmitting(false)
       return
     }
 
@@ -443,6 +453,7 @@ const Page = () => {
 
     if (value.length !== 10) {
       setError("Phone number must be exactly 10 digits");
+      
     } else {
       setError("");
     }
@@ -944,7 +955,7 @@ const Page = () => {
                 >
                   <div className="flex justify-between items-center">
                     <h3 className="font-medium text-blue-600">Product #{index + 1}</h3>
-                    {formData.items.length > 1 && (
+                    {isselectedInvoice.items.length > 1 && (
                       <button
                         onClick={() => EditremoveItem(index)}
                         className="text-red-500 text-sm hover:underline"
