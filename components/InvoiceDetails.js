@@ -30,21 +30,31 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
 
   <div
                 ref={reportRef}
+                style={{
+                   
+                    minWidth: "794px",
+                    minHeight: "1000px",
+                    width: "994px",
+                  
+                    padding: "8px",
+                  
+                    margin: "auto",
+                  background: "#fff",
+                }}
 
                 // className={`bg-white min-w-[794px] min-h-[950px] w-[994px] p-1 text-black mx-auto  rounded shadow-lg  `}
-                style={{ display: "" }}
+                
             >
 
 
                 <div
 
                     style={{
-                        minWidth: "950px",
-                        minHeight: "100px",
+                        Width: "950px",
+                        Height: "1000px",
                         background: "#fff",
                         margin: "auto",
                         // border: "1px solid #bbb",
-                        padding: "12px",
                         fontFamily: "Arial, sans-serif",
                         fontSize: "10px",
                         color: "#222",
@@ -68,8 +78,8 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                         <div
                             style={{
                                 fontWeight: "bold",
-                                fontSize: "3.5em",
-                                letterSpacing: "2px",
+                                fontSize: "40px",
+                                letterSpacing: "1px",
                                 color: "#2552cc",
                                 marginBottom: "1px",
                             }}
@@ -91,7 +101,7 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                     </div>
                     {/* <hr style={{ margin: "9px 0" }} /> */}
 
-                    <div style={{ border: "2px solid #222", margin: "12px", borderRadius: '2px', overflow: 'hidden', minHeight: '1450px', position: 'relative' }}>
+                    <div style={{ border: "2px solid #222", margin: "12px", borderRadius: '2px', overflow: 'hidden', minHeight: '1200px', position: 'relative' }}>
 
                         <div style={{ width: "100%", display: "flex", justifyContent: "space-between", fontSize: '12px', padding: '10px' }}>
 
@@ -144,7 +154,7 @@ const InvoiceDetails = ({ isLoading, invoice, reportRef }) => {
                                 fontSize: "12px",
                                 width: "100%",
                                 tableLayout: "fixed",
-                                height: "1100px",
+                                height: "850px",
                             }}
                         >
                             <thead>
