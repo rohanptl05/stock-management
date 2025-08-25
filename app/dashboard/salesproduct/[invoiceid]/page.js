@@ -129,7 +129,7 @@ const generatePDF = async () => {
     //   pdfHeightMm - 10
     // );
 
-    pdf.save('invoice-report.pdf');
+    pdf.save(`invoice-${Date.now()}.pdf`);
   } catch (error) {
     console.error('PDF generation error:', error);
     alert('There was an error generating the PDF.');
